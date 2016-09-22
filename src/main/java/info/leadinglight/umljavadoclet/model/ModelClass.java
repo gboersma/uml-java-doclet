@@ -5,8 +5,4 @@ package info.leadinglight.umljavadoclet.model;
  */
 public abstract class ModelClass extends ModelElement {
     public abstract String getQualifiedName();
-    
-    public String printModel() {
-        return "Class: " + getQualifiedName();
-    }
 }

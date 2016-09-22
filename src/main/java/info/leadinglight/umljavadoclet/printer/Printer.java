@@ -5,16 +5,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public abstract class Printer {
-    public abstract String print();
+    public abstract void print();
     
     public void printToFile(String filename) {
-        String str = print();
-        dumpToFile(filename, str);
+        print();
+        dumpToFile(filename, _sb.toString());
     }
     
-    public void println(StringBuilder sb, String str) {
-        sb.append(str);
-        sb.append("\n");
+    public void print(String str) {
+        _sb.append(str);
+    }
+    
+    public void println(String str) {
+        _sb.append(str);
+        _sb.append("\n");
     }
 
     private void dumpToFile(String filename, String str) {
@@ -26,4 +30,6 @@ public abstract class Printer {
                 throw new RuntimeException(e);
         }
     }
+    
+    private final StringBuilder _sb = new StringBuilder();
 }

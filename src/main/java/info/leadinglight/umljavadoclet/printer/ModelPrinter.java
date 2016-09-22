@@ -12,21 +12,28 @@ public class ModelPrinter extends Printer {
     }
     
     @Override
-    public String print() {
-        StringBuilder sb = new StringBuilder();
+    public void print() {
         for (ModelClass modelClass: _model.getClassLookup().getClasses()) {
             if (modelClass instanceof ModelInternalClass) {
-                println(sb, modelClass.printModel());
+                printClass(modelClass);
                 List<ModelRel> rels = _model.getRelationshipLookup().getRelationshipsForSource(modelClass);
                 if (rels.size() > 0) {
-                    println(sb, "  Relationships:");
+                    println("  Relationships:");
                     for (ModelRel rel: rels) {
-                        println(sb, rel.printModel());
+                        print("    ");
+                        printRel(rel);
                     }
                 }
             }
         }
-        return sb.toString();
+    }
+    
+    private void printClass(ModelClass modelClass) {
+        println("Class: " + modelClass.getQualifiedName());
+    }
+    
+    private void printRel(ModelRel rel) {
+        println(rel.getType() + ": " + rel.getDestination().getQualifiedName());
     }
     
     private final Model _model;

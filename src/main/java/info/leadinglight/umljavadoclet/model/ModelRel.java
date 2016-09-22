@@ -19,10 +19,6 @@ public abstract class ModelRel extends ModelElement {
     
     public abstract String getType();
     
-    public String printModel() {
-        return getType() + ": " + _dest.getQualifiedName();
-    }
-    
     private final ModelClass _src;
     private final ModelClass _dest;
 }

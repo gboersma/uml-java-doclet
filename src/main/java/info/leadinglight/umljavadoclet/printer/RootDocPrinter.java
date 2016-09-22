@@ -12,34 +12,33 @@ public class RootDocPrinter extends Printer {
     public RootDocPrinter(RootDoc rootDoc) {
         _rootDoc = rootDoc;
     }
-    
-    public String print() {
-        StringBuilder sb = new StringBuilder();
+
+    @Override
+    public void print() {
         for (ClassDoc classDoc: _rootDoc.classes()) {
-            printClassDoc(sb, classDoc);
+            printClassDoc(classDoc);
         }
-        return sb.toString();
     }
     
-    private void printClassDoc(StringBuilder sb, ClassDoc classDoc) {
-        println(sb, "Class: " + classDoc.qualifiedTypeName());
+    private void printClassDoc(ClassDoc classDoc) {
+        println("Class: " + classDoc.qualifiedTypeName());
         if (classDoc.superclassType() != null) {
             String superClassName = classDoc.superclassType().qualifiedTypeName();
             if (!superClassName.equals("java.lang.Object") && !superClassName.equals("java.lang.Enum")) {
-                println(sb, "  Superclass: " + classDoc.superclassType().qualifiedTypeName());
+                println("  Superclass: " + classDoc.superclassType().qualifiedTypeName());
             }
         }
-//        for (MethodDoc methodDoc: classDoc.methods()) {
-//            printMethodDoc(sb, methodDoc);
-//        }
+        for (MethodDoc methodDoc: classDoc.methods()) {
+            printMethodDoc(methodDoc);
+        }
     }
     
-    private void printMethodDoc(StringBuilder sb, MethodDoc methodDoc) {
-        println(sb, "  Method: " + methodDoc.name());
+    private void printMethodDoc(MethodDoc methodDoc) {
+        println("  Method: " + methodDoc.name());
         for (Parameter param: methodDoc.parameters()) {
-            println(sb, "    Parameter: " + param.name() + "- " + param.type().qualifiedTypeName());
+            println("    Parameter: " + param.name() + "- " + param.type().qualifiedTypeName());
         }
-        println(sb, "    Return: " + methodDoc.returnType().qualifiedTypeName());
+        println("    Return: " + methodDoc.returnType().qualifiedTypeName());
     }
     
     private final RootDoc _rootDoc;
