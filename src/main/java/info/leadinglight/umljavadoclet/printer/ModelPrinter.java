@@ -16,7 +16,7 @@ public class ModelPrinter extends Printer {
         for (ModelClass modelClass: _model.getClassLookup().getClasses()) {
             if (modelClass instanceof ModelInternalClass) {
                 printClass(modelClass);
-                List<ModelRel> rels = _model.getRelationshipLookup().getRelationshipsForSource(modelClass);
+                List<ModelRel> rels = modelClass.getSourceRelationships();
                 if (rels.size() > 0) {
                     println("  Relationships:");
                     for (ModelRel rel: rels) {

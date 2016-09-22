@@ -14,6 +14,7 @@ public class ModelInternalClass extends ModelClass {
         return _classDoc;
     }
     
+    @Override
     public String getQualifiedName() {
         return _classDoc.qualifiedName();
     }

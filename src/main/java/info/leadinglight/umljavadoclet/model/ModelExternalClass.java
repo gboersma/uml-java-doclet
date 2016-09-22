@@ -14,6 +14,7 @@ public class ModelExternalClass extends ModelClass {
         return _type;
     }
     
+    @Override
     public String getQualifiedName() {
         return _type.qualifiedTypeName();
     }

@@ -49,7 +49,7 @@ public class DocletModelMapper {
                 ModelClass source = _model.getClass(classDoc);
                 ModelClass dest = _model.getClassLookup().createExternalClass(classDoc.superclassType());
                 GeneralizationRel rel = new GeneralizationRel(source, dest);
-                _model.getRelationshipLookup().addRelationship(rel);
+                _model.addRelationship(rel);
             }
         }
     }
