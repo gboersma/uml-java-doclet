@@ -42,7 +42,7 @@ public class DocletModelMapper {
     
     public void mapClassRelationships(ClassDoc classDoc) {
         mapSuperclass(classDoc);
-        mapUsages(classDoc);
+        mapDependencies(classDoc);
     }
     
     private void mapSuperclass(ClassDoc classDoc) {
@@ -56,29 +56,29 @@ public class DocletModelMapper {
         }
     }
     
-    private void mapUsages(ClassDoc classDoc) {
+    private void mapDependencies(ClassDoc classDoc) {
         ModelClass source = _model.getClass(classDoc);
         for (MethodDoc methodDoc: classDoc.methods()) {
             if (methodDoc.isPublic()) {
-                mapMethodUsages(source, methodDoc);
+                mapMethodDependencies(source, methodDoc);
             }
         }
     }
     
-    private void mapMethodUsages(ModelClass src, MethodDoc methodDoc) {
+    private void mapMethodDependencies(ModelClass src, MethodDoc methodDoc) {
         for (Parameter param: methodDoc.parameters()) {
             Type type = param.type();
-            mapTypeUsage(src, type);
+            mapTypeDependency(src, type);
         }
         
         Type returnType = methodDoc.returnType();
-        mapTypeUsage(src, returnType);
+        mapTypeDependency(src, returnType);
     }
     
-    private void mapTypeUsage(ModelClass src, Type type) {
+    private void mapTypeDependency(ModelClass src, Type type) {
         String typeName = type.qualifiedTypeName();
         if (!type.simpleTypeName().equals("void") && !typeName.startsWith("java.lang.") && !type.isPrimitive()) {
-            src.addUsageTo(type);
+            src.addDependencyTo(type);
         }
     }
         

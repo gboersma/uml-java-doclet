@@ -25,14 +25,18 @@ public abstract class ModelClass extends ModelElement {
         return _relLookup.getGeneralization(this);
     }
     
-    public ModelRel getUsageTo(ModelClass dest) {
-        return _relLookup.getUsage(this, dest);
+    public ModelRel getDependencyTo(ModelClass dest) {
+        return _relLookup.getDependency(this, dest);
     }
     
-    public List<ModelRel> getUsages() {
-        return _relLookup.getUsages(this);
+    public List<ModelRel> getDependencies() {
+        return _relLookup.getDependencies(this);
     }
     
+    public List<ModelRel> getDependents() {
+        return _relLookup.getDependents(this);
+    }
+
     public void addRelationship(ModelRel rel) {
         _relLookup.addRelationship(rel);
     }
@@ -45,9 +49,9 @@ public abstract class ModelClass extends ModelElement {
         }
     }
     
-    public void addUsageTo(Type type) {
+    public void addDependencyTo(Type type) {
         ModelClass dest = getModel().getClassLookup().createExternalClass(type);
-        if (dest != this && getUsageTo(dest) == null) {
+        if (dest != this && getDependencyTo(dest) == null) {
             DependencyRel rel = new DependencyRel(this, dest);
             getModel().addRelationship(rel);
         }

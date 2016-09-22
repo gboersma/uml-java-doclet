@@ -17,7 +17,8 @@ public class ModelPrinter extends Printer {
             if (modelClass instanceof InternalClass) {
                 printClass(modelClass);
                 printSuperclass(modelClass);
-                printUsages(modelClass);
+                printDependencies(modelClass);
+                printDependents(modelClass);
                 // TODO Other relationships.
             }
         }
@@ -31,21 +32,37 @@ public class ModelPrinter extends Printer {
         ModelRel generalization = modelClass.getGeneralization();
         if (generalization != null) {
             indent();
-            printRel(generalization);
+            printSuperclassRel(generalization);
         }
     }
     
-    private void printUsages(ModelClass modelClass) {
-        List<ModelRel> usages = modelClass.getUsages();
+    private void printDependencies(ModelClass modelClass) {
+        List<ModelRel> usages = modelClass.getDependencies();
         for (ModelRel usage: usages) {
             indent();
-            printRel(usage);
+            printUsesRel(usage);
         }
     }
 
-    private void printRel(ModelRel rel) {
-        println(rel.getType() + ": " + rel.getDestination().getQualifiedName());
+    private void printDependents(ModelClass modelClass) {
+        List<ModelRel> usages = modelClass.getDependents();
+        for (ModelRel usage: usages) {
+            indent();
+            printUsedRel(usage);
+        }
+    }
+
+    private void printSuperclassRel(ModelRel rel) {
+        println("extends: " + rel.getDestination().getQualifiedName());
+    }
+
+    private void printUsesRel(ModelRel rel) {
+        println("uses: " + rel.getDestination().getQualifiedName());
     }
     
+    private void printUsedRel(ModelRel rel) {
+        println("used by: " + rel.getSource().getQualifiedName());
+    }
+
     private final Model _model;
 }

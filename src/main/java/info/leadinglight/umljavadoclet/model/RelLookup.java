@@ -1,6 +1,5 @@
 package info.leadinglight.umljavadoclet.model;
 
-import com.sun.javadoc.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +27,22 @@ public class RelLookup extends ModelElement {
                 GeneralizationRel.class);
     }
     
-    public ModelRel getUsage(ModelClass sourceClass, ModelClass destClass) {
+    public ModelRel getDependency(ModelClass sourceClass, ModelClass destClass) {
         return RelFilter.filterFirstForType(
                 RelFilter.filterForDestinationClass(
                     RelFilter.filterForSourceClass(_rels, sourceClass),
                         destClass), DependencyRel.class);
     }
     
-    public List<ModelRel> getUsages(ModelClass sourceClass) {
+    public List<ModelRel> getDependencies(ModelClass sourceClass) {
         return RelFilter.filterForType(
                 RelFilter.filterForSourceClass(_rels, sourceClass),
+                DependencyRel.class);
+    }
+
+    public List<ModelRel> getDependents(ModelClass sourceClass) {
+        return RelFilter.filterForType(
+                RelFilter.filterForDestinationClass(_rels, sourceClass),
                 DependencyRel.class);
     }
 
