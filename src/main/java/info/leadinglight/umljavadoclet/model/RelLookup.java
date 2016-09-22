@@ -27,6 +27,12 @@ public class RelLookup extends ModelElement {
                 GeneralizationRel.class);
     }
     
+    public List<ModelRel> getGeneralized(ModelClass sourceClass) {
+        return RelFilter.filterForType(
+                RelFilter.filterForDestinationClass(_rels, sourceClass),
+                GeneralizationRel.class);
+    }
+    
     public ModelRel getDependency(ModelClass sourceClass, ModelClass destClass) {
         return RelFilter.filterFirstForType(
                 RelFilter.filterForDestinationClass(

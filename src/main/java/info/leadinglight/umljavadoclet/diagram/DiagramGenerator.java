@@ -58,6 +58,7 @@ public abstract class DiagramGenerator extends Printer {
     
     public void addClassRelationships(ModelClass modelClass) {
         addGeneralization(modelClass);
+        addGeneralized(modelClass);
         addDependencies(modelClass);
         addDependents(modelClass);
     }
@@ -70,6 +71,14 @@ public abstract class DiagramGenerator extends Printer {
         }
     }
     
+    public void addGeneralized(ModelClass modelClass) {
+        for (ModelRel rel: modelClass.getGeneralized()) {
+            // TODO Distinguish between external / internal classes. 
+            addReferencedClass(rel.getDestination());
+            printGeneralization(rel.getSource(), modelClass);
+        }
+    }
+
     public void addDependencies(ModelClass modelClass) {
         // Add all of the classes for relationships.
         for (ModelRel rel: modelClass.getDependencies()) {

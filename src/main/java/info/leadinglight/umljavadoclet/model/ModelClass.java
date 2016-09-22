@@ -25,6 +25,10 @@ public abstract class ModelClass extends ModelElement {
         return _relLookup.getGeneralization(this);
     }
     
+    public List<ModelRel> getGeneralized() {
+        return _relLookup.getGeneralized(this);
+    }
+    
     public ModelRel getDependencyTo(ModelClass dest) {
         return _relLookup.getDependency(this, dest);
     }
