@@ -7,11 +7,11 @@ import com.sun.javadoc.Type;
  */
 public class Model {
     public Model() {
-        _classLookup = new ModelClassLookup();
+        _classLookup = new ClassLookup();
         _classLookup.setModel(this);
     }
     
-    public ModelClassLookup getClassLookup() {
+    public ClassLookup getClassLookup() {
         return _classLookup;
     }
     
@@ -38,5 +38,5 @@ public class Model {
         }
     }
     
-    private final ModelClassLookup _classLookup;
+    private final ClassLookup _classLookup;
 }

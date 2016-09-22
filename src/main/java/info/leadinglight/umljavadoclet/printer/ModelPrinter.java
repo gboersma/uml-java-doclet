@@ -2,7 +2,7 @@ package info.leadinglight.umljavadoclet.printer;
 
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
-import info.leadinglight.umljavadoclet.model.ModelInternalClass;
+import info.leadinglight.umljavadoclet.model.InternalClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class ModelPrinter extends Printer {
     @Override
     public void print() {
         for (ModelClass modelClass: _model.getClassLookup().getClasses()) {
-            if (modelClass instanceof ModelInternalClass) {
+            if (modelClass instanceof InternalClass) {
                 printClass(modelClass);
                 printSuperclass(modelClass);
                 printUsages(modelClass);

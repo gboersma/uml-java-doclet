@@ -3,8 +3,8 @@ package info.leadinglight.umljavadoclet.model;
 /**
  * Generalization relationship.
  */
-public class UsageRel extends ModelRel {
-    public UsageRel(ModelClass src, ModelClass dest) {
+public class DependencyRel extends ModelRel {
+    public DependencyRel(ModelClass src, ModelClass dest) {
         super(src, dest);
     }
     

@@ -5,8 +5,8 @@ import com.sun.javadoc.Type;
 /**
  * Wrapper to a type that is not part of the javadoc classes (Type).
  */
-public class ModelExternalClass extends ModelClass {
-    public ModelExternalClass(Type type) {
+public class ExternalClass extends ModelClass {
+    public ExternalClass(Type type) {
         _type = type;
     }
     

@@ -16,11 +16,22 @@ public abstract class Printer {
         _sb.append(str);
     }
     
+    public void print(int level, String str) {
+        indent(level);
+        _sb.append(str);
+    }
+
     public void println(String str) {
         _sb.append(str);
         _sb.append("\n");
     }
     
+    public void println(int level, String str) {
+        indent(level);
+        _sb.append(str);
+        _sb.append("\n");
+    }
+
     public void indent() {
         indent(1);
     }
@@ -29,6 +40,10 @@ public abstract class Printer {
         for (int i=0; i<level; i++) {
             print("  ");
         }
+    }
+    
+    public void emptyLine() {
+        _sb.append("\n");
     }
 
     private void dumpToFile(String filename, String str) {

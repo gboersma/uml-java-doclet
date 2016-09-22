@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class ModelClass extends ModelElement {
     public abstract String getQualifiedName();
     
-    public ModelRelLookup getRelationshipLookup() {
+    public RelLookup getRelationshipLookup() {
         return _relLookup;
     }
     
@@ -48,7 +48,7 @@ public abstract class ModelClass extends ModelElement {
     public void addUsageTo(Type type) {
         ModelClass dest = getModel().getClassLookup().createExternalClass(type);
         if (dest != this && getUsageTo(dest) == null) {
-            UsageRel rel = new UsageRel(this, dest);
+            DependencyRel rel = new DependencyRel(this, dest);
             getModel().addRelationship(rel);
         }
     }
@@ -59,5 +59,5 @@ public abstract class ModelClass extends ModelElement {
         _relLookup.setModel(model);
     }
     
-    private final ModelRelLookup _relLookup = new ModelRelLookup();
+    private final RelLookup _relLookup = new RelLookup();
 }

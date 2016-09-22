@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Maintains lookup of all classes in the model.
  */
-public class ModelClassLookup extends ModelElement {
+public class ClassLookup extends ModelElement {
     public ModelClass getClass(String qualifiedName) {
         return _classes.get(qualifiedName);
     }
@@ -38,7 +38,7 @@ public class ModelClassLookup extends ModelElement {
         if (modelClass == null) {
             // This is a class that is outside the set of Javadoc root classes.
             // Add it to the model as an external class.
-            modelClass = new ModelExternalClass(type);
+            modelClass = new ExternalClass(type);
             addClass(modelClass);
         }
         return modelClass;

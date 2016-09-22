@@ -3,7 +3,7 @@ package info.leadinglight.umljavadoclet.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelRelFilter {
+public class RelFilter {
     public static List<ModelRel> filterForSourceClass(List<ModelRel> rels, ModelClass src) {
         List<ModelRel> filtered = new ArrayList<>();
         for (ModelRel rel: rels) {

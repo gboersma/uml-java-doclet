@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Lookup of relationships.
  */
-public class ModelRelLookup extends ModelElement {
+public class RelLookup extends ModelElement {
     public ModelRel addRelationship(ModelRel rel) {
         _rels.add(rel);
         rel.setModel(getModel());
@@ -15,30 +15,30 @@ public class ModelRelLookup extends ModelElement {
     }
     
     public List<ModelRel> getRelationshipsForSource(ModelClass sourceClass) {
-        return ModelRelFilter.filterForSourceClass(_rels, sourceClass);
+        return RelFilter.filterForSourceClass(_rels, sourceClass);
     }
     
     public List<ModelRel> getRelationshipsForDestination(ModelClass destClass) {
-        return ModelRelFilter.filterForSourceClass(_rels, destClass);
+        return RelFilter.filterForDestinationClass(_rels, destClass);
     }
     
     public ModelRel getGeneralization(ModelClass sourceClass) {
-        return ModelRelFilter.filterFirstForType(
-                ModelRelFilter.filterForSourceClass(_rels, sourceClass),
+        return RelFilter.filterFirstForType(
+                RelFilter.filterForSourceClass(_rels, sourceClass),
                 GeneralizationRel.class);
     }
     
     public ModelRel getUsage(ModelClass sourceClass, ModelClass destClass) {
-        return ModelRelFilter.filterFirstForType(
-                ModelRelFilter.filterForDestinationClass(
-                    ModelRelFilter.filterForSourceClass(_rels, sourceClass),
-                        destClass), UsageRel.class);
+        return RelFilter.filterFirstForType(
+                RelFilter.filterForDestinationClass(
+                    RelFilter.filterForSourceClass(_rels, sourceClass),
+                        destClass), DependencyRel.class);
     }
     
     public List<ModelRel> getUsages(ModelClass sourceClass) {
-        return ModelRelFilter.filterForType(
-                ModelRelFilter.filterForSourceClass(_rels, sourceClass),
-                UsageRel.class);
+        return RelFilter.filterForType(
+                RelFilter.filterForSourceClass(_rels, sourceClass),
+                DependencyRel.class);
     }
 
     private final List<ModelRel> _rels = new ArrayList<>();
