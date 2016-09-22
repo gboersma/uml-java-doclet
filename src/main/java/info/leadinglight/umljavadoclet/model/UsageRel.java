@@ -3,13 +3,13 @@ package info.leadinglight.umljavadoclet.model;
 /**
  * Generalization relationship.
  */
-public class GeneralizationRel extends ModelRel {
-    public GeneralizationRel(ModelClass src, ModelClass dest) {
+public class UsageRel extends ModelRel {
+    public UsageRel(ModelClass src, ModelClass dest) {
         super(src, dest);
     }
     
     @Override
     public String getType() {
-        return "extends";
+        return "uses";
     }
 }

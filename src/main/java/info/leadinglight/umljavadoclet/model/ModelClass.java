@@ -1,5 +1,6 @@
 package info.leadinglight.umljavadoclet.model;
 
+import com.sun.javadoc.Type;
 import java.util.List;
 
 /**
@@ -20,14 +21,38 @@ public abstract class ModelClass extends ModelElement {
         return _relLookup.getRelationshipsForDestination(this);
     }
     
-    public ModelRel getGeneralizationRelationship() {
-        return _relLookup.getGeneralizationRel(this);
+    public ModelRel getGeneralization() {
+        return _relLookup.getGeneralization(this);
+    }
+    
+    public ModelRel getUsageTo(ModelClass dest) {
+        return _relLookup.getUsage(this, dest);
+    }
+    
+    public List<ModelRel> getUsages() {
+        return _relLookup.getUsages(this);
     }
     
     public void addRelationship(ModelRel rel) {
         _relLookup.addRelationship(rel);
     }
     
+    public void addGeneralizationTo(Type type) {
+        ModelClass dest = getModel().getClassLookup().createExternalClass(type);
+        if (getGeneralization() == null) {
+            GeneralizationRel rel = new GeneralizationRel(this, dest);
+            getModel().addRelationship(rel);
+        }
+    }
+    
+    public void addUsageTo(Type type) {
+        ModelClass dest = getModel().getClassLookup().createExternalClass(type);
+        if (getUsageTo(dest) == null) {
+            UsageRel rel = new UsageRel(this, dest);
+            getModel().addRelationship(rel);
+        }
+    }
+
     @Override
     public void setModel(Model model) {
         super.setModel(model);
