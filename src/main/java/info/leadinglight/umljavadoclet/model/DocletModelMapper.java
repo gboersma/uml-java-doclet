@@ -59,18 +59,26 @@ public class DocletModelMapper {
     private void mapUsages(ClassDoc classDoc) {
         ModelClass source = _model.getClass(classDoc);
         for (MethodDoc methodDoc: classDoc.methods()) {
-            mapUsages(source, classDoc, methodDoc);
+            if (methodDoc.isPublic()) {
+                mapMethodUsages(source, methodDoc);
+            }
         }
     }
     
-    private void mapUsages(ModelClass src, ClassDoc classDoc, MethodDoc methodDoc) {
+    private void mapMethodUsages(ModelClass src, MethodDoc methodDoc) {
         for (Parameter param: methodDoc.parameters()) {
-            src.addUsageTo(param.type());
+            Type type = param.type();
+            mapTypeUsage(src, type);
         }
         
         Type returnType = methodDoc.returnType();
-        if (!returnType.simpleTypeName().equals("void")) {
-            src.addUsageTo(returnType);
+        mapTypeUsage(src, returnType);
+    }
+    
+    private void mapTypeUsage(ModelClass src, Type type) {
+        String typeName = type.qualifiedTypeName();
+        if (!type.simpleTypeName().equals("void") && !typeName.startsWith("java.lang.") && !type.isPrimitive()) {
+            src.addUsageTo(type);
         }
     }
         

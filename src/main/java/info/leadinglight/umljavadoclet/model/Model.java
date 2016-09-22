@@ -29,9 +29,13 @@ public class Model {
     
     public void addRelationship(ModelRel rel) {
         ModelClass src = rel.getSource();
-        src.addRelationship(rel);
         ModelClass dest = rel.getDestination();
-        dest.addRelationship(rel);
+        src.addRelationship(rel);
+        // Only add the destination relationship if it is different than source.
+        // Can be a relationship back to the same class.
+        if (src != dest) {
+            dest.addRelationship(rel);
+        }
     }
     
     private final ModelClassLookup _classLookup;

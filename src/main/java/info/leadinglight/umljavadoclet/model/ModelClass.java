@@ -47,7 +47,7 @@ public abstract class ModelClass extends ModelElement {
     
     public void addUsageTo(Type type) {
         ModelClass dest = getModel().getClassLookup().createExternalClass(type);
-        if (getUsageTo(dest) == null) {
+        if (dest != this && getUsageTo(dest) == null) {
             UsageRel rel = new UsageRel(this, dest);
             getModel().addRelationship(rel);
         }
