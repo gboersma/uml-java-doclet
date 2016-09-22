@@ -20,6 +20,16 @@ public abstract class Printer {
         _sb.append(str);
         _sb.append("\n");
     }
+    
+    public void indent() {
+        indent(1);
+    }
+    
+    public void indent(int level) {
+        for (int i=0; i<level; i++) {
+            print("  ");
+        }
+    }
 
     private void dumpToFile(String filename, String str) {
         try {

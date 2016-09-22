@@ -23,6 +23,10 @@ public class Model {
         return _classLookup.getClass(qualifiedName);
     }
     
+    public void addClass(ModelClass modelClass) {
+        _classLookup.addClass(modelClass);
+    }
+    
     public void addRelationship(ModelRel rel) {
         ModelClass src = rel.getSource();
         src.addRelationship(rel);

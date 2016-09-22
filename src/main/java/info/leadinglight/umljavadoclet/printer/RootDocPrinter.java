@@ -25,20 +25,24 @@ public class RootDocPrinter extends Printer {
         if (classDoc.superclassType() != null) {
             String superClassName = classDoc.superclassType().qualifiedTypeName();
             if (!superClassName.equals("java.lang.Object") && !superClassName.equals("java.lang.Enum")) {
-                println("  Superclass: " + classDoc.superclassType().qualifiedTypeName());
+                indent(1);
+                println("extends: " + classDoc.superclassType().qualifiedTypeName());
             }
         }
         for (MethodDoc methodDoc: classDoc.methods()) {
-            printMethodDoc(methodDoc);
+            //printMethodDoc(methodDoc);
         }
     }
     
     private void printMethodDoc(MethodDoc methodDoc) {
-        println("  Method: " + methodDoc.name());
+        indent(1);
+        println("Method: " + methodDoc.name());
         for (Parameter param: methodDoc.parameters()) {
-            println("    Parameter: " + param.name() + "- " + param.type().qualifiedTypeName());
+            indent(2);
+            println("Parameter: " + param.name() + "- " + param.type().qualifiedTypeName());
         }
-        println("    Return: " + methodDoc.returnType().qualifiedTypeName());
+        indent(2);
+        println("Return: " + methodDoc.returnType().qualifiedTypeName());
     }
     
     private final RootDoc _rootDoc;

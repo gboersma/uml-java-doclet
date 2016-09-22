@@ -14,23 +14,17 @@ public class ModelRelLookup extends ModelElement {
     }
     
     public List<ModelRel> getRelationshipsForSource(ModelClass sourceClass) {
-        List<ModelRel> rels = new ArrayList<>();
-        for (ModelRel rel: _rels) {
-            if (rel.getSource().getQualifiedName().equals(sourceClass.getQualifiedName())) {
-                rels.add(rel);
-            }
-        }
-        return rels;
+        return ModelRelFilter.filterForSourceClass(_rels, sourceClass);
     }
     
-    public List<ModelRel> getRelationshipsForDestination(ModelClass sourceClass) {
-        List<ModelRel> rels = new ArrayList<>();
-        for (ModelRel rel: _rels) {
-            if (rel.getDestination().getQualifiedName().equals(sourceClass.getQualifiedName())) {
-                rels.add(rel);
-            }
-        }
-        return rels;
+    public List<ModelRel> getRelationshipsForDestination(ModelClass destClass) {
+        return ModelRelFilter.filterForSourceClass(_rels, destClass);
+    }
+    
+    public ModelRel getGeneralizationRel(ModelClass sourceClass) {
+        return ModelRelFilter.filterFirstForType(
+                ModelRelFilter.filterForSourceClass(_rels, sourceClass),
+                GeneralizationRel.class);
     }
     
     private final List<ModelRel> _rels = new ArrayList<>();

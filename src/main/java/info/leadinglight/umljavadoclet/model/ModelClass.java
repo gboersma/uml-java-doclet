@@ -8,12 +8,20 @@ import java.util.List;
 public abstract class ModelClass extends ModelElement {
     public abstract String getQualifiedName();
     
+    public ModelRelLookup getRelationshipLookup() {
+        return _relLookup;
+    }
+    
     public List<ModelRel> getSourceRelationships() {
         return _relLookup.getRelationshipsForSource(this);
     }
     
     public List<ModelRel> getDestinationRelationships() {
         return _relLookup.getRelationshipsForDestination(this);
+    }
+    
+    public ModelRel getGeneralizationRelationship() {
+        return _relLookup.getGeneralizationRel(this);
     }
     
     public void addRelationship(ModelRel rel) {

@@ -34,7 +34,7 @@ public class DocletModelMapper {
 
     public void mapClass(ClassDoc classDoc) {
         ModelInternalClass modelClass = new ModelInternalClass(classDoc);
-        _model.getClassLookup().addClass(modelClass);
+        _model.addClass(modelClass);
     }
     
     public void mapClassRelationships(ClassDoc classDoc) {

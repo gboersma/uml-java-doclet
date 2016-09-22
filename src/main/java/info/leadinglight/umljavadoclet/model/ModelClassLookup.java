@@ -2,7 +2,7 @@ package info.leadinglight.umljavadoclet.model;
 
 import com.sun.javadoc.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,5 +44,5 @@ public class ModelClassLookup extends ModelElement {
         return modelClass;
     }
 
-    private final Map<String,ModelClass> _classes = new HashMap<>();
+    private final Map<String,ModelClass> _classes = new LinkedHashMap<>();
 }
