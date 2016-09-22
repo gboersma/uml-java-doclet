@@ -1,17 +1,21 @@
 package info.leadinglight.umljavadoclet;
 
+import info.leadinglight.umljavadoclet.printer.RootDocPrinter;
 import com.sun.javadoc.*;
 import info.leadinglight.umljavadoclet.model.DocletModelMapper;
+import info.leadinglight.umljavadoclet.printer.ModelPrinter;
 
 public class UmlJavaDoclet {
     public static boolean start(RootDoc root) {
-        //RootDocDumper.dumpRootDoc(root);
-        
-        // Map to our model representation.
         DocletModelMapper mapper = new DocletModelMapper();
         mapper.map(root);
-        // Print out the model.
-        System.out.println(mapper.getModel().printModel());
+        
+        // Dump results to file.
+        RootDocPrinter rootDocPrinter = new RootDocPrinter(root);
+        rootDocPrinter.printToFile("/Users/gerald/tmp/rootdoc.out");
+        ModelPrinter modelPrinter = new ModelPrinter(mapper.getModel());
+        modelPrinter.printToFile("/Users/gerald/tmp/model.out");
+
         return true;
     }
 }

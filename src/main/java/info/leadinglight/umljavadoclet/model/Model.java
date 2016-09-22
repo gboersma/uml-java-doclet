@@ -1,5 +1,6 @@
 package info.leadinglight.umljavadoclet.model;
 
+import com.sun.javadoc.Type;
 import java.util.List;
 
 /**
@@ -17,28 +18,16 @@ public class Model {
         return _classLookup;
     }
     
+    public ModelClass getClass(Type type) {
+        return _classLookup.getClass(type);
+    }
+    
+    public ModelClass getClass(String qualifiedName) {
+        return _classLookup.getClass(qualifiedName);
+    }
+    
     public ModelRelLookup getRelationshipLookup() {
         return _relLookup;
-    }
-
-    public String printModel() {
-        StringBuilder sb = new StringBuilder();
-        for (ModelClass modelClass: _classLookup.getClasses()) {
-            if (modelClass instanceof ModelInternalClass) {
-                sb.append(modelClass.printModel());
-                sb.append("\n");
-                List<ModelRel> rels = _relLookup.getRelationshipsForSource(modelClass);
-                if (rels.size() > 0) {
-                    sb.append("  Relationships:");
-                    for (ModelRel rel: rels) {
-                        sb.append("\n    ");
-                        sb.append(rel.printModel());
-                        sb.append("\n");
-                    }
-                }
-            }
-        }
-        return sb.toString();
     }
 
     private final ModelClassLookup _classLookup;
