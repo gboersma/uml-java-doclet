@@ -74,7 +74,7 @@ public abstract class DiagramGenerator extends Printer {
     public void addGeneralized(ModelClass modelClass) {
         for (ModelRel rel: modelClass.getGeneralized()) {
             // TODO Distinguish between external / internal classes. 
-            addReferencedClass(rel.getDestination());
+            addReferencedClass(rel.getSource());
             printGeneralization(rel.getSource(), modelClass);
         }
     }
