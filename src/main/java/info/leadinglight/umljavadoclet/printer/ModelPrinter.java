@@ -12,7 +12,7 @@ public class ModelPrinter extends Printer {
     }
     
     public void print() {
-        for (ModelClass modelClass: _model.getClasses().getAll()) {
+        for (ModelClass modelClass: _model.getClasses().all()) {
             if (modelClass.isInternal()) {
                 printClass(modelClass);
                 printSuperclass(modelClass);

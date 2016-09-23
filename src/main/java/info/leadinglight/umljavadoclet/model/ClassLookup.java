@@ -15,24 +15,44 @@ public class ClassLookup extends ModelElement {
     }
     
     public ModelClass get(Type type) {
-        return ClassLookup.this.get(type.qualifiedTypeName());
+        return get(type.qualifiedTypeName());
     }
 
     public boolean has(String qualifiedName) {
-        return ClassLookup.this.get(qualifiedName) != null;
+        return get(qualifiedName) != null;
     }
     
-    public List<ModelClass> getAll() {
+    public List<ModelClass> all() {
         return new ArrayList<>(_classes.values());
     }
     
     public void add(ModelClass modelClass) {
-        if (ClassLookup.this.get(modelClass.getQualifiedName()) == null) {
+        if (get(modelClass.getQualifiedName()) == null) {
             _classes.put(modelClass.getQualifiedName(), modelClass);
             modelClass.setModel(getModel());
         }
     }
     
+    public List<ModelClass> internal() {
+        ArrayList<ModelClass> internal = new ArrayList<>();
+        for (ModelClass modelClass: all()) {
+            if (modelClass.isInternal()) {
+                internal.add(modelClass);
+            }
+        }
+        return internal;
+    }
+    
+    public List<ModelClass> external() {
+        ArrayList<ModelClass> external = new ArrayList<>();
+        for (ModelClass modelClass: all()) {
+            if (modelClass.isExternal()) {
+                external.add(modelClass);
+            }
+        }
+        return external;
+    }
+
     public ModelClass createExternal(Type type) {
         ModelClass modelClass = get(type);
         if (modelClass == null) {

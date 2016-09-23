@@ -18,10 +18,6 @@ public class Model {
         return _classes;
     }
     
-    public PackageLookup getPackages() {
-        return _packages;
-    }
-    
     public ModelClass getClass(Type type) {
         return _classes.get(type);
     }
@@ -32,6 +28,10 @@ public class Model {
     
     public void addClass(ModelClass modelClass) {
         _classes.add(modelClass);
+    }
+    
+    public PackageLookup getPackages() {
+        return _packages;
     }
     
     public ModelPackage getPackage(PackageDoc packageDoc) {
