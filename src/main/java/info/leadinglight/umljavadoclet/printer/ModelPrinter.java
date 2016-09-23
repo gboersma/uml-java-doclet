@@ -13,7 +13,7 @@ public class ModelPrinter extends Printer {
     
     @Override
     public void print() {
-        for (ModelClass modelClass: _model.getClassLookup().getClasses()) {
+        for (ModelClass modelClass: _model.getClasses().getAll()) {
             if (modelClass instanceof InternalClass) {
                 printClass(modelClass);
                 printSuperclass(modelClass);

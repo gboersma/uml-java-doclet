@@ -24,6 +24,7 @@ public class DocletModelMapper {
         for (int i = 0; i < classes.length; ++i) {
             ClassDoc classDoc = classes[i];
             mapClass(classDoc);
+            mapPackage(classDoc);
         }
     }
     
@@ -34,10 +35,21 @@ public class DocletModelMapper {
             mapClassRelationships(classDoc);
         }
     }
-
+    
     public void mapClass(ClassDoc classDoc) {
         InternalClass modelClass = new InternalClass(classDoc);
         _model.addClass(modelClass);
+    }
+    
+    public void mapPackage(ClassDoc classDoc) {
+        ModelClass modelClass = _model.getClass(classDoc);
+        ModelPackage modelPackage = _model.getPackage(classDoc.containingPackage());
+        if (modelPackage == null) {
+            modelPackage = new ModelPackage(classDoc.containingPackage());
+            _model.addPackage(modelPackage);
+        }
+        modelPackage.addClass(modelClass);
+        modelClass.setPackage(modelPackage);
     }
     
     public void mapClassRelationships(ClassDoc classDoc) {

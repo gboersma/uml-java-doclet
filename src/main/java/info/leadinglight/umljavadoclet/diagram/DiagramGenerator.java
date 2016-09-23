@@ -57,10 +57,6 @@ public abstract class DiagramGenerator extends Printer {
         detailedClass(modelClass, true, true);
     }
     
-    public void classWithPublicMethods(InternalClass modelClass) {
-        
-    }
-
     // Displays the class with all details, and full method signatures (if displayed).
     public void detailedClass(InternalClass modelClass, boolean showFields, boolean showMethods) {
         println("class " + modelClass.getQualifiedName() + " {");
@@ -85,6 +81,7 @@ public abstract class DiagramGenerator extends Printer {
                 method(methodDoc, false);
             }
         }
+        println("}");
     }
     
     public void method(MethodDoc methodDoc, boolean detailed) {

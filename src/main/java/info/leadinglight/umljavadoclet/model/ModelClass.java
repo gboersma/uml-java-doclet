@@ -14,15 +14,15 @@ public abstract class ModelClass extends ModelElement {
     }
     
     public List<ModelRel> getRelationships() {
-        return _relLookup.getRelationships();
+        return _relLookup.getAll();
     }
     
     public List<ModelRel> getSourceRelationships() {
-        return _relLookup.getRelationshipsForSource(this);
+        return _relLookup.getForSource(this);
     }
     
     public List<ModelRel> getDestinationRelationships() {
-        return _relLookup.getRelationshipsForDestination(this);
+        return _relLookup.getForDestination(this);
     }
     
     public ModelRel getGeneralization() {
@@ -46,11 +46,11 @@ public abstract class ModelClass extends ModelElement {
     }
 
     public void addRelationship(ModelRel rel) {
-        _relLookup.addRelationship(rel);
+        _relLookup.add(rel);
     }
     
     public void addGeneralizationTo(Type type) {
-        ModelClass dest = getModel().getClassLookup().createExternalClass(type);
+        ModelClass dest = getModel().getClasses().createExternal(type);
         if (getGeneralization() == null) {
             GeneralizationRel rel = new GeneralizationRel(this, dest);
             getModel().addRelationship(rel);
@@ -58,7 +58,7 @@ public abstract class ModelClass extends ModelElement {
     }
     
     public void addDependencyTo(Type type) {
-        ModelClass dest = getModel().getClassLookup().createExternalClass(type);
+        ModelClass dest = getModel().getClasses().createExternal(type);
         if (dest != this && getDependencyTo(dest) == null) {
             DependencyRel rel = new DependencyRel(this, dest);
             getModel().addRelationship(rel);
@@ -71,5 +71,14 @@ public abstract class ModelClass extends ModelElement {
         _relLookup.setModel(model);
     }
     
+    public ModelPackage getPackage() {
+        return _package;
+    }
+    
+    public void setPackage(ModelPackage modelPackage) {
+        _package = modelPackage;
+    }
+    
     private final RelLookup _relLookup = new RelLookup();
+    private ModelPackage _package;
 }

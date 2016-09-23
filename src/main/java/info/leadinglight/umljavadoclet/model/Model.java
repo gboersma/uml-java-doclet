@@ -1,5 +1,6 @@
 package info.leadinglight.umljavadoclet.model;
 
+import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Type;
 
 /**
@@ -7,24 +8,42 @@ import com.sun.javadoc.Type;
  */
 public class Model {
     public Model() {
-        _classLookup = new ClassLookup();
-        _classLookup.setModel(this);
+        _classes = new ClassLookup();
+        _classes.setModel(this);
+        _packages = new PackageLookup();
+        _packages.setModel(this);
     }
     
-    public ClassLookup getClassLookup() {
-        return _classLookup;
+    public ClassLookup getClasses() {
+        return _classes;
+    }
+    
+    public PackageLookup getPackages() {
+        return _packages;
     }
     
     public ModelClass getClass(Type type) {
-        return _classLookup.getClass(type);
+        return _classes.get(type);
     }
     
     public ModelClass getClass(String qualifiedName) {
-        return _classLookup.getClass(qualifiedName);
+        return _classes.get(qualifiedName);
     }
     
     public void addClass(ModelClass modelClass) {
-        _classLookup.addClass(modelClass);
+        _classes.add(modelClass);
+    }
+    
+    public ModelPackage getPackage(PackageDoc packageDoc) {
+       return _packages.get(packageDoc);
+    }
+    
+    public ModelPackage getPackage(String qualifiedName) {
+        return _packages.get(qualifiedName);
+    }
+    
+    public void addPackage(ModelPackage modelPackage) {
+        _packages.add(modelPackage);
     }
     
     public void addRelationship(ModelRel rel) {
@@ -38,5 +57,6 @@ public class Model {
         }
     }
     
-    private final ClassLookup _classLookup;
+    private final ClassLookup _classes;
+    private final PackageLookup _packages;
 }

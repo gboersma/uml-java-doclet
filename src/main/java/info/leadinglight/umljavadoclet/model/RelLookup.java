@@ -7,21 +7,21 @@ import java.util.List;
  * Lookup of relationships.
  */
 public class RelLookup extends ModelElement {
-    public List<ModelRel> getRelationships() {
+    public List<ModelRel> getAll() {
         return _rels;
     }
     
-    public ModelRel addRelationship(ModelRel rel) {
+    public ModelRel add(ModelRel rel) {
         _rels.add(rel);
         rel.setModel(getModel());
         return rel;
     }
     
-    public List<ModelRel> getRelationshipsForSource(ModelClass sourceClass) {
+    public List<ModelRel> getForSource(ModelClass sourceClass) {
         return RelFilter.filterForSourceClass(_rels, sourceClass);
     }
     
-    public List<ModelRel> getRelationshipsForDestination(ModelClass destClass) {
+    public List<ModelRel> getForDestination(ModelClass destClass) {
         return RelFilter.filterForDestinationClass(_rels, destClass);
     }
     

@@ -1,14 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package info.leadinglight.umljavadoclet.diagram;
 
+import info.leadinglight.umljavadoclet.model.InternalClass;
+import info.leadinglight.umljavadoclet.model.Model;
+import info.leadinglight.umljavadoclet.model.ModelClass;
+import info.leadinglight.umljavadoclet.model.ModelPackage;
+
 /**
- *
- * @author gerald
+ * Generate PUML for package diagram.
  */
-public class PackageDiagramGenerator {
+public class PackageDiagramGenerator extends DiagramGenerator {
+    public PackageDiagramGenerator(Model model, ModelPackage modelPackage) {
+        super(model);
+        _modelPackage = modelPackage;
+    }
     
+    @Override
+    public void print() {
+        startUML();
+        for (ModelClass modelClass: _modelPackage.getClasses()) {
+            // Display only public methods, no parameters.
+            summaryClass((InternalClass)modelClass);
+            // TODO Display all relationships between classes on the model.
+        }
+        endUML();
+    }
+    
+    private final ModelPackage _modelPackage;
 }
