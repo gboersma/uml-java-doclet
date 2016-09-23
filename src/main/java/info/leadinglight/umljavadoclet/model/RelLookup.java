@@ -7,6 +7,10 @@ import java.util.List;
  * Lookup of relationships.
  */
 public class RelLookup extends ModelElement {
+    public List<ModelRel> getRelationships() {
+        return _rels;
+    }
+    
     public ModelRel addRelationship(ModelRel rel) {
         _rels.add(rel);
         rel.setModel(getModel());

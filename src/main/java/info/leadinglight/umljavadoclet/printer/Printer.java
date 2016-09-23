@@ -42,7 +42,7 @@ public abstract class Printer {
         }
     }
     
-    public void emptyLine() {
+    public void newline() {
         _sb.append("\n");
     }
 

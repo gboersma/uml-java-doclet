@@ -13,6 +13,10 @@ public abstract class ModelClass extends ModelElement {
         return _relLookup;
     }
     
+    public List<ModelRel> getRelationships() {
+        return _relLookup.getRelationships();
+    }
+    
     public List<ModelRel> getSourceRelationships() {
         return _relLookup.getRelationshipsForSource(this);
     }
