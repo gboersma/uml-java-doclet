@@ -1,8 +1,10 @@
 package info.leadinglight.umljavadoclet.diagram;
 
+import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.ProgramElementDoc;
 import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
 import info.leadinglight.umljavadoclet.model.AssociationRel;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
@@ -30,6 +32,7 @@ public abstract class DiagramGenerator extends Printer {
     
     public void start() {
         println("@startuml");
+        // Orthogonal lines
         println("skinparam linetype ortho");
         newline();
     }
@@ -40,11 +43,20 @@ public abstract class DiagramGenerator extends Printer {
     }
     
     public void emptyClass(ModelClass modelClass) {
-        println("class " + modelClass.getQualifiedName() + " {");
+        classType(modelClass);
+        println(modelClass.getQualifiedName() + " {");
         println("}");
     }
     
     public void classType(ModelClass modelClass) {
+        ClassDoc classDoc = modelClass.getClassDoc();
+        if (classDoc.isInterface()) {
+            print("interface ");
+        } else if (classDoc.isEnum()) {
+            print("enum ");
+        } else {
+            print("class ");
+        }
     }
     
     public void hiddenClass(ModelClass modelClass) {
@@ -69,7 +81,8 @@ public abstract class DiagramGenerator extends Printer {
     
     // Displays the class with all details, and full method signatures (if displayed).
     public void detailedClass(ModelClass modelClass, boolean showFields, boolean showMethods) {
-        println("class " + modelClass.getQualifiedName() + " {");
+        classType(modelClass);
+        println(modelClass.getQualifiedName() + " {");
         if (showFields) {
             for (FieldDoc fieldDoc: modelClass.getClassDoc().fields()) {
                 field(fieldDoc, true);
@@ -85,7 +98,8 @@ public abstract class DiagramGenerator extends Printer {
     
     // Only display public methods, not full signature.
     public void summaryClass(ModelClass modelClass) {
-        println("class " + modelClass.getQualifiedName() + " {");
+        classType(modelClass);
+        println(modelClass.getQualifiedName() + " {");
         for (MethodDoc methodDoc: modelClass.getClassDoc().methods()) {
             if (methodDoc.isPublic()) {
                 // It is possible for overloaded methods to have the same name.
@@ -100,20 +114,37 @@ public abstract class DiagramGenerator extends Printer {
     }
     
     public void field(FieldDoc fieldDoc, boolean detailed) {
+        if (fieldDoc.isStatic()) {
+            printStatic();
+        }
+        visibility(fieldDoc);
         if (detailed) {
             print(fieldDoc.type().simpleTypeName() + " ");
         }
         print(fieldDoc.name());
         newline();
     }
-
+    
+    public void visibility(ProgramElementDoc doc) {
+        if (doc.isPublic()) {
+            print("+");
+        } else if (doc.isProtected()) {
+            print("#");
+        } else if (doc.isPackagePrivate()) {
+            print("~");
+        } else {
+            print("-");
+        }
+    }
+    
     public void method(MethodDoc methodDoc, boolean detailed) {
         if (methodDoc.isStatic()) {
-            print("{static} ");
+            printStatic();
         }
         if (methodDoc.isAbstract()) {
-            print("{abstract} ");
+            printAbstract();
         }
+        visibility(methodDoc);
         if (detailed) {
             print(methodDoc.returnType().simpleTypeName() + " ");
         }
@@ -203,6 +234,14 @@ public abstract class DiagramGenerator extends Printer {
         }
     }
     
+    public void printAbstract() {
+        print("{abstract} ");
+    }
+    
+    public void printStatic() {
+        print("{static} ");
+    }
+
     public void printRel(ModelClass src, String relText, ModelClass dest) {
         println(src.getQualifiedName() + " " + relText + " " + dest.getQualifiedName());
     }
