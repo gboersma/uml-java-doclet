@@ -14,6 +14,7 @@ public class PackageDiagramGenerator extends DiagramGenerator {
         _modelPackage = modelPackage;
     }
     
+    @Override
     public void generate() {
         start();
         for (ModelClass modelClass: _modelPackage.getClasses()) {

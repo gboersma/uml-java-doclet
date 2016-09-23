@@ -1,14 +1,19 @@
 package info.leadinglight.umljavadoclet.mapper;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Type;
+import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
+import info.leadinglight.umljavadoclet.model.AssociationRel;
+import info.leadinglight.umljavadoclet.model.DependencyRel;
 import info.leadinglight.umljavadoclet.model.InternalClass;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
+import info.leadinglight.umljavadoclet.model.Multiplicity;
 
 /**
  * Populates the model based on the information provided by the doclet.
@@ -87,8 +92,29 @@ public class DocletModelMapper {
     }
 
     private void mapDependencies(ClassDoc classDoc) {
+        mapFieldAssociations(classDoc);
+        mapMethodDependencies(classDoc);
+    }
+    
+    private void mapFieldAssociations(ClassDoc classDoc) {
         ModelClass source = _model.getClass(classDoc);
-        // TODO Attributes
+        for (FieldDoc fieldDoc: classDoc.fields()) {
+            Type type = fieldDoc.type();
+            AssociationRel association = mapTypeAssociation(source, type);
+            if (association != null) {
+                // TODO Multiplicity, determined by relationships through collection types.
+                AssociationEndpoint endpoint = new AssociationEndpoint(fieldDoc.name(), null);
+                if (source == association.getSource()) {
+                    association.setDestinationEndpoint(endpoint);
+                } else {
+                    association.setSourceEndpoint(endpoint);
+                }
+            }
+        }
+    }
+
+    private void mapMethodDependencies(ClassDoc classDoc) {
+        ModelClass source = _model.getClass(classDoc);
         for (MethodDoc methodDoc: classDoc.methods()) {
             if (methodDoc.isPublic()) {
                 for (Parameter param: methodDoc.parameters()) {
@@ -102,11 +128,24 @@ public class DocletModelMapper {
         }
     }
     
-    private void mapTypeDependency(ModelClass src, Type type) {
+    private DependencyRel mapTypeDependency(ModelClass src, Type type) {
+        DependencyRel dependency = null;
         String typeName = type.qualifiedTypeName();
+        // TODO Relationships through collection types.
         if (!type.simpleTypeName().equals("void") && !typeName.startsWith("java.lang.") && !type.isPrimitive()) {
-            src.addDependencyTo(type);
+            dependency = src.addDependencyTo(type);
         }
+        return dependency;
+    }
+    
+    private AssociationRel mapTypeAssociation(ModelClass src, Type type) {
+        AssociationRel association = null;
+        String typeName = type.qualifiedTypeName();
+        // TODO Relationships through collection types.
+        if (!type.simpleTypeName().equals("void") && !typeName.startsWith("java.lang.") && !type.isPrimitive()) {
+            association = src.addAssociationTo(type);
+        }
+        return association;
     }
         
     private final Model _model = new Model();

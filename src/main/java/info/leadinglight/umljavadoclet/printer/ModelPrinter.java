@@ -1,9 +1,10 @@
 package info.leadinglight.umljavadoclet.printer;
 
+import info.leadinglight.umljavadoclet.model.DependencyRel;
+import info.leadinglight.umljavadoclet.model.GeneralizationRel;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.InternalClass;
-import info.leadinglight.umljavadoclet.model.ModelRel;
 import java.util.List;
 
 public class ModelPrinter extends Printer {
@@ -28,7 +29,7 @@ public class ModelPrinter extends Printer {
     }
     
     private void printSuperclass(ModelClass modelClass) {
-        ModelRel generalization = modelClass.getGeneralization();
+        GeneralizationRel generalization = modelClass.getGeneralization();
         if (generalization != null) {
             indent();
             printSuperclassRel(generalization);
@@ -36,30 +37,30 @@ public class ModelPrinter extends Printer {
     }
     
     private void printDependencies(ModelClass modelClass) {
-        List<ModelRel> usages = modelClass.getDependencies();
-        for (ModelRel usage: usages) {
+        List<DependencyRel> usages = modelClass.getDependencies();
+        for (DependencyRel usage: usages) {
             indent();
             printUsesRel(usage);
         }
     }
 
     private void printDependents(ModelClass modelClass) {
-        List<ModelRel> usages = modelClass.getDependents();
-        for (ModelRel usage: usages) {
+        List<DependencyRel> usages = modelClass.getDependents();
+        for (DependencyRel usage: usages) {
             indent();
             printUsedRel(usage);
         }
     }
 
-    private void printSuperclassRel(ModelRel rel) {
+    private void printSuperclassRel(GeneralizationRel rel) {
         println("extends: " + rel.getDestination().getQualifiedName());
     }
 
-    private void printUsesRel(ModelRel rel) {
+    private void printUsesRel(DependencyRel rel) {
         println("uses: " + rel.getDestination().getQualifiedName());
     }
     
-    private void printUsedRel(ModelRel rel) {
+    private void printUsedRel(DependencyRel rel) {
         println("used by: " + rel.getSource().getQualifiedName());
     }
 

@@ -1,13 +1,17 @@
 package info.leadinglight.umljavadoclet.diagram;
 
+import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
+import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
+import info.leadinglight.umljavadoclet.model.AssociationRel;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
 import info.leadinglight.umljavadoclet.model.GeneralizationRel;
 import info.leadinglight.umljavadoclet.model.InternalClass;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
+import info.leadinglight.umljavadoclet.model.Multiplicity;
 import info.leadinglight.umljavadoclet.model.RealizationRel;
 import info.leadinglight.umljavadoclet.printer.Printer;
 
@@ -64,6 +68,9 @@ public abstract class DiagramGenerator extends Printer {
     public void detailedClass(InternalClass modelClass, boolean showFields, boolean showMethods) {
         println("class " + modelClass.getQualifiedName() + " {");
         if (showFields) {
+            for (FieldDoc fieldDoc: modelClass.getClassDoc().fields()) {
+                field(fieldDoc, true);
+            }
         }
         if (showMethods) {
             for (MethodDoc methodDoc: modelClass.getClassDoc().methods()) {
@@ -87,6 +94,14 @@ public abstract class DiagramGenerator extends Printer {
         println("}");
     }
     
+    public void field(FieldDoc fieldDoc, boolean detailed) {
+        if (detailed) {
+            print(fieldDoc.type().simpleTypeName() + " ");
+        }
+        print(fieldDoc.name());
+        newline();
+    }
+
     public void method(MethodDoc methodDoc, boolean detailed) {
         if (methodDoc.isStatic()) {
             print("{static} ");
@@ -128,6 +143,11 @@ public abstract class DiagramGenerator extends Printer {
             dependency(rel.getSource(), rel.getDestination());
         } else if (rel instanceof RealizationRel) {
             realization(rel.getSource(), rel.getDestination());
+        } else if (rel instanceof AssociationRel) {
+            AssociationRel association = (AssociationRel) rel;
+            AssociationEndpoint destEndpoint = association.getDestinationEndpoint();
+            AssociationEndpoint srcEndpoint = association.getSourceEndpoint();
+            association(rel.getSource(), srcEndpoint, rel.getDestination(), destEndpoint);
         }
     }
     
@@ -143,9 +163,54 @@ public abstract class DiagramGenerator extends Printer {
         printRel(src,  "..>", dest);
     }
     
+    public void association(ModelClass src, AssociationEndpoint srcEndpoint, ModelClass dest, AssociationEndpoint destEndpoint) {
+        String relText = null;
+        if (srcEndpoint == null) {
+            relText = "-->";
+        } else if (destEndpoint == null) {
+            relText = "<--";
+        } else {
+            relText = "--";
+        }
+        printRel(src, 
+                (srcEndpoint != null ? srcEndpoint.getRole() : null), 
+                (srcEndpoint != null ? multiplicityLabel(srcEndpoint.getMultiplicity()) : null),
+                relText,
+                dest,
+                (destEndpoint != null ? destEndpoint.getRole() : null), 
+                (destEndpoint != null ? multiplicityLabel(destEndpoint.getMultiplicity()) : null));
+    }
+    
+    public String multiplicityLabel(Multiplicity mult) {
+        if (mult != null) {
+            switch(mult) {
+                case ONE:
+                    return "1";
+                case ZERO_OR_ONE:
+                    return "0..1";
+                case MANY:
+                    return "*";
+                default:
+                    return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
     public void printRel(ModelClass src, String relText, ModelClass dest) {
         println(src.getQualifiedName() + " " + relText + " " + dest.getQualifiedName());
     }
     
+    public void printRel(ModelClass src, String srcRole, String srcCardinality, String relText, ModelClass dest, String destRole, String destCardinality) {
+        // PUML does not allow labels to be specified for each end.
+        // We'll fake it by overloading the multiplicity label.
+        String srcLabel = (srcRole != null ? srcRole + " " : "") + (srcCardinality != null ? srcCardinality : "");
+        srcLabel = srcLabel.length() > 0 ? "\"" + srcLabel + "\"" + " " : "";
+        String destLabel = (destRole != null ? destRole + " " : "") + (destCardinality != null ? destCardinality : "");
+        destLabel = destLabel.length() > 0 ? "\"" + destLabel + "\"" + " " : "";
+        println(src.getQualifiedName() + " " + srcLabel + relText + " " + destLabel + dest.getQualifiedName());
+    }
+
     private final Model _model;
 }

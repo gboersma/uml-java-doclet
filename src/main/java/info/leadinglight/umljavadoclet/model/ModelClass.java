@@ -1,6 +1,7 @@
 package info.leadinglight.umljavadoclet.model;
 
 import com.sun.javadoc.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,8 +22,8 @@ public abstract class ModelClass extends ModelElement {
         _relLookup.add(rel);
     }
     
-    public ModelRel getGeneralization() {
-        return _relLookup.type(GeneralizationRel.class).source(this).first();
+    public GeneralizationRel getGeneralization() {
+        return (GeneralizationRel) _relLookup.type(GeneralizationRel.class).source(this).first();
     }
     
     public void addGeneralizationTo(Type type) {
@@ -37,21 +38,43 @@ public abstract class ModelClass extends ModelElement {
         getModel().addRelationship(rel);
     }
 
-    public List<ModelRel> getDependencies() {
-        return _relLookup.source(this).type(DependencyRel.class).all();
+    public List<DependencyRel> getDependencies() {
+        List<ModelRel> rels = _relLookup.source(this).type(DependencyRel.class).all();
+        return castDependencyRels(rels);
     }
     
-    public List<ModelRel> getDependents() {
-        return _relLookup.destination(this).type(DependencyRel.class).all();
+    public List<DependencyRel> getDependents() {
+        List<ModelRel> rels = _relLookup.destination(this).type(DependencyRel.class).all();
+        return castDependencyRels(rels);
     }
 
-    public void addDependencyTo(Type type) {
+    public DependencyRel addDependencyTo(Type type) {
+        DependencyRel rel = null;
         ModelClass dest = getModel().getClasses().createExternal(type);
         // Only add dependency to the class if a relationship does not already exist.
         if (dest != this && _relLookup.between(this, dest).isEmpty()) {
-            DependencyRel rel = new DependencyRel(this, dest);
+            rel = new DependencyRel(this, dest);
             getModel().addRelationship(rel);
         }
+        return rel;
+    }
+    
+    public AssociationRel getAssociationWith(ModelClass otherClass) {
+        AssociationRel association = (AssociationRel) _relLookup.between(this, otherClass).first();
+        if (association == null) {
+            association = (AssociationRel) _relLookup.between(otherClass, this).first();
+        }
+        return association;
+    }
+    
+    public AssociationRel addAssociationTo(Type type) {
+        ModelClass dest = getModel().getClasses().createExternal(type);
+        // When adding an association with a destination class, each one will have its own label
+        // and multiplicity. Do not reuse existing associations- create a new one.
+        // Also, if it is an association with itself, draw it explicitly as well.
+        AssociationRel association = new AssociationRel(this, dest);
+        getModel().addRelationship(association);
+        return association;
     }
 
     @Override
@@ -66,6 +89,14 @@ public abstract class ModelClass extends ModelElement {
     
     public void setPackage(ModelPackage modelPackage) {
         _package = modelPackage;
+    }
+    
+    private List<DependencyRel> castDependencyRels(List<ModelRel> rels) {
+        List<DependencyRel> dependencies = new ArrayList<>();
+        for (ModelRel rel: rels) {
+            dependencies.add((DependencyRel)rel);
+        }
+        return dependencies;
     }
     
     private final RelLookup _relLookup = new RelLookup();

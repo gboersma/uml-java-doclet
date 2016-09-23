@@ -13,6 +13,7 @@ public class ContextDiagramGenerator extends DiagramGenerator {
         _contextClass = contextClass;
     }
     
+    @Override
     public void generate() {
         start();
         addContextClass(_contextClass);
