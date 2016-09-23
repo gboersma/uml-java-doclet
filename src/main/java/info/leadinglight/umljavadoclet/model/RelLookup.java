@@ -7,54 +7,55 @@ import java.util.List;
  * Lookup of relationships.
  */
 public class RelLookup extends ModelElement {
-    public List<ModelRel> getAll() {
+    public List<ModelRel> all() {
         return _rels;
     }
     
-    public ModelRel add(ModelRel rel) {
+    public boolean isEmpty() {
+        return _rels.isEmpty();
+    }
+    
+    public ModelRel first() {
+        return _rels.size() > 0 ? _rels.get(0) : null;
+    }
+    
+    public void add(ModelRel rel) {
         _rels.add(rel);
-        rel.setModel(getModel());
-        return rel;
     }
     
-    public List<ModelRel> getForSource(ModelClass sourceClass) {
-        return RelFilter.filterForSourceClass(_rels, sourceClass);
+    public RelLookup source(ModelClass source) {
+        RelLookup filtered = new RelLookup();
+        for (ModelRel rel: _rels) {
+            if (rel.getSource() == source) {
+                filtered.add(rel);
+            }
+        }
+        return filtered;
     }
     
-    public List<ModelRel> getForDestination(ModelClass destClass) {
-        return RelFilter.filterForDestinationClass(_rels, destClass);
+    public RelLookup destination(ModelClass dest) {
+        RelLookup filtered = new RelLookup();
+        for (ModelRel rel: _rels) {
+            if (rel.getDestination() == dest) {
+                filtered.add(rel);
+            }
+        }
+        return filtered;
     }
     
-    public ModelRel getGeneralization(ModelClass sourceClass) {
-        return RelFilter.filterFirstForType(
-                RelFilter.filterForSourceClass(_rels, sourceClass),
-                GeneralizationRel.class);
+    public RelLookup type(Class<? extends ModelRel> type) {
+        RelLookup filtered = new RelLookup();
+        for (ModelRel rel: _rels) {
+            if (rel.getClass() == type) {
+                filtered.add(rel);
+            }
+        }
+        return filtered;
     }
     
-    public List<ModelRel> getGeneralized(ModelClass sourceClass) {
-        return RelFilter.filterForType(
-                RelFilter.filterForDestinationClass(_rels, sourceClass),
-                GeneralizationRel.class);
+    public RelLookup between(ModelClass source, ModelClass dest) {
+        return source(source).destination(dest);
     }
     
-    public ModelRel getDependency(ModelClass sourceClass, ModelClass destClass) {
-        return RelFilter.filterFirstForType(
-                RelFilter.filterForDestinationClass(
-                    RelFilter.filterForSourceClass(_rels, sourceClass),
-                        destClass), DependencyRel.class);
-    }
-    
-    public List<ModelRel> getDependencies(ModelClass sourceClass) {
-        return RelFilter.filterForType(
-                RelFilter.filterForSourceClass(_rels, sourceClass),
-                DependencyRel.class);
-    }
-
-    public List<ModelRel> getDependents(ModelClass sourceClass) {
-        return RelFilter.filterForType(
-                RelFilter.filterForDestinationClass(_rels, sourceClass),
-                DependencyRel.class);
-    }
-
     private final List<ModelRel> _rels = new ArrayList<>();
 }
