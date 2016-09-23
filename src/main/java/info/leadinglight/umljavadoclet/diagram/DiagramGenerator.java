@@ -8,6 +8,7 @@ import info.leadinglight.umljavadoclet.model.InternalClass;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
+import info.leadinglight.umljavadoclet.model.RealizationRel;
 import info.leadinglight.umljavadoclet.printer.Printer;
 
 /**
@@ -123,6 +124,8 @@ public abstract class DiagramGenerator extends Printer {
             generalization(rel.getSource(), rel.getDestination());
         } else if (rel instanceof DependencyRel) {
             dependency(rel.getSource(), rel.getDestination());
+        } else if (rel instanceof RealizationRel) {
+            realization(rel.getSource(), rel.getDestination());
         }
     }
     
@@ -130,6 +133,10 @@ public abstract class DiagramGenerator extends Printer {
         printRel(src,  "--|>", dest);
     }
     
+    public void realization(ModelClass src, ModelClass dest) {
+        printRel(src,  "..|>", dest);
+    }
+
     public void dependency(ModelClass src, ModelClass dest) {
         printRel(src,  "..>", dest);
     }

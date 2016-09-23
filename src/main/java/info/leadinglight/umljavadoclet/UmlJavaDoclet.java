@@ -4,7 +4,7 @@ import info.leadinglight.umljavadoclet.printer.RootDocPrinter;
 import com.sun.javadoc.*;
 import info.leadinglight.umljavadoclet.diagram.ContextDiagramGenerator;
 import info.leadinglight.umljavadoclet.diagram.PackageDiagramGenerator;
-import info.leadinglight.umljavadoclet.model.DocletModelMapper;
+import info.leadinglight.umljavadoclet.mapper.DocletModelMapper;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;

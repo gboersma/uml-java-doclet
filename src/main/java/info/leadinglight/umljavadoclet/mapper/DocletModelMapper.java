@@ -1,10 +1,14 @@
-package info.leadinglight.umljavadoclet.model;
+package info.leadinglight.umljavadoclet.mapper;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Type;
+import info.leadinglight.umljavadoclet.model.InternalClass;
+import info.leadinglight.umljavadoclet.model.Model;
+import info.leadinglight.umljavadoclet.model.ModelClass;
+import info.leadinglight.umljavadoclet.model.ModelPackage;
 
 /**
  * Populates the model based on the information provided by the doclet.
@@ -54,6 +58,7 @@ public class DocletModelMapper {
     
     public void mapClassRelationships(ClassDoc classDoc) {
         mapSuperclass(classDoc);
+        mapInterfaces(classDoc);
         mapDependencies(classDoc);
     }
     
@@ -68,23 +73,33 @@ public class DocletModelMapper {
         }
     }
     
-    private void mapDependencies(ClassDoc classDoc) {
-        ModelClass source = _model.getClass(classDoc);
-        for (MethodDoc methodDoc: classDoc.methods()) {
-            if (methodDoc.isPublic()) {
-                mapMethodDependencies(source, methodDoc);
+    private void mapInterfaces(ClassDoc classDoc) {
+        for (ClassDoc interfaceDoc: classDoc.interfaces()) {
+            ModelClass source = _model.getClass(classDoc);
+            // If source class is an interface, than the relationship is a generalization,
+            // not a realization.
+            if (classDoc.isInterface()) {
+                source.addGeneralizationTo(interfaceDoc);
+            } else {
+                source.addRealizationTo(interfaceDoc);
             }
         }
     }
-    
-    private void mapMethodDependencies(ModelClass src, MethodDoc methodDoc) {
-        for (Parameter param: methodDoc.parameters()) {
-            Type type = param.type();
-            mapTypeDependency(src, type);
+
+    private void mapDependencies(ClassDoc classDoc) {
+        ModelClass source = _model.getClass(classDoc);
+        // TODO Attributes
+        for (MethodDoc methodDoc: classDoc.methods()) {
+            if (methodDoc.isPublic()) {
+                for (Parameter param: methodDoc.parameters()) {
+                    Type type = param.type();
+                    mapTypeDependency(source, type);
+                }
+
+                Type returnType = methodDoc.returnType();
+                mapTypeDependency(source, returnType);
+            }
         }
-        
-        Type returnType = methodDoc.returnType();
-        mapTypeDependency(src, returnType);
     }
     
     private void mapTypeDependency(ModelClass src, Type type) {

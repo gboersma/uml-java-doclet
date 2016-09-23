@@ -17,8 +17,6 @@ public abstract class ModelRel extends ModelElement {
         return _dest;
     }
     
-    public abstract String getType();
-    
     private final ModelClass _src;
     private final ModelClass _dest;
 }

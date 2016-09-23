@@ -7,9 +7,4 @@ public class DependencyRel extends ModelRel {
     public DependencyRel(ModelClass src, ModelClass dest) {
         super(src, dest);
     }
-    
-    @Override
-    public String getType() {
-        return "uses";
-    }
 }

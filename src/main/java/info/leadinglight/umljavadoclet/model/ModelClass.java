@@ -31,6 +31,12 @@ public abstract class ModelClass extends ModelElement {
         getModel().addRelationship(rel);
     }
     
+    public void addRealizationTo(Type type) {
+        ModelClass dest = getModel().getClasses().createExternal(type);
+        RealizationRel rel = new RealizationRel(this, dest);
+        getModel().addRelationship(rel);
+    }
+
     public List<ModelRel> getDependencies() {
         return _relLookup.source(this).type(DependencyRel.class).all();
     }
