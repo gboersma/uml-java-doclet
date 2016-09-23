@@ -7,7 +7,6 @@ import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
 import info.leadinglight.umljavadoclet.model.AssociationRel;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
 import info.leadinglight.umljavadoclet.model.GeneralizationRel;
-import info.leadinglight.umljavadoclet.model.InternalClass;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
@@ -45,6 +44,9 @@ public abstract class DiagramGenerator extends Printer {
         println("}");
     }
     
+    public void classType(ModelClass modelClass) {
+    }
+    
     public void hiddenClass(ModelClass modelClass) {
         emptyClass(modelClass);
         newline();
@@ -53,20 +55,20 @@ public abstract class DiagramGenerator extends Printer {
         newline();
     }
 
-    public void classWithFields(InternalClass modelClass) {
+    public void classWithFields(ModelClass modelClass) {
         detailedClass(modelClass, true, false);
     }
 
-    public void classWithMethods(InternalClass modelClass) {
+    public void classWithMethods(ModelClass modelClass) {
         detailedClass(modelClass, false, true);
     }
 
-    public void classWithFieldsAndMethods(InternalClass modelClass) {
+    public void classWithFieldsAndMethods(ModelClass modelClass) {
         detailedClass(modelClass, true, true);
     }
     
     // Displays the class with all details, and full method signatures (if displayed).
-    public void detailedClass(InternalClass modelClass, boolean showFields, boolean showMethods) {
+    public void detailedClass(ModelClass modelClass, boolean showFields, boolean showMethods) {
         println("class " + modelClass.getQualifiedName() + " {");
         if (showFields) {
             for (FieldDoc fieldDoc: modelClass.getClassDoc().fields()) {
@@ -82,7 +84,7 @@ public abstract class DiagramGenerator extends Printer {
     }
     
     // Only display public methods, not full signature.
-    public void summaryClass(InternalClass modelClass) {
+    public void summaryClass(ModelClass modelClass) {
         println("class " + modelClass.getQualifiedName() + " {");
         for (MethodDoc methodDoc: modelClass.getClassDoc().methods()) {
             if (methodDoc.isPublic()) {
@@ -93,6 +95,8 @@ public abstract class DiagramGenerator extends Printer {
             }
         }
         println("}");
+        // Fields are not shown.
+        hideFields(modelClass);
     }
     
     public void field(FieldDoc fieldDoc, boolean detailed) {

@@ -1,6 +1,5 @@
 package info.leadinglight.umljavadoclet.diagram;
 
-import info.leadinglight.umljavadoclet.model.InternalClass;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
@@ -27,7 +26,7 @@ public class ContextDiagramGenerator extends DiagramGenerator {
     // Highlight the class with a different colour.
     private void addContextClass(ModelClass modelClass) {
         // TODO Show in different color.
-        classWithFieldsAndMethods((InternalClass)modelClass);
+        classWithFieldsAndMethods(modelClass);
         _classes.add(modelClass);
     }
     

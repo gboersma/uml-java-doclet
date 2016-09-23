@@ -4,7 +4,6 @@ import info.leadinglight.umljavadoclet.model.DependencyRel;
 import info.leadinglight.umljavadoclet.model.GeneralizationRel;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
-import info.leadinglight.umljavadoclet.model.InternalClass;
 import java.util.List;
 
 public class ModelPrinter extends Printer {
@@ -14,7 +13,7 @@ public class ModelPrinter extends Printer {
     
     public void print() {
         for (ModelClass modelClass: _model.getClasses().getAll()) {
-            if (modelClass instanceof InternalClass) {
+            if (modelClass.isInternal()) {
                 printClass(modelClass);
                 printSuperclass(modelClass);
                 printDependencies(modelClass);

@@ -9,11 +9,9 @@ import com.sun.javadoc.Type;
 import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
 import info.leadinglight.umljavadoclet.model.AssociationRel;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
-import info.leadinglight.umljavadoclet.model.InternalClass;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
-import info.leadinglight.umljavadoclet.model.Multiplicity;
 
 /**
  * Populates the model based on the information provided by the doclet.
@@ -46,7 +44,7 @@ public class DocletModelMapper {
     }
     
     public void mapClass(ClassDoc classDoc) {
-        InternalClass modelClass = new InternalClass(classDoc);
+        ModelClass modelClass = new ModelClass(classDoc, true);
         _model.addClass(modelClass);
     }
     

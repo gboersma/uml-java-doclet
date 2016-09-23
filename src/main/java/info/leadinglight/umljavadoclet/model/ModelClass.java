@@ -1,5 +1,6 @@
 package info.leadinglight.umljavadoclet.model;
 
+import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +8,27 @@ import java.util.List;
 /**
  * Represents a class internal or external to the model.
  */
-public abstract class ModelClass extends ModelElement {
-    public abstract String getQualifiedName();
+public class ModelClass extends ModelElement {
+    public ModelClass(ClassDoc classDoc, boolean isInternal) {
+        _classDoc = classDoc;
+        _isInternal = isInternal;
+    }
+    
+    public ClassDoc getClassDoc() {
+        return _classDoc;
+    }
+    
+    public String getQualifiedName() {
+        return _classDoc.qualifiedName();
+    }
+    
+    public boolean isInternal() {
+        return _isInternal;
+    }
+    
+    public boolean isExternal() {
+        return !isInternal();
+    }
     
     public RelLookup getRelationshipLookup() {
         return _relLookup;
@@ -101,4 +121,6 @@ public abstract class ModelClass extends ModelElement {
     
     private final RelLookup _relLookup = new RelLookup();
     private ModelPackage _package;
+    private final ClassDoc _classDoc;
+    private final boolean _isInternal;
 }

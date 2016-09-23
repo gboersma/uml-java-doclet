@@ -38,7 +38,7 @@ public class ClassLookup extends ModelElement {
         if (modelClass == null) {
             // This is a class that is outside the set of Javadoc root classes.
             // Add it to the model as an external class.
-            modelClass = new ExternalClass(type);
+            modelClass = new ModelClass(type.asClassDoc(), false);
             add(modelClass);
         }
         return modelClass;
