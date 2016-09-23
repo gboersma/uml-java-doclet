@@ -11,7 +11,6 @@ public class ModelPrinter extends Printer {
         _model = model;
     }
     
-    @Override
     public void print() {
         for (ModelClass modelClass: _model.getClasses().getAll()) {
             if (modelClass instanceof InternalClass) {

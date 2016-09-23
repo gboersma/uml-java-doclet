@@ -13,7 +13,6 @@ public class RootDocPrinter extends Printer {
         _rootDoc = rootDoc;
     }
 
-    @Override
     public void print() {
         for (ClassDoc classDoc: _rootDoc.classes()) {
             printClassDoc(classDoc);

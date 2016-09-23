@@ -17,9 +17,11 @@ public class UmlJavaDoclet {
         
         // Dump results to file.
         RootDocPrinter rootDocPrinter = new RootDocPrinter(root);
-        rootDocPrinter.printToFile("/Users/gerald/tmp/umljavadoclet/rootdoc.out");
+        rootDocPrinter.print();
+        rootDocPrinter.toFile("/Users/gerald/tmp/umljavadoclet/rootdoc.out");
         ModelPrinter modelPrinter = new ModelPrinter(mapper.getModel());
-        modelPrinter.printToFile("/Users/gerald/tmp/umljavadoclet/model.out");
+        modelPrinter.print();
+        modelPrinter.toFile("/Users/gerald/tmp/umljavadoclet/model.out");
         
         // Generate the PUML for the context diagrams.
         for (ClassDoc classDoc: root.classes()) {
@@ -39,12 +41,14 @@ public class UmlJavaDoclet {
         ModelClass modelClass = model.getClass(qualifiedName);
         ContextDiagramGenerator generator = new ContextDiagramGenerator(model, modelClass);
         String filename = "/Users/gerald/tmp/umljavadoclet/puml/context_" + qualifiedName.replace(".", "_") + ".puml";
-        generator.printToFile(filename);
+        generator.generate();
+        generator.toFile(filename);
     }
 
     private static void generatePackageDiagram(Model model, ModelPackage modelPackage) {
         PackageDiagramGenerator generator = new PackageDiagramGenerator(model, modelPackage);
         String filename = "/Users/gerald/tmp/umljavadoclet/puml/package_" + modelPackage.getName().replace(".", "_") + ".puml";
-        generator.printToFile(filename);
+        generator.generate();
+        generator.toFile(filename);
     }
 }

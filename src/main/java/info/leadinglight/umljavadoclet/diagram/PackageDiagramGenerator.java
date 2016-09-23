@@ -14,15 +14,14 @@ public class PackageDiagramGenerator extends DiagramGenerator {
         _modelPackage = modelPackage;
     }
     
-    @Override
-    public void print() {
-        startUML();
+    public void generate() {
+        start();
         for (ModelClass modelClass: _modelPackage.getClasses()) {
             // Display only public methods, no parameters.
             summaryClass((InternalClass)modelClass);
             // TODO Display all relationships between classes on the model.
         }
-        endUML();
+        end();
     }
     
     private final ModelPackage _modelPackage;

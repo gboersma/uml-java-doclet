@@ -5,10 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public abstract class Printer {
-    public abstract void print();
-    
-    public void printToFile(String filename) {
-        print();
+    public void toFile(String filename) {
         dumpToFile(filename, _sb.toString());
     }
     

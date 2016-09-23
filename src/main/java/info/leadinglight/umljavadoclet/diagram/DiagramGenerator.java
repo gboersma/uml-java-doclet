@@ -19,16 +19,18 @@ public abstract class DiagramGenerator extends Printer {
         _model = model;
     }
     
+    public abstract void generate();
+    
     public Model getModel() {
         return _model;
     }
     
-    public void startUML() {
+    public void start() {
         println("@startuml");
         newline();
     }
     
-    public void endUML() {
+    public void end() {
         newline();
         println("@enduml");
     }
