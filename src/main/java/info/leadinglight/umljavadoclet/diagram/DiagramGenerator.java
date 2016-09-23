@@ -31,6 +31,7 @@ public abstract class DiagramGenerator extends Printer {
     
     public void start() {
         println("@startuml");
+        println("skinparam linetype ortho");
         newline();
     }
     
