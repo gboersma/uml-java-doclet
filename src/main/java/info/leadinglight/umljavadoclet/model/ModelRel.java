@@ -4,19 +4,19 @@ package info.leadinglight.umljavadoclet.model;
  * Representation of a relationship in the model.
  */
 public abstract class ModelRel extends ModelElement {
-    public ModelRel(ModelClass src, ModelClass dest) {
+    public ModelRel(ModelType src, ModelType dest) {
         _src = src;
         _dest = dest;
     }
     
-    public ModelClass getSource() {
+    public ModelType getSource() {
         return _src;
     }
     
-    public ModelClass getDestination() {
+    public ModelType getDestination() {
         return _dest;
     }
     
-    private final ModelClass _src;
-    private final ModelClass _dest;
+    private final ModelType _src;
+    private final ModelType _dest;
 }

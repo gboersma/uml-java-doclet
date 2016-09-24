@@ -11,7 +11,7 @@ import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
 import info.leadinglight.umljavadoclet.model.AssociationRel;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
 import info.leadinglight.umljavadoclet.model.Model;
-import info.leadinglight.umljavadoclet.model.ModelClass;
+import info.leadinglight.umljavadoclet.model.ModelType;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
 
 /**
@@ -45,19 +45,19 @@ public class DocletModelMapper {
     }
     
     public void mapClass(ClassDoc classDoc) {
-        ModelClass modelClass = new ModelClass(classDoc, true);
-        _model.addClass(modelClass);
+        ModelType modelType = new ModelType(classDoc, true);
+        _model.addType(modelType);
     }
     
     public void mapPackage(ClassDoc classDoc) {
-        ModelClass modelClass = _model.getClass(classDoc);
+        ModelType modelType = _model.getType(classDoc);
         ModelPackage modelPackage = _model.getPackage(classDoc.containingPackage());
         if (modelPackage == null) {
             modelPackage = new ModelPackage(classDoc.containingPackage());
             _model.addPackage(modelPackage);
         }
-        modelPackage.addClass(modelClass);
-        modelClass.setPackage(modelPackage);
+        modelPackage.addClass(modelType);
+        modelType.setPackage(modelPackage);
     }
     
     public void mapClassRelationships(ClassDoc classDoc) {
@@ -71,7 +71,7 @@ public class DocletModelMapper {
             String superclassName = classDoc.superclassType().qualifiedTypeName();
             // Do not include standard Java superclasses in the model.
             if (!superclassName.equals("java.lang.Object") && !superclassName.equals("java.lang.Enum")) {
-                ModelClass source = _model.getClass(classDoc);
+                ModelType source = _model.getType(classDoc);
                 source.addGeneralizationTo(classDoc.superclassType());
             }
         }
@@ -79,7 +79,7 @@ public class DocletModelMapper {
     
     private void mapInterfaces(ClassDoc classDoc) {
         for (Type interfaceType: classDoc.interfaceTypes()) {
-            ModelClass source = _model.getClass(classDoc);
+            ModelType source = _model.getType(classDoc);
                 // If source class is an interface, than the relationship is a generalization,
                 // not a realization.
             if (classDoc.isInterface()) {
@@ -96,7 +96,7 @@ public class DocletModelMapper {
     }
     
     private void mapFieldAssociations(ClassDoc classDoc) {
-        ModelClass source = _model.getClass(classDoc);
+        ModelType source = _model.getType(classDoc);
         for (FieldDoc fieldDoc: classDoc.fields()) {
             Type type = fieldDoc.type();
             AssociationRel association = mapTypeAssociation(source, type);
@@ -113,7 +113,7 @@ public class DocletModelMapper {
     }
 
     private void mapMethodDependencies(ClassDoc classDoc) {
-        ModelClass source = _model.getClass(classDoc);
+        ModelType source = _model.getType(classDoc);
         for (MethodDoc methodDoc: classDoc.methods()) {
             if (methodDoc.isPublic()) {
                 for (Parameter param: methodDoc.parameters()) {
@@ -127,7 +127,7 @@ public class DocletModelMapper {
         }
     }
     
-    private DependencyRel mapTypeDependency(ModelClass src, Type type) {
+    private DependencyRel mapTypeDependency(ModelType src, Type type) {
         DependencyRel dependency = null;
         String typeName = type.qualifiedTypeName();
         // TODO Relationships through collection types.
@@ -137,7 +137,7 @@ public class DocletModelMapper {
         return dependency;
     }
     
-    private AssociationRel mapTypeAssociation(ModelClass src, Type type) {
+    private AssociationRel mapTypeAssociation(ModelType src, Type type) {
         AssociationRel association = null;
         String typeName = type.qualifiedTypeName();
         // TODO Relationships through collection types.

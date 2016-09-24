@@ -4,7 +4,7 @@ package info.leadinglight.umljavadoclet.model;
  * Association relationship between classses.
  */
 public class AssociationRel extends ModelRel {
-    public AssociationRel(ModelClass src, ModelClass dest) {
+    public AssociationRel(ModelType src, ModelType dest) {
         super(src, dest);
     }
     

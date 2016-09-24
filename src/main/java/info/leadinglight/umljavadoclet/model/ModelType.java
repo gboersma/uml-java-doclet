@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * Represents a class internal or external to the model.
  */
-public class ModelClass extends ModelElement {
-    public ModelClass(Type type, boolean isInternal) {
+public class ModelType extends ModelElement {
+    public ModelType(Type type, boolean isInternal) {
         _type = type;
         _isInternal = isInternal;
     }
@@ -56,13 +56,13 @@ public class ModelClass extends ModelElement {
     }
     
     public void addGeneralizationTo(Type type) {
-        ModelClass dest = getModel().getClasses().createExternal(type);
+        ModelType dest = getModel().getTypes().createExternal(type);
         GeneralizationRel rel = new GeneralizationRel(this, dest);
         getModel().addRelationship(rel);
     }
     
     public void addRealizationTo(Type type) {
-        ModelClass dest = getModel().getClasses().createExternal(type);
+        ModelType dest = getModel().getTypes().createExternal(type);
         RealizationRel rel = new RealizationRel(this, dest);
         getModel().addRelationship(rel);
     }
@@ -79,7 +79,7 @@ public class ModelClass extends ModelElement {
 
     public DependencyRel addDependencyTo(Type type) {
         DependencyRel rel = null;
-        ModelClass dest = getModel().getClasses().createExternal(type);
+        ModelType dest = getModel().getTypes().createExternal(type);
         // Only add dependency to the class if a relationship does not already exist.
         if (dest != this && _relLookup.between(this, dest).isEmpty()) {
             rel = new DependencyRel(this, dest);
@@ -88,7 +88,7 @@ public class ModelClass extends ModelElement {
         return rel;
     }
     
-    public AssociationRel getAssociationWith(ModelClass otherClass) {
+    public AssociationRel getAssociationWith(ModelType otherClass) {
         AssociationRel association = (AssociationRel) _relLookup.between(this, otherClass).first();
         if (association == null) {
             association = (AssociationRel) _relLookup.between(otherClass, this).first();
@@ -97,7 +97,7 @@ public class ModelClass extends ModelElement {
     }
     
     public AssociationRel addAssociationTo(Type type) {
-        ModelClass dest = getModel().getClasses().createExternal(type);
+        ModelType dest = getModel().getTypes().createExternal(type);
         // When adding an association with a destination class, each one will have its own label
         // and multiplicity. Do not reuse existing associations- create a new one.
         // Also, if it is an association with itself, draw it explicitly as well.

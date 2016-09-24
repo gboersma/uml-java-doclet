@@ -4,7 +4,7 @@ package info.leadinglight.umljavadoclet.model;
  * Generalization relationship.
  */
 public class GeneralizationRel extends ModelRel {
-    public GeneralizationRel(ModelClass src, ModelClass dest) {
+    public GeneralizationRel(ModelType src, ModelType dest) {
         super(src, dest);
     }
 }

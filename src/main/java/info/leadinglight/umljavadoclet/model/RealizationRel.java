@@ -4,7 +4,7 @@ package info.leadinglight.umljavadoclet.model;
  * Realization relationship.
  */
 public class RealizationRel extends ModelRel {
-    public RealizationRel(ModelClass src, ModelClass dest) {
+    public RealizationRel(ModelType src, ModelType dest) {
         super(src, dest);
     }
 }

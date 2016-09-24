@@ -20,16 +20,16 @@ public class ModelPackage extends ModelElement {
         return _packageDoc.name();
     }
     
-    public List<ModelClass> getClasses() {
-        return _classes;
+    public List<ModelType> getClasses() {
+        return _types;
     }
     
-    public void addClass(ModelClass modelClass) {
-        if (!_classes.contains(modelClass)) {
-            _classes.add(modelClass);
+    public void addClass(ModelType modelType) {
+        if (!_types.contains(modelType)) {
+            _types.add(modelType);
         }
     }
     
     private final PackageDoc _packageDoc;
-    private final List<ModelClass> _classes = new ArrayList<>();
+    private final List<ModelType> _types = new ArrayList<>();
 }

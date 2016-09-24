@@ -8,22 +8,22 @@ import com.sun.javadoc.Type;
  */
 public class Model {
     public Model() {
-        _classes = new ClassLookup();
+        _classes = new TypeLookup();
         _classes.setModel(this);
         _packages = new PackageLookup();
         _packages.setModel(this);
     }
     
-    public ClassLookup getClasses() {
+    public TypeLookup getTypes() {
         return _classes;
     }
     
-    public ModelClass getClass(Type type) {
+    public ModelType getType(Type type) {
         return _classes.get(type);
     }
     
-    public void addClass(ModelClass modelClass) {
-        _classes.add(modelClass);
+    public void addType(ModelType modelType) {
+        _classes.add(modelType);
     }
     
     public PackageLookup getPackages() {
@@ -39,8 +39,8 @@ public class Model {
     }
     
     public void addRelationship(ModelRel rel) {
-        ModelClass src = rel.getSource();
-        ModelClass dest = rel.getDestination();
+        ModelType src = rel.getSource();
+        ModelType dest = rel.getDestination();
         src.addRelationship(rel);
         // Only add the destination relationship if it is different than source.
         // Can be a relationship back to the same class.
@@ -49,6 +49,6 @@ public class Model {
         }
     }
     
-    private final ClassLookup _classes;
+    private final TypeLookup _classes;
     private final PackageLookup _packages;
 }

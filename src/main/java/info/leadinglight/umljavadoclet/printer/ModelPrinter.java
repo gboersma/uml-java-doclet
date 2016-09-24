@@ -3,7 +3,7 @@ package info.leadinglight.umljavadoclet.printer;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
 import info.leadinglight.umljavadoclet.model.GeneralizationRel;
 import info.leadinglight.umljavadoclet.model.Model;
-import info.leadinglight.umljavadoclet.model.ModelClass;
+import info.leadinglight.umljavadoclet.model.ModelType;
 import java.util.List;
 
 public class ModelPrinter extends Printer {
@@ -12,39 +12,39 @@ public class ModelPrinter extends Printer {
     }
     
     public void print() {
-        for (ModelClass modelClass: _model.getClasses().all()) {
-            if (modelClass.isInternal()) {
-                printClass(modelClass);
-                printSuperclass(modelClass);
-                printDependencies(modelClass);
-                printDependents(modelClass);
+        for (ModelType modelType: _model.getTypes().all()) {
+            if (modelType.isInternal()) {
+                printClass(modelType);
+                printSuperclass(modelType);
+                printDependencies(modelType);
+                printDependents(modelType);
                 // TODO Other relationships.
             }
         }
     }
     
-    private void printClass(ModelClass modelClass) {
-        println("Class: " + modelClass.getQualifiedName());
+    private void printClass(ModelType modelType) {
+        println("Class: " + modelType.getQualifiedName());
     }
     
-    private void printSuperclass(ModelClass modelClass) {
-        GeneralizationRel generalization = modelClass.getGeneralization();
+    private void printSuperclass(ModelType modelType) {
+        GeneralizationRel generalization = modelType.getGeneralization();
         if (generalization != null) {
             indent();
             printSuperclassRel(generalization);
         }
     }
     
-    private void printDependencies(ModelClass modelClass) {
-        List<DependencyRel> usages = modelClass.getDependencies();
+    private void printDependencies(ModelType modelType) {
+        List<DependencyRel> usages = modelType.getDependencies();
         for (DependencyRel usage: usages) {
             indent();
             printUsesRel(usage);
         }
     }
 
-    private void printDependents(ModelClass modelClass) {
-        List<DependencyRel> usages = modelClass.getDependents();
+    private void printDependents(ModelType modelType) {
+        List<DependencyRel> usages = modelType.getDependents();
         for (DependencyRel usage: usages) {
             indent();
             printUsedRel(usage);
