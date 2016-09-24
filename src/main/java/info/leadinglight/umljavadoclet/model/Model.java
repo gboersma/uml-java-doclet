@@ -22,10 +22,6 @@ public class Model {
         return _classes.get(type);
     }
     
-    public ModelClass getClass(String qualifiedName) {
-        return _classes.get(qualifiedName);
-    }
-    
     public void addClass(ModelClass modelClass) {
         _classes.add(modelClass);
     }
@@ -36,10 +32,6 @@ public class Model {
     
     public ModelPackage getPackage(PackageDoc packageDoc) {
        return _packages.get(packageDoc);
-    }
-    
-    public ModelPackage getPackage(String qualifiedName) {
-        return _packages.get(qualifiedName);
     }
     
     public void addPackage(ModelPackage modelPackage) {

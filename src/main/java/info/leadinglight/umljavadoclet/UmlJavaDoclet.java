@@ -2,7 +2,7 @@ package info.leadinglight.umljavadoclet;
 
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
-import info.leadinglight.umljavadoclet.printer.RootDocPrinter;
+import com.sun.tools.doclets.standard.Standard;
 import info.leadinglight.umljavadoclet.diagram.ContextDiagramGenerator;
 import info.leadinglight.umljavadoclet.diagram.PackageDiagramGenerator;
 import info.leadinglight.umljavadoclet.mapper.DocletModelMapper;
@@ -18,9 +18,6 @@ public class UmlJavaDoclet {
         Model model = mapper.getModel();
         
         // Dump results to file.
-        RootDocPrinter rootDocPrinter = new RootDocPrinter(root);
-        rootDocPrinter.print();
-        rootDocPrinter.toFile("/Users/gerald/tmp/umljavadoclet/rootdoc.out");
         ModelPrinter modelPrinter = new ModelPrinter(model);
         modelPrinter.print();
         modelPrinter.toFile("/Users/gerald/tmp/umljavadoclet/model.out");
@@ -46,7 +43,7 @@ public class UmlJavaDoclet {
      * @return Version of the language.
      */
     public static LanguageVersion languageVersion() {
-        return LanguageVersion.JAVA_1_5;
+        return Standard.languageVersion();
     }
     
     private static void generateContextDiagram(Model model, ModelClass modelClass) {

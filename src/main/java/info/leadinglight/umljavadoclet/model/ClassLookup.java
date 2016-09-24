@@ -10,25 +10,17 @@ import java.util.Map;
  * Maintains lookup of all classes in the model.
  */
 public class ClassLookup extends ModelElement {
-    public ModelClass get(String qualifiedName) {
-        return _classes.get(qualifiedName);
-    }
-    
     public ModelClass get(Type type) {
-        return get(type.qualifiedTypeName());
+        return _classes.get(type);
     }
 
-    public boolean has(String qualifiedName) {
-        return get(qualifiedName) != null;
-    }
-    
     public List<ModelClass> all() {
         return new ArrayList<>(_classes.values());
     }
     
     public void add(ModelClass modelClass) {
-        if (get(modelClass.getQualifiedName()) == null) {
-            _classes.put(modelClass.getQualifiedName(), modelClass);
+        if (get(modelClass.getType()) == null) {
+            _classes.put(modelClass.getType(), modelClass);
             modelClass.setModel(getModel());
         }
     }
@@ -58,11 +50,11 @@ public class ClassLookup extends ModelElement {
         if (modelClass == null) {
             // This is a class that is outside the set of Javadoc root classes.
             // Add it to the model as an external class.
-            modelClass = new ModelClass(type.asClassDoc(), false);
+            modelClass = new ModelClass(type, false);
             add(modelClass);
         }
         return modelClass;
     }
 
-    private final Map<String,ModelClass> _classes = new LinkedHashMap<>();
+    private final Map<Type,ModelClass> _classes = new LinkedHashMap<>();
 }

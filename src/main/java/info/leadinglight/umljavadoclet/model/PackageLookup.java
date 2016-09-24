@@ -15,19 +15,15 @@ public class PackageLookup extends ModelElement {
     }
     
     public ModelPackage get(PackageDoc packageDoc) {
-        return get(packageDoc.name());
-    }
-    
-    public ModelPackage get(String qualifiedName) {
-        return _packages.get(qualifiedName);
+        return _packages.get(packageDoc);
     }
     
     public void add(ModelPackage modelPackage) {
-        if (get(modelPackage.getName()) == null) {
+        if (get(modelPackage.getPackageDoc()) == null) {
             modelPackage.setModel(getModel());
-            _packages.put(modelPackage.getName(), modelPackage);
+            _packages.put(modelPackage.getPackageDoc(), modelPackage);
         }
     }
     
-    private final Map<String,ModelPackage> _packages = new LinkedHashMap<>();
+    private final Map<PackageDoc,ModelPackage> _packages = new LinkedHashMap<>();
 }

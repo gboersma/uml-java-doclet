@@ -4,6 +4,7 @@ import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Type;
 import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
@@ -77,14 +78,14 @@ public class DocletModelMapper {
     }
     
     private void mapInterfaces(ClassDoc classDoc) {
-        for (ClassDoc interfaceDoc: classDoc.interfaces()) {
+        for (Type interfaceType: classDoc.interfaceTypes()) {
             ModelClass source = _model.getClass(classDoc);
-            // If source class is an interface, than the relationship is a generalization,
-            // not a realization.
+                // If source class is an interface, than the relationship is a generalization,
+                // not a realization.
             if (classDoc.isInterface()) {
-                source.addGeneralizationTo(interfaceDoc);
+                source.addGeneralizationTo(interfaceType);
             } else {
-                source.addRealizationTo(interfaceDoc);
+                source.addRealizationTo(interfaceType);
             }
         }
     }

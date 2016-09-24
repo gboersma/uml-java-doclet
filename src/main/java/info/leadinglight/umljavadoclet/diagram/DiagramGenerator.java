@@ -46,7 +46,8 @@ public abstract class DiagramGenerator extends Printer {
     
     public void emptyClass(ModelClass modelClass) {
         classType(modelClass);
-        println(modelClass.getQualifiedName() + " {");
+        className(modelClass);
+        println(" {");
         println("}");
     }
     
@@ -58,6 +59,21 @@ public abstract class DiagramGenerator extends Printer {
             print("enum ");
         } else {
             print("class ");
+        }
+    }
+    
+    public void className(ModelClass modelClass) {
+        print(modelClass.getQualifiedName());
+        ParameterizedType paramType = modelClass.getParameterizedType();
+        if (paramType != null) {
+            print("<");
+            String sep = "";
+            for (Type param : paramType.typeArguments()) {
+                print(sep);
+                print(param.simpleTypeName());
+                sep = ", ";
+            }
+            print(">");
         }
     }
     
@@ -84,7 +100,8 @@ public abstract class DiagramGenerator extends Printer {
     // Displays the class with all details, and full method signatures (if displayed).
     public void detailedClass(ModelClass modelClass, boolean showFields, boolean showMethods) {
         classType(modelClass);
-        println(modelClass.getQualifiedName() + " {");
+        className(modelClass);
+        println(" {");
         if (showFields) {
             for (FieldDoc fieldDoc: modelClass.getClassDoc().fields()) {
                 field(fieldDoc, true);
@@ -101,12 +118,13 @@ public abstract class DiagramGenerator extends Printer {
     // Only display public methods, not full signature.
     public void summaryClass(ModelClass modelClass) {
         classType(modelClass);
-        println(modelClass.getQualifiedName() + " {");
+        className(modelClass);
+        println(" {");
         for (MethodDoc methodDoc: modelClass.getClassDoc().methods()) {
             if (methodDoc.isPublic()) {
                 // It is possible for overloaded methods to have the same name.
                 // On a summary view, they will appear like the same method multiple times.
-                // TODO Only display a single entry for this.
+                // TODO Only display a single entry in this case.
                 method(methodDoc, false);
             }
         }

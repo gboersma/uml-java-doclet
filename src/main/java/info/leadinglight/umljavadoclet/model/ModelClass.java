@@ -1,6 +1,7 @@
 package info.leadinglight.umljavadoclet.model;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,17 +10,25 @@ import java.util.List;
  * Represents a class internal or external to the model.
  */
 public class ModelClass extends ModelElement {
-    public ModelClass(ClassDoc classDoc, boolean isInternal) {
-        _classDoc = classDoc;
+    public ModelClass(Type type, boolean isInternal) {
+        _type = type;
         _isInternal = isInternal;
     }
     
+    public Type getType() {
+        return _type;
+    }
+    
     public ClassDoc getClassDoc() {
-        return _classDoc;
+        return _type.asClassDoc();
+    }
+    
+    public ParameterizedType getParameterizedType() {
+        return _type.asParameterizedType();
     }
     
     public String getQualifiedName() {
-        return _classDoc.qualifiedName();
+        return _type.qualifiedTypeName();
     }
     
     public boolean isInternal() {
@@ -121,6 +130,6 @@ public class ModelClass extends ModelElement {
     
     private final RelLookup _relLookup = new RelLookup();
     private ModelPackage _package;
-    private final ClassDoc _classDoc;
+    private final Type _type;
     private final boolean _isInternal;
 }
