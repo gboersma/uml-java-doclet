@@ -4,7 +4,9 @@ import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.ProgramElementDoc;
+import com.sun.javadoc.Type;
 import info.leadinglight.umljavadoclet.model.AssociationEndpoint;
 import info.leadinglight.umljavadoclet.model.AssociationRel;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
@@ -146,7 +148,8 @@ public abstract class DiagramGenerator extends Printer {
         }
         visibility(methodDoc);
         if (detailed) {
-            print(methodDoc.returnType().simpleTypeName() + " ");
+            typeName(methodDoc.returnType());
+            print(" ");
         }
         print(methodDoc.name());
         print("(");
@@ -154,7 +157,9 @@ public abstract class DiagramGenerator extends Printer {
             Parameter[] params = methodDoc.parameters();
             for (int i=0; i < params.length; i++) {
                 Parameter param = params[i];
-                print(param.type().simpleTypeName() + " " + param.name());
+                typeName(param.type());
+                print(" ");
+                print(param.name());
                 if (i != params.length - 1) {
                     print(", ");
                 }
@@ -162,6 +167,23 @@ public abstract class DiagramGenerator extends Printer {
         }
         print(")");
         newline();
+    }
+    
+    public void typeName(Type type) {
+        print(type.simpleTypeName());
+        ParameterizedType paramType = type.asParameterizedType();
+        if (paramType != null) {
+            Type[] generics = paramType.typeArguments();
+            print("<");
+            for (int i=0; i < generics.length; i++) {
+                Type arg = generics[i];
+                typeName(arg);
+                if (i < generics.length - 1) {
+                    print(", ");
+                }
+            }
+            print(">");
+        }
     }
     
     public void hideFields(ModelClass modelClass) {

@@ -3,7 +3,9 @@ package info.leadinglight.umljavadoclet.printer;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.Type;
 
 /**
  * Dump all of the info from the RootDoc.
@@ -27,8 +29,8 @@ public class RootDocPrinter extends Printer {
                 println(1, "extends: " + classDoc.superclassType().qualifiedTypeName());
             }
         }
-        for (MethodDoc methodDoc: classDoc.methods()) {
-            //printMethodDoc(methodDoc);
+        for (MethodDoc methodDoc: classDoc.methods(false)) {
+            printMethodDoc(methodDoc);
         }
     }
     
@@ -36,9 +38,31 @@ public class RootDocPrinter extends Printer {
         indent(1);
         println("Method: " + methodDoc.name());
         for (Parameter param: methodDoc.parameters()) {
-            println(2, "Parameter: " + param.name() + "- " + param.type().qualifiedTypeName());
+            print(2, "Parameter: " + param.name() + "- ");
+            printType(param.type());
+            print(" ");
+            newline();
         }
-        println(2, "Return: " + methodDoc.returnType().qualifiedTypeName());
+        print(2, "Return: ");
+        printType(methodDoc.returnType());
+        print(" ");
+        newline();
+    }
+    
+    private void printType(Type type) {
+        print(type.typeName());
+        ParameterizedType paramType = type.asParameterizedType();
+        if (paramType != null) {
+            print("<");
+            Type[] args = paramType.typeArguments();
+            String sep = "";
+            for (Type arg: args) {
+                print(sep);
+                printType(arg);
+                sep = ", ";
+            }
+            print(">");
+        }
     }
     
     private final RootDoc _rootDoc;

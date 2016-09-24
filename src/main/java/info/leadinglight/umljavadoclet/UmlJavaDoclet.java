@@ -1,5 +1,6 @@
 package info.leadinglight.umljavadoclet;
 
+import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import info.leadinglight.umljavadoclet.printer.RootDocPrinter;
 import info.leadinglight.umljavadoclet.diagram.ContextDiagramGenerator;
@@ -36,6 +37,16 @@ public class UmlJavaDoclet {
         }
         
         return true;
+    }
+
+    /**
+     * Specify the language version.
+     * This is EXTREMELY important. It it is not set, none of the generic parameters
+     * are properly returned. Grrrr. Thanks Java.
+     * @return Version of the language.
+     */
+    public static LanguageVersion languageVersion() {
+        return LanguageVersion.JAVA_1_5;
     }
     
     private static void generateContextDiagram(Model model, ModelClass modelClass) {
