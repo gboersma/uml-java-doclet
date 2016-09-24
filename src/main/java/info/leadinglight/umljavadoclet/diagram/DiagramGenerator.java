@@ -12,7 +12,7 @@ import info.leadinglight.umljavadoclet.model.AssociationRel;
 import info.leadinglight.umljavadoclet.model.DependencyRel;
 import info.leadinglight.umljavadoclet.model.GeneralizationRel;
 import info.leadinglight.umljavadoclet.model.Model;
-import info.leadinglight.umljavadoclet.model.ModelType;
+import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
 import info.leadinglight.umljavadoclet.model.Multiplicity;
 import info.leadinglight.umljavadoclet.model.RealizationRel;
@@ -44,15 +44,15 @@ public abstract class DiagramGenerator extends Printer {
         println("@enduml");
     }
     
-    public void emptyClass(ModelType modelType) {
-        classType(modelType);
-        className(modelType);
+    public void emptyClass(ModelClass modelClass) {
+        classType(modelClass);
+        className(modelClass);
         println(" {");
         println("}");
     }
     
-    public void classType(ModelType modelType) {
-        ClassDoc classDoc = modelType.getClassDoc();
+    public void classType(ModelClass modelClass) {
+        ClassDoc classDoc = modelClass.getClassDoc();
         if (classDoc.isInterface()) {
             print("interface ");
         } else if (classDoc.isEnum()) {
@@ -62,9 +62,9 @@ public abstract class DiagramGenerator extends Printer {
         }
     }
     
-    public void className(ModelType modelType) {
-        print(modelType.getQualifiedName());
-        ParameterizedType paramType = modelType.getParameterizedType();
+    public void className(ModelClass modelClass) {
+        print(modelClass.getQualifiedName());
+        ParameterizedType paramType = modelClass.getParameterizedType();
         if (paramType != null) {
             print("<");
             String sep = "";
@@ -77,38 +77,38 @@ public abstract class DiagramGenerator extends Printer {
         }
     }
     
-    public void hiddenClass(ModelType modelType) {
-        emptyClass(modelType);
+    public void hiddenClass(ModelClass modelClass) {
+        emptyClass(modelClass);
         newline();
-        hideFields(modelType);
-        hideMethods(modelType);
+        hideFields(modelClass);
+        hideMethods(modelClass);
         newline();
     }
 
-    public void classWithFields(ModelType modelType) {
-        detailedClass(modelType, true, false);
+    public void classWithFields(ModelClass modelClass) {
+        detailedClass(modelClass, true, false);
     }
 
-    public void classWithMethods(ModelType modelType) {
-        detailedClass(modelType, false, true);
+    public void classWithMethods(ModelClass modelClass) {
+        detailedClass(modelClass, false, true);
     }
 
-    public void classWithFieldsAndMethods(ModelType modelType) {
-        detailedClass(modelType, true, true);
+    public void classWithFieldsAndMethods(ModelClass modelClass) {
+        detailedClass(modelClass, true, true);
     }
     
     // Displays the class with all details, and full method signatures (if displayed).
-    public void detailedClass(ModelType modelType, boolean showFields, boolean showMethods) {
-        classType(modelType);
-        className(modelType);
+    public void detailedClass(ModelClass modelClass, boolean showFields, boolean showMethods) {
+        classType(modelClass);
+        className(modelClass);
         println(" {");
         if (showFields) {
-            for (FieldDoc fieldDoc: modelType.getClassDoc().fields()) {
+            for (FieldDoc fieldDoc: modelClass.getClassDoc().fields()) {
                 field(fieldDoc, true);
             }
         }
         if (showMethods) {
-            for (MethodDoc methodDoc: modelType.getClassDoc().methods()) {
+            for (MethodDoc methodDoc: modelClass.getClassDoc().methods()) {
                 method(methodDoc, true);
             }
         }
@@ -116,11 +116,11 @@ public abstract class DiagramGenerator extends Printer {
     }
     
     // Only display public methods, not full signature.
-    public void summaryClass(ModelType modelType) {
-        classType(modelType);
-        className(modelType);
+    public void summaryClass(ModelClass modelClass) {
+        classType(modelClass);
+        className(modelClass);
         println(" {");
-        for (MethodDoc methodDoc: modelType.getClassDoc().methods()) {
+        for (MethodDoc methodDoc: modelClass.getClassDoc().methods()) {
             if (methodDoc.isPublic()) {
                 // It is possible for overloaded methods to have the same name.
                 // On a summary view, they will appear like the same method multiple times.
@@ -130,7 +130,7 @@ public abstract class DiagramGenerator extends Printer {
         }
         println("}");
         // Fields are not shown.
-        hideFields(modelType);
+        hideFields(modelClass);
     }
     
     public void field(FieldDoc fieldDoc, boolean detailed) {
@@ -204,12 +204,12 @@ public abstract class DiagramGenerator extends Printer {
         }
     }
     
-    public void hideFields(ModelType modelType) {
-        println("hide " + modelType.getQualifiedName() + " fields");
+    public void hideFields(ModelClass modelClass) {
+        println("hide " + modelClass.getQualifiedName() + " fields");
     }
 
-    public void hideMethods(ModelType modelType) {
-        println("hide " + modelType.getQualifiedName() + " methods");
+    public void hideMethods(ModelClass modelClass) {
+        println("hide " + modelClass.getQualifiedName() + " methods");
     }
     
     public void relationship(ModelRel rel) {
@@ -227,19 +227,19 @@ public abstract class DiagramGenerator extends Printer {
         }
     }
     
-    public void generalization(ModelType src, ModelType dest) {
+    public void generalization(ModelClass src, ModelClass dest) {
         printRel(src,  "--|>", dest);
     }
     
-    public void realization(ModelType src, ModelType dest) {
+    public void realization(ModelClass src, ModelClass dest) {
         printRel(src,  "..|>", dest);
     }
 
-    public void dependency(ModelType src, ModelType dest) {
+    public void dependency(ModelClass src, ModelClass dest) {
         printRel(src,  "..>", dest);
     }
     
-    public void association(ModelType src, AssociationEndpoint srcEndpoint, ModelType dest, AssociationEndpoint destEndpoint) {
+    public void association(ModelClass src, AssociationEndpoint srcEndpoint, ModelClass dest, AssociationEndpoint destEndpoint) {
         String relText = null;
         if (srcEndpoint == null) {
             relText = "-->";
@@ -282,11 +282,11 @@ public abstract class DiagramGenerator extends Printer {
         print("{static} ");
     }
 
-    public void printRel(ModelType src, String relText, ModelType dest) {
+    public void printRel(ModelClass src, String relText, ModelClass dest) {
         println(src.getQualifiedName() + " " + relText + " " + dest.getQualifiedName());
     }
     
-    public void printRel(ModelType src, String srcRole, String srcCardinality, String relText, ModelType dest, String destRole, String destCardinality) {
+    public void printRel(ModelClass src, String srcRole, String srcCardinality, String relText, ModelClass dest, String destRole, String destCardinality) {
         // PUML does not allow labels to be specified for each end.
         // We'll fake it by overloading the multiplicity label.
         String srcLabel = (srcRole != null ? srcRole + " " : "") + (srcCardinality != null ? srcCardinality : "");

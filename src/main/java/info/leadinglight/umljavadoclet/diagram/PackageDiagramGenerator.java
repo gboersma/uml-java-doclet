@@ -1,7 +1,7 @@
 package info.leadinglight.umljavadoclet.diagram;
 
 import info.leadinglight.umljavadoclet.model.Model;
-import info.leadinglight.umljavadoclet.model.ModelType;
+import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
 
 /**
@@ -16,9 +16,9 @@ public class PackageDiagramGenerator extends DiagramGenerator {
     @Override
     public void generate() {
         start();
-        for (ModelType modelType: _modelPackage.getClasses()) {
+        for (ModelClass modelClass: _modelPackage.getClasses()) {
             // Display only public methods, no parameters.
-            summaryClass(modelType);
+            summaryClass(modelClass);
             // TODO Display all relationships between classes on the model.
         }
         end();

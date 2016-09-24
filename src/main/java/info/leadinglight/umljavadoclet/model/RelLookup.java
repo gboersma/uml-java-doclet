@@ -23,7 +23,7 @@ public class RelLookup extends ModelElement {
         _rels.add(rel);
     }
     
-    public RelLookup source(ModelType source) {
+    public RelLookup source(ModelClass source) {
         RelLookup filtered = new RelLookup();
         for (ModelRel rel: _rels) {
             if (rel.getSource() == source) {
@@ -33,7 +33,7 @@ public class RelLookup extends ModelElement {
         return filtered;
     }
     
-    public RelLookup destination(ModelType dest) {
+    public RelLookup destination(ModelClass dest) {
         RelLookup filtered = new RelLookup();
         for (ModelRel rel: _rels) {
             if (rel.getDestination() == dest) {
@@ -53,7 +53,7 @@ public class RelLookup extends ModelElement {
         return filtered;
     }
     
-    public RelLookup between(ModelType source, ModelType dest) {
+    public RelLookup between(ModelClass source, ModelClass dest) {
         return source(source).destination(dest);
     }
     

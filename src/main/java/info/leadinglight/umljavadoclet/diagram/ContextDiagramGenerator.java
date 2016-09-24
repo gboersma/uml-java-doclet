@@ -1,13 +1,13 @@
 package info.leadinglight.umljavadoclet.diagram;
 
 import info.leadinglight.umljavadoclet.model.Model;
-import info.leadinglight.umljavadoclet.model.ModelType;
+import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContextDiagramGenerator extends DiagramGenerator {
-    public ContextDiagramGenerator(Model model, ModelType contextClass) {
+    public ContextDiagramGenerator(Model model, ModelClass contextClass) {
         super(model);
         _contextClass = contextClass;
     }
@@ -24,15 +24,15 @@ public class ContextDiagramGenerator extends DiagramGenerator {
     }
     
     // Highlight the class with a different colour.
-    private void addContextClass(ModelType modelType) {
+    private void addContextClass(ModelClass modelClass) {
         // TODO Show in different color.
-        classWithFieldsAndMethods(modelType);
-        _classes.add(modelType);
+        classWithFieldsAndMethods(modelClass);
+        _classes.add(modelClass);
     }
     
     // Put the class on the other side of the relationship on the diagram.
     private void addRelationshipClass(ModelRel rel) {
-        ModelType otherClass = (rel.getSource() != _contextClass ? rel.getSource() : rel.getDestination());
+        ModelClass otherClass = (rel.getSource() != _contextClass ? rel.getSource() : rel.getDestination());
         // Only draw the class on the other side of the relationship if it hasn't been added yet.
         if (!_classes.contains(otherClass)) {
             hiddenClass(otherClass);
@@ -40,6 +40,6 @@ public class ContextDiagramGenerator extends DiagramGenerator {
         }
     }
     
-    private final ModelType _contextClass;
-    private final List<ModelType> _classes = new ArrayList<>();
+    private final ModelClass _contextClass;
+    private final List<ModelClass> _classes = new ArrayList<>();
 }
