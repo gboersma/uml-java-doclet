@@ -8,21 +8,32 @@ import java.util.List;
  * Represents a package containing classes.
  */
 public class ModelPackage extends ModelElement {
-    public ModelPackage(PackageDoc packageDoc) {
+    public ModelPackage(Model model, PackageDoc packageDoc) {
+        _model = model;
         _packageDoc = packageDoc;
     }
     
-    public PackageDoc getPackageDoc() {
-        return _packageDoc;
+    public void mapToModel() {
+        // Nothing additional to map.
     }
     
-    public String getName() {
-        return _packageDoc.name();
+    public String fullName() {
+        return fullName(_packageDoc);
     }
     
-    public List<ModelClass> getClasses() {
+    public String qualifiedName() {
+        return fullName(_packageDoc);
+    }
+    
+    public List<ModelClass> modelClasses() {
         return _classes;
     }
+    
+    public static String fullName(PackageDoc packageDoc) {
+        return packageDoc.name();
+    }
+    
+    // Update model
     
     public void addClass(ModelClass modelClass) {
         if (!_classes.contains(modelClass)) {
@@ -30,6 +41,7 @@ public class ModelPackage extends ModelElement {
         }
     }
     
+    private final Model _model;
     private final PackageDoc _packageDoc;
     private final List<ModelClass> _classes = new ArrayList<>();
 }

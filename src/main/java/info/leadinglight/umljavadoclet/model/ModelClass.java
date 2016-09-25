@@ -3,133 +3,60 @@ package info.leadinglight.umljavadoclet.model;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a class internal or external to the model.
  */
 public class ModelClass extends ModelElement {
-    public ModelClass(Type type, boolean isInternal) {
+    public ModelClass(Model model, Type type) {
+        _model = model;
         _type = type;
-        _isInternal = isInternal;
     }
     
-    public Type getType() {
-        return _type;
+    public void mapToModel() {
+        //mapRelationships();
     }
     
-    public ClassDoc getClassDoc() {
-        return _type.asClassDoc();
+    public String fullName() {
+        return fullName(_type);
     }
     
-    public ParameterizedType getParameterizedType() {
-        return _type.asParameterizedType();
-    }
-    
-    public String getQualifiedName() {
+    public String qualifiedName() {
         return _type.qualifiedTypeName();
     }
     
-    public boolean isInternal() {
-        return _isInternal;
+    public boolean internal() {
+        ClassDoc classDoc = _type.asClassDoc();
+        return classDoc != null ? classDoc.isIncluded() : false;
     }
     
-    public boolean isExternal() {
-        return !isInternal();
+    public boolean external() {
+        return !internal();
     }
     
-    public RelLookup getRelationshipLookup() {
-        return _relLookup;
+    public static String fullName(Type type) {
+        String params = buildParameterString(type);
+        if (params.length() > 0) {
+            return type.qualifiedTypeName() + "<" + params + ">";
+        } else {
+            return type.qualifiedTypeName();
+        }
     }
     
-    public List<ModelRel> getRelationships() {
-        return _relLookup.all();
-    }
-    
-    public void addRelationship(ModelRel rel) {
-        _relLookup.add(rel);
-    }
-    
-    public GeneralizationRel getGeneralization() {
-        return (GeneralizationRel) _relLookup.type(GeneralizationRel.class).source(this).first();
-    }
-    
-    public void addGeneralizationTo(Type type) {
-        ModelClass dest = getModel().getClasses().createExternal(type);
-        GeneralizationRel rel = new GeneralizationRel(this, dest);
-        getModel().addRelationship(rel);
-    }
-    
-    public void addRealizationTo(Type type) {
-        ModelClass dest = getModel().getClasses().createExternal(type);
-        RealizationRel rel = new RealizationRel(this, dest);
-        getModel().addRelationship(rel);
+    private static String buildParameterString(Type type) {
+        StringBuilder sb = new StringBuilder();
+        ParameterizedType paramType = type.asParameterizedType();
+        if (paramType != null) {
+            String sep = "";
+            for (Type param : paramType.typeArguments()) {
+                sb.append(sep);
+                sb.append(param.simpleTypeName());
+                sep = ", ";
+            }
+        }
+        return sb.toString();
     }
 
-    public List<DependencyRel> getDependencies() {
-        List<ModelRel> rels = _relLookup.source(this).type(DependencyRel.class).all();
-        return castDependencyRels(rels);
-    }
-    
-    public List<DependencyRel> getDependents() {
-        List<ModelRel> rels = _relLookup.destination(this).type(DependencyRel.class).all();
-        return castDependencyRels(rels);
-    }
-
-    public DependencyRel addDependencyTo(Type type) {
-        DependencyRel rel = null;
-        ModelClass dest = getModel().getClasses().createExternal(type);
-        // Only add dependency to the class if a relationship does not already exist.
-        if (dest != this && _relLookup.between(this, dest).isEmpty()) {
-            rel = new DependencyRel(this, dest);
-            getModel().addRelationship(rel);
-        }
-        return rel;
-    }
-    
-    public AssociationRel getAssociationWith(ModelClass otherClass) {
-        AssociationRel association = (AssociationRel) _relLookup.between(this, otherClass).first();
-        if (association == null) {
-            association = (AssociationRel) _relLookup.between(otherClass, this).first();
-        }
-        return association;
-    }
-    
-    public AssociationRel addAssociationTo(Type type) {
-        ModelClass dest = getModel().getClasses().createExternal(type);
-        // When adding an association with a destination class, each one will have its own label
-        // and multiplicity. Do not reuse existing associations- create a new one.
-        // Also, if it is an association with itself, draw it explicitly as well.
-        AssociationRel association = new AssociationRel(this, dest);
-        getModel().addRelationship(association);
-        return association;
-    }
-
-    @Override
-    public void setModel(Model model) {
-        super.setModel(model);
-        _relLookup.setModel(model);
-    }
-    
-    public ModelPackage getPackage() {
-        return _package;
-    }
-    
-    public void setPackage(ModelPackage modelPackage) {
-        _package = modelPackage;
-    }
-    
-    private List<DependencyRel> castDependencyRels(List<ModelRel> rels) {
-        List<DependencyRel> dependencies = new ArrayList<>();
-        for (ModelRel rel: rels) {
-            dependencies.add((DependencyRel)rel);
-        }
-        return dependencies;
-    }
-    
-    private final RelLookup _relLookup = new RelLookup();
-    private ModelPackage _package;
+    private final Model _model;
     private final Type _type;
-    private final boolean _isInternal;
 }

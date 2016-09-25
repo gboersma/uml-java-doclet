@@ -1,10 +1,8 @@
 package info.leadinglight.umljavadoclet.printer;
 
-import info.leadinglight.umljavadoclet.model.DependencyRel;
-import info.leadinglight.umljavadoclet.model.GeneralizationRel;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
-import java.util.List;
+import info.leadinglight.umljavadoclet.model.ModelPackage;
 
 public class ModelPrinter extends Printer {
     public ModelPrinter(Model model) {
@@ -12,56 +10,79 @@ public class ModelPrinter extends Printer {
     }
     
     public void print() {
-        for (ModelClass modelClass: _model.getClasses().all()) {
-            if (modelClass.isInternal()) {
+        printClasses();
+        printPackages();
+    }
+    
+    private void printClasses() {
+        for (ModelClass modelClass: _model.modelClasses()) {
+            if (modelClass.internal()) {
                 printClass(modelClass);
-                printSuperclass(modelClass);
-                printDependencies(modelClass);
-                printDependents(modelClass);
+//                printSuperclass(modelClass);
+//                printDependencies(modelClass);
+//                printDependents(modelClass);
                 // TODO Other relationships.
             }
         }
     }
     
     private void printClass(ModelClass modelClass) {
-        println("Class: " + modelClass.getQualifiedName());
+        println("Class: " + modelClass.fullName());
     }
     
-    private void printSuperclass(ModelClass modelClass) {
-        GeneralizationRel generalization = modelClass.getGeneralization();
-        if (generalization != null) {
-            indent();
-            printSuperclassRel(generalization);
-        }
-    }
-    
-    private void printDependencies(ModelClass modelClass) {
-        List<DependencyRel> usages = modelClass.getDependencies();
-        for (DependencyRel usage: usages) {
-            indent();
-            printUsesRel(usage);
+    private void printPackages() {
+        for (ModelPackage modelPackage: _model.modelPackages()) {
+            printPackage(modelPackage);
+//                printSuperclass(modelClass);
+//                printDependencies(modelClass);
+//                printDependents(modelClass);
+                // TODO Other relationships.
         }
     }
 
-    private void printDependents(ModelClass modelClass) {
-        List<DependencyRel> usages = modelClass.getDependents();
-        for (DependencyRel usage: usages) {
-            indent();
-            printUsedRel(usage);
+    private void printPackage(ModelPackage modelPackage) {
+        println("Package: " + modelPackage.fullName());
+        for (ModelClass modelClass: modelPackage.modelClasses()) {
+            print("  ");
+            printClass(modelClass);
         }
     }
 
-    private void printSuperclassRel(GeneralizationRel rel) {
-        println("extends: " + rel.getDestination().getQualifiedName());
-    }
-
-    private void printUsesRel(DependencyRel rel) {
-        println("uses: " + rel.getDestination().getQualifiedName());
-    }
-    
-    private void printUsedRel(DependencyRel rel) {
-        println("used by: " + rel.getSource().getQualifiedName());
-    }
+//    private void printSuperclass(ModelClass modelClass) {
+//        GeneralizationRel generalization = modelClass.getGeneralization();
+//        if (generalization != null) {
+//            indent();
+//            printSuperclassRel(generalization);
+//        }
+//    }
+//    
+//    private void printDependencies(ModelClass modelClass) {
+//        List<DependencyRel> usages = modelClass.getDependencies();
+//        for (DependencyRel usage: usages) {
+//            indent();
+//            printUsesRel(usage);
+//        }
+//    }
+//
+//    private void printDependents(ModelClass modelClass) {
+//        List<DependencyRel> usages = modelClass.getDependents();
+//        for (DependencyRel usage: usages) {
+//            indent();
+//            printUsedRel(usage);
+//        }
+//    }
+//
+//    private void printSuperclassRel(GeneralizationRel rel) {
+//        println("extends: " + rel.getDestination().getQualifiedName());
+//    }
+//
+//    private void printUsesRel(DependencyRel rel) {
+//        println("uses: " + rel.getDestination().getQualifiedName());
+//    }
+//    
+//    private void printUsedRel(DependencyRel rel) {
+//        println("used by: " + rel.getSource().getQualifiedName());
+//    }
 
     private final Model _model;
 }

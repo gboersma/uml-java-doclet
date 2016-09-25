@@ -1,54 +1,74 @@
 package info.leadinglight.umljavadoclet.model;
 
+import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.PackageDoc;
-import com.sun.javadoc.Type;
+import com.sun.javadoc.RootDoc;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A representation of a set of classes and the relationships between them.
  */
 public class Model {
-    public Model() {
-        _classes = new ClassLookup();
-        _classes.setModel(this);
-        _packages = new PackageLookup();
-        _packages.setModel(this);
+    public Model(RootDoc rootDoc) {
+        _rootDoc = rootDoc;
     }
     
-    public ClassLookup getClasses() {
-        return _classes;
+    public void mapToModel() {
+        mapClasses();
     }
     
-    public ModelClass getClass(Type type) {
-        return _classes.get(type);
+    public List<ModelClass> modelClasses() {
+        return new ArrayList<>(_classes.values());
     }
     
-    public void addClass(ModelClass modelClass) {
-        _classes.add(modelClass);
+    public ModelClass modelClass(String fullName) {
+        return _classes.get(fullName);
     }
     
-    public PackageLookup getPackages() {
-        return _packages;
+    public List<ModelPackage> modelPackages() {
+        return new ArrayList<>(_packages.values());
     }
     
-    public ModelPackage getPackage(PackageDoc packageDoc) {
-       return _packages.get(packageDoc);
+    public ModelPackage modelPackage(String fullName) {
+        return _packages.get(fullName);
     }
+
+    // Mapping
     
-    public void addPackage(ModelPackage modelPackage) {
-        _packages.add(modelPackage);
-    }
-    
-    public void addRelationship(ModelRel rel) {
-        ModelClass src = rel.getSource();
-        ModelClass dest = rel.getDestination();
-        src.addRelationship(rel);
-        // Only add the destination relationship if it is different than source.
-        // Can be a relationship back to the same class.
-        if (src != dest) {
-            dest.addRelationship(rel);
+    private void mapClasses() {
+        for (ClassDoc classDoc: _rootDoc.classes()) {
+            ModelClass modelClass = mapClass(classDoc);
+            ModelPackage modelPackage = mapPackage(classDoc.containingPackage());
+            modelPackage.addClass(modelClass);
         }
     }
     
-    private final ClassLookup _classes;
-    private final PackageLookup _packages;
+    private ModelClass mapClass(ClassDoc classDoc) {
+        String fullName = ModelClass.fullName(classDoc);
+        ModelClass modelClass = _classes.get(fullName);
+        if (modelClass == null) {
+            modelClass = new ModelClass(this, classDoc);
+            _classes.put(fullName, modelClass);
+            modelClass.mapToModel();
+        }
+        return modelClass;
+    }
+    
+    private ModelPackage mapPackage(PackageDoc packageDoc) {
+        String fullName = ModelPackage.fullName(packageDoc);
+        ModelPackage modelPackage = _packages.get(fullName);
+        if (modelPackage == null) {
+            modelPackage = new ModelPackage(this, packageDoc);
+            _packages.put(fullName, modelPackage);
+            modelPackage.mapToModel();
+        }
+        return modelPackage;
+    }
+
+    private final RootDoc _rootDoc;
+    private final Map<String,ModelClass> _classes = new LinkedHashMap<>();
+    private final Map<String,ModelPackage> _packages = new LinkedHashMap<>();
 }
