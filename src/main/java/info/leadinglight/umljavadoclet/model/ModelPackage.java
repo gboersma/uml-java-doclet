@@ -13,7 +13,7 @@ public class ModelPackage {
         _packageDoc = packageDoc;
     }
     
-    public void mapToModel() {
+    public void map() {
         // Nothing additional to map.
     }
     

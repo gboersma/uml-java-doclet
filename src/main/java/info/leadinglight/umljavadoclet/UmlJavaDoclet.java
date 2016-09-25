@@ -11,7 +11,7 @@ import info.leadinglight.umljavadoclet.printer.ModelPrinter;
 public class UmlJavaDoclet {
     public static boolean start(RootDoc root) {
         Model model = new Model(root);
-        model.mapToModel();
+        model.map();
         
         // Dump results to file.
         ModelPrinter modelPrinter = new ModelPrinter(model);

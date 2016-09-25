@@ -17,7 +17,7 @@ public class Model {
         _rootDoc = rootDoc;
     }
     
-    public void mapToModel() {
+    public void map() {
         mapClasses();
     }
     
@@ -65,7 +65,7 @@ public class Model {
         if (modelClass == null) {
             modelClass = new ModelClass(this, classType);
             _classes.put(fullName, modelClass);
-            modelClass.mapToModel();
+            modelClass.map();
         }
         return modelClass;
     }
@@ -76,7 +76,7 @@ public class Model {
         if (modelPackage == null) {
             modelPackage = new ModelPackage(this, packageDoc);
             _packages.put(fullName, modelPackage);
-            modelPackage.mapToModel();
+            modelPackage.map();
         }
         return modelPackage;
     }

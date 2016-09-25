@@ -35,23 +35,23 @@ public class ModelRel {
         _srcCardinality = srcCardinality;
     }
     
-    public Kind getKind() {
+    public Kind kind() {
         return _kind;
     }
     
-    public ModelClass getSource() {
+    public ModelClass source() {
         return _src;
     }
     
-    public String getSourceRole() {
+    public String sourceRole() {
         return _srcRole;
     }
     
-    public Multiplicity getSourceCardinality() {
+    public Multiplicity sourceCardinality() {
         return _srcCardinality;
     }
 
-    public ModelClass getDestination() {
+    public ModelClass destination() {
         return _dest;
     }
     

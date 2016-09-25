@@ -27,6 +27,22 @@ public class RelFilter {
         return _rels.size() > 0 ? _rels.get(0) : null;
     }
     
+    public List<ModelClass> sourceClasses() {
+        List<ModelClass> classes = new ArrayList<>();
+        for (ModelRel rel: _rels) {
+            classes.add(rel.source());
+        }
+        return classes;
+    }
+
+    public List<ModelClass> destinationClasses() {
+        List<ModelClass> classes = new ArrayList<>();
+        for (ModelRel rel: _rels) {
+            classes.add(rel.destination());
+        }
+        return classes;
+    }
+    
     public void add(ModelRel rel) {
         _rels.add(rel);
     }
@@ -34,7 +50,7 @@ public class RelFilter {
     public RelFilter source(ModelClass source) {
         RelFilter filter = new RelFilter();
         for (ModelRel rel: _rels) {
-            if (rel.getSource() == source) {
+            if (rel.source() == source) {
                 filter.add(rel);
             }
         }
@@ -44,7 +60,7 @@ public class RelFilter {
     public RelFilter destination(ModelClass dest) {
         RelFilter filter = new RelFilter();
         for (ModelRel rel: _rels) {
-            if (rel.getDestination() == dest) {
+            if (rel.destination() == dest) {
                 filter.add(rel);
             }
         }
@@ -54,7 +70,7 @@ public class RelFilter {
     public RelFilter kind(ModelRel.Kind kind) {
         RelFilter filter = new RelFilter();
         for (ModelRel rel: _rels) {
-            if (rel.getKind() == kind) {
+            if (rel.kind() == kind) {
                 filter.add(rel);
             }
         }
