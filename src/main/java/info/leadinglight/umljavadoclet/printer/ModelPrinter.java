@@ -18,7 +18,7 @@ public class ModelPrinter extends Printer {
         for (ModelClass modelClass: _model.modelClasses()) {
             if (modelClass.internal()) {
                 printClass(modelClass);
-//                printSuperclass(modelClass);
+                printSuperclass(modelClass);
 //                printDependencies(modelClass);
 //                printDependents(modelClass);
                 // TODO Other relationships.
@@ -28,6 +28,13 @@ public class ModelPrinter extends Printer {
     
     private void printClass(ModelClass modelClass) {
         println("Class: " + modelClass.fullName());
+    }
+    
+    private void printSuperclass(ModelClass modelClass) {
+        ModelClass superclass = modelClass.superclass();
+        if (superclass != null) {
+            println("  extends: " + superclass.fullName());
+        }
     }
     
     private void printPackages() {

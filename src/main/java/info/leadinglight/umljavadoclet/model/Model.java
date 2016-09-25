@@ -3,6 +3,7 @@ package info.leadinglight.umljavadoclet.model;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,6 +36,18 @@ public class Model {
     public ModelPackage modelPackage(String fullName) {
         return _packages.get(fullName);
     }
+    
+    // Updating Model
+    
+    public ModelClass createClassIfNotExists(Type classType) {
+        String fullName = ModelClass.fullName(classType);
+        ModelClass modelClass = _classes.get(fullName);
+        if (modelClass == null) {
+            modelClass = new ModelClass(this, classType);
+            _classes.put(fullName, modelClass);
+        }
+        return modelClass;
+    }
 
     // Mapping
     
@@ -46,11 +59,11 @@ public class Model {
         }
     }
     
-    private ModelClass mapClass(ClassDoc classDoc) {
-        String fullName = ModelClass.fullName(classDoc);
+    private ModelClass mapClass(Type classType) {
+        String fullName = ModelClass.fullName(classType);
         ModelClass modelClass = _classes.get(fullName);
         if (modelClass == null) {
-            modelClass = new ModelClass(this, classDoc);
+            modelClass = new ModelClass(this, classType);
             _classes.put(fullName, modelClass);
             modelClass.mapToModel();
         }

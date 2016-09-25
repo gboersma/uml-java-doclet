@@ -3,18 +3,24 @@ package info.leadinglight.umljavadoclet.model;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a class internal or external to the model.
  */
-public class ModelClass extends ModelElement {
+public class ModelClass {
     public ModelClass(Model model, Type type) {
         _model = model;
         _type = type;
+        _classDoc = _type.asClassDoc();
     }
     
     public void mapToModel() {
-        //mapRelationships();
+        if (internal()) {
+            // Only map internal classes.
+            mapRelationships();
+        }
     }
     
     public String fullName() {
@@ -26,12 +32,24 @@ public class ModelClass extends ModelElement {
     }
     
     public boolean internal() {
-        ClassDoc classDoc = _type.asClassDoc();
-        return classDoc != null ? classDoc.isIncluded() : false;
+        return _classDoc != null ? _classDoc.isIncluded() : false;
     }
     
     public boolean external() {
         return !internal();
+    }
+    
+    public List<ModelRel> relationships() {
+        return _rels;
+    }
+    
+    public RelFilter relationshipsFilter() {
+        return new RelFilter(_rels);
+    }
+    
+    public ModelClass superclass() {
+        ModelRel rel = relationshipsFilter().source(this).kind(ModelRel.Kind.GENERALIZATION).first();
+        return rel != null ? rel.getDestination() : null;
     }
     
     public static String fullName(Type type) {
@@ -43,6 +61,43 @@ public class ModelClass extends ModelElement {
         }
     }
     
+    // Update Model
+    
+    public void addRelationship(ModelRel rel) {
+        _rels.add(rel);
+    }
+    
+    // Mapping
+    
+    private void mapRelationships() {
+        mapSuperclass();
+//        mapInterfaces();
+//        mapDependencies();
+    }
+    
+    private void mapSuperclass() {
+        Type superclassType = _classDoc.superclassType();
+        if (superclassType != null) {
+            String superclassName = superclassType.qualifiedTypeName();
+            // Do not include standard Java superclasses in the model.
+            if (!superclassName.equals("java.lang.Object") && !superclassName.equals("java.lang.Enum")) {
+                ModelClass dest = _model.createClassIfNotExists(superclassType);
+                ModelRel rel = new ModelRel(ModelRel.Kind.GENERALIZATION, this, dest);
+                mapSourceRel(rel);
+            }
+        }
+        
+    }
+    
+    private void mapSourceRel(ModelRel rel) {
+        _rels.add(rel);
+        // Do not add relationships back to ourselves more than once.
+        ModelClass dest = rel.getDestination();
+        if (this != dest) {
+            dest.addRelationship(rel);
+        }
+    }
+
     private static String buildParameterString(Type type) {
         StringBuilder sb = new StringBuilder();
         ParameterizedType paramType = type.asParameterizedType();
@@ -56,7 +111,9 @@ public class ModelClass extends ModelElement {
         }
         return sb.toString();
     }
-
+    
     private final Model _model;
     private final Type _type;
+    private final ClassDoc _classDoc;
+    private final List<ModelRel> _rels = new ArrayList<>();
 }

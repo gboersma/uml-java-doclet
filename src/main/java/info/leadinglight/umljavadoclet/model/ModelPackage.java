@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Represents a package containing classes.
  */
-public class ModelPackage extends ModelElement {
+public class ModelPackage {
     public ModelPackage(Model model, PackageDoc packageDoc) {
         _model = model;
         _packageDoc = packageDoc;
