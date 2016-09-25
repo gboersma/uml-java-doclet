@@ -43,11 +43,11 @@ public class ModelRel {
         return _src;
     }
     
-    public String sourceRole() {
+    public String destinationRole() {
         return _srcRole;
     }
     
-    public Multiplicity sourceCardinality() {
+    public Multiplicity destinationCardinality() {
         return _srcCardinality;
     }
 

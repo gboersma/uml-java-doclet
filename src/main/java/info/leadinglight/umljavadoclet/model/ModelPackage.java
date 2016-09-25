@@ -25,7 +25,7 @@ public class ModelPackage {
         return fullName(_packageDoc);
     }
     
-    public List<ModelClass> modelClasses() {
+    public List<ModelClass> classes() {
         return _classes;
     }
     

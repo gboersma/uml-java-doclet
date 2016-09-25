@@ -5,6 +5,7 @@ import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.ParameterizedType;
+import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,59 @@ public class ModelClass {
         _model = model;
         _type = type;
         _classDoc = _type.asClassDoc();
+    }
+    
+    public enum Visibility {
+        PUBLIC, PROTECTED, PRIVATE, PACKAGE_PRIVATE
+    }
+    
+    public enum ClassType {
+        INTERFACE, ENUM, CLASS
+    }
+    
+    public static class Field {
+        public Field(String name, String type, Visibility visibility, boolean isStatic) {
+            this.name = name;
+            this.type = type;
+            this.visibility = visibility;
+            this.isStatic = isStatic;
+        }
+        
+        public String name;
+        public String type;
+        public Visibility visibility;
+        public boolean isStatic;
+    }
+    
+    public static class Method {
+        public Method(String name, List<String> parameters, String returnType, Visibility visibility, boolean isAbstract, boolean isStatic) {
+            this.name = name;
+            this.parameters = parameters;
+            this.returnType = returnType;
+            this.visibility = visibility;
+            this.isAbstract = isAbstract;
+            this.isStatic = isStatic;
+        }
+        
+        public Method(String name, List<String> parameters, Visibility visibility) {
+            this.name = name;
+            this.parameters = parameters;
+            this.returnType = null;
+            this.visibility = visibility;
+            this.isStatic = false;
+            this.isAbstract = false;
+        }
+        
+        public boolean isConstructor() {
+            return returnType == null;
+        }
+
+        public String name;
+        public List<String> parameters;
+        public String returnType;
+        public Visibility visibility;
+        public boolean isAbstract;
+        public boolean isStatic;
     }
     
     public void map() {
@@ -32,6 +86,16 @@ public class ModelClass {
     
     public String qualifiedName() {
         return _type.qualifiedTypeName();
+    }
+    
+    public ClassType type() {
+        if (_classDoc.isInterface()) {
+            return ClassType.INTERFACE;
+        } else if (_classDoc.isEnum()) {
+            return ClassType.ENUM;
+        } else {
+            return ClassType.CLASS;
+        }
     }
     
     public boolean isInternal() {
@@ -78,13 +142,39 @@ public class ModelClass {
     public boolean hasRelationshipWith(ModelClass dest) {
         return relationshipsFilter().source(this).destination(dest).first() != null;
     }
-
+    
+    public List<Field> fields() {
+        List<Field> fields = new ArrayList<>();
+        for (FieldDoc fieldDoc: _classDoc.fields(false)) {
+            Field mappedField = new Field(fieldDoc.name(), shortName(fieldDoc.type()), mapVisibility(fieldDoc), fieldDoc.isStatic());
+            fields.add(mappedField);
+        }
+        return fields;
+    }
+    
+    public List<Method> methods() {
+        List<Method> methods = new ArrayList<>();
+        for (MethodDoc methodDoc: _classDoc.methods(false)) {
+            // TODO Method detail.
+        }
+        return methods;
+    }
+    
     public static String fullName(Type type) {
         String params = buildParameterString(type);
         if (params.length() > 0) {
             return type.qualifiedTypeName() + "<" + params + ">";
         } else {
             return type.qualifiedTypeName();
+        }
+    }
+    
+    public static String shortName(Type type) {
+        String params = buildParameterString(type);
+        if (params.length() > 0) {
+            return type.simpleTypeName() + "<" + params + ">";
+        } else {
+            return type.simpleTypeName();
         }
     }
     
@@ -182,6 +272,18 @@ public class ModelClass {
         ModelClass dest = rel.destination();
         if (this != dest) {
             dest.addRelationship(rel);
+        }
+    }
+    
+    private Visibility mapVisibility(ProgramElementDoc doc) {
+        if (doc.isPublic()) {
+            return Visibility.PUBLIC;
+        } else if(doc.isProtected()) {
+            return Visibility.PROTECTED;
+        } else if(doc.isPrivate()) {
+            return Visibility.PRIVATE;
+        } else {
+            return Visibility.PACKAGE_PRIVATE;
         }
     }
 

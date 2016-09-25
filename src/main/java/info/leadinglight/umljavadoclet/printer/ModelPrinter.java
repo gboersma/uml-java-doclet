@@ -17,7 +17,7 @@ public class ModelPrinter extends Printer {
     }
     
     private void printClasses() {
-        for (ModelClass modelClass: _model.modelClasses()) {
+        for (ModelClass modelClass: _model.classes()) {
             if (modelClass.isInternal()) {
                 printClass(modelClass);
                 printSuperclass(modelClass);
@@ -49,13 +49,13 @@ public class ModelPrinter extends Printer {
     
     private void printAssociationsTo(ModelClass modelClass) {
         for (ModelRel assocTo: modelClass.sourceAssociations()) {
-            println(1, "to: " + assocTo.sourceRole() + " (" + assocTo.destination().fullName() + ")");
+            println(1, "to: " + assocTo.destinationRole() + " (" + assocTo.destination().fullName() + ")");
         }
     }
 
     private void printAssociationsFrom(ModelClass modelClass) {
         for (ModelRel assocFrom: modelClass.destinationAssociations()) {
-            println(1, "from: " + assocFrom.sourceRole() + " (" + assocFrom.source().fullName() + ")");
+            println(1, "from: " + assocFrom.destinationRole() + " (" + assocFrom.source().fullName() + ")");
         }
     }
 
@@ -72,14 +72,14 @@ public class ModelPrinter extends Printer {
     }
 
     private void printPackages() {
-        for (ModelPackage modelPackage: _model.modelPackages()) {
+        for (ModelPackage modelPackage: _model.packages()) {
             printPackage(modelPackage);
         }
     }
 
     private void printPackage(ModelPackage modelPackage) {
         println("Package: " + modelPackage.fullName());
-        for (ModelClass modelClass: modelPackage.modelClasses()) {
+        for (ModelClass modelClass: modelPackage.classes()) {
             print("  ");
             printClass(modelClass);
         }

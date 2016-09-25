@@ -21,7 +21,7 @@ public class Model {
         mapClasses();
     }
     
-    public List<ModelClass> modelClasses() {
+    public List<ModelClass> classes() {
         return new ArrayList<>(_classes.values());
     }
     
@@ -29,7 +29,7 @@ public class Model {
         return _classes.get(fullName);
     }
     
-    public List<ModelPackage> modelPackages() {
+    public List<ModelPackage> packages() {
         return new ArrayList<>(_packages.values());
     }
     
