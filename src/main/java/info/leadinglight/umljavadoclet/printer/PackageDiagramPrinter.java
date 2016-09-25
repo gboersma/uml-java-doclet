@@ -23,5 +23,16 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
         end();
     }
     
+    // Only display public methods, not full signature.
+    public void summaryClass(ModelClass modelClass) {
+        classType(modelClass);
+        className(modelClass);
+        println(" {");
+        // TODO Print methods.
+        println("}");
+        // Fields are not shown.
+        hideFields(modelClass);
+    }
+    
     private final ModelPackage _modelPackage;
 }

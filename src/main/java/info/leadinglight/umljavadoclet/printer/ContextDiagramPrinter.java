@@ -25,7 +25,7 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
     // Highlight the class with a different colour.
     private void addContextClass(ModelClass modelClass) {
         // TODO Show in different color.
-        classWithFieldsAndMethods(modelClass);
+        detailedClass(modelClass, true, true, true, false, true);
         _classes.add(modelClass);
     }
     

@@ -62,50 +62,45 @@ public abstract class PumlDiagramPrinter extends Printer {
         newline();
     }
 
-    public void classWithFields(ModelClass modelClass) {
-        detailedClass(modelClass, true, false);
-    }
-
-    public void classWithMethods(ModelClass modelClass) {
-        detailedClass(modelClass, false, true);
-    }
-
-    public void classWithFieldsAndMethods(ModelClass modelClass) {
-        detailedClass(modelClass, true, true);
-    }
-    
     // Displays the class with all details, and full method signatures (if displayed).
-    public void detailedClass(ModelClass modelClass, boolean showFields, boolean showMethods) {
+    public void detailedClass(ModelClass modelClass, 
+            boolean showFields, 
+            boolean showConstructors, 
+            boolean showMethods,
+            boolean publicMethodsOnly,
+            boolean includeTypeInfo) {
         classType(modelClass);
         className(modelClass);
         println(" {");
         if (showFields) {
-            // TODO Show the fields here.
+            for (ModelClass.Field field: modelClass.fields()) {
+                field(field, includeTypeInfo);
+            }
+        }
+        if (showConstructors) {
+            for (ModelClass.Constructor cons: modelClass.constructors()) {
+                if (publicMethodsOnly == false || publicMethodsOnly == true && cons.visibility == ModelClass.Visibility.PUBLIC) {
+                    constructor(cons, includeTypeInfo);
+                }
+            }
         }
         if (showMethods) {
-            // TODO Show the method here.
+            for (ModelClass.Method method: modelClass.methods()) {
+                if (publicMethodsOnly == false || publicMethodsOnly == true && method.visibility == ModelClass.Visibility.PUBLIC) {
+                    method(method, includeTypeInfo);
+                }
+            }
         }
         println("}");
         newline();
     }
     
-    // Only display public methods, not full signature.
-    public void summaryClass(ModelClass modelClass) {
-        classType(modelClass);
-        className(modelClass);
-        println(" {");
-        // TODO Print methods.
-        println("}");
-        // Fields are not shown.
-        hideFields(modelClass);
-    }
-    
-    public void field(ModelClass.Field field, boolean detailed) {
+    public void field(ModelClass.Field field, boolean includeTypeInfo) {
         if (field.isStatic) {
             printStatic();
         }
         visibility(field.visibility);
-        if (detailed) {
+        if (includeTypeInfo) {
             print(field.type + " ");
         }
         print(field.name);
@@ -128,7 +123,25 @@ public abstract class PumlDiagramPrinter extends Printer {
         }
     }
     
-    public void method(ModelClass.Method method, boolean detailed) {
+    public void constructor(ModelClass.Constructor constructor, boolean includeTypeInfo) {
+        visibility(constructor.visibility);
+        print(constructor.name);
+        print("(");
+        if (includeTypeInfo) {
+            String sep = "";
+            for (ModelClass.MethodParameter param: constructor.parameters) {
+                print(sep);
+                print(param.type);
+                print(" ");
+                print(param.name);
+                sep = ",";
+            }
+        }
+        print(")");
+        newline();
+    }
+    
+    public void method(ModelClass.Method method, boolean includeTypeInfo) {
         if (method.isStatic) {
             printStatic();
         }
@@ -136,17 +149,19 @@ public abstract class PumlDiagramPrinter extends Printer {
             printAbstract();
         }
         visibility(method.visibility);
-        if (detailed) {
+        if (includeTypeInfo) {
             print(method.returnType);
             print(" ");
         }
         print(method.name);
         print("(");
-        if (detailed) {
+        if (includeTypeInfo) {
             String sep = "";
-            for (String param: method.parameters) {
+            for (ModelClass.MethodParameter param: method.parameters) {
                 print(sep);
-                print(param);
+                print(param.type);
+                print(" ");
+                print(param.name);
                 sep = ",";
             }
         }

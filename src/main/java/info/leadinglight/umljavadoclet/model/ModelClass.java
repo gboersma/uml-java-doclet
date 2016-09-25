@@ -1,6 +1,7 @@
 package info.leadinglight.umljavadoclet.model;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Parameter;
@@ -42,8 +43,20 @@ public class ModelClass {
         public boolean isStatic;
     }
     
+    public static class Constructor {
+        public Constructor(String name, List<MethodParameter> parameters, Visibility visibility) {
+            this.name = name;
+            this.parameters = parameters;
+            this.visibility = visibility;
+        }
+        
+        public String name;
+        public List<MethodParameter> parameters;
+        public Visibility visibility;
+    }
+    
     public static class Method {
-        public Method(String name, List<String> parameters, String returnType, Visibility visibility, boolean isAbstract, boolean isStatic) {
+        public Method(String name, List<MethodParameter> parameters, String returnType, Visibility visibility, boolean isAbstract, boolean isStatic) {
             this.name = name;
             this.parameters = parameters;
             this.returnType = returnType;
@@ -52,25 +65,22 @@ public class ModelClass {
             this.isStatic = isStatic;
         }
         
-        public Method(String name, List<String> parameters, Visibility visibility) {
-            this.name = name;
-            this.parameters = parameters;
-            this.returnType = null;
-            this.visibility = visibility;
-            this.isStatic = false;
-            this.isAbstract = false;
-        }
-        
-        public boolean isConstructor() {
-            return returnType == null;
-        }
-
         public String name;
-        public List<String> parameters;
+        public List<MethodParameter> parameters;
         public String returnType;
         public Visibility visibility;
         public boolean isAbstract;
         public boolean isStatic;
+    }
+    
+    public static class MethodParameter {
+        public MethodParameter(String type, String name) {
+            this.type = type;
+            this.name = name;
+        }
+        
+        public String type;
+        public String name;
     }
     
     public void map() {
@@ -152,10 +162,33 @@ public class ModelClass {
         return fields;
     }
     
+    public List<Constructor> constructors() {
+        List<Constructor> constructors = new ArrayList<>();
+        for (ConstructorDoc consDoc: _classDoc.constructors(false)) {
+            List<MethodParameter> params = new ArrayList<>();
+            for (Parameter param: consDoc.parameters()) {
+                params.add(new MethodParameter(shortName(param.type()), param.name()));
+            }
+            Constructor constructor = new Constructor(consDoc.name(), params, mapVisibility(consDoc));
+            constructors.add(constructor);
+        }
+        return constructors;
+    }
+    
     public List<Method> methods() {
         List<Method> methods = new ArrayList<>();
         for (MethodDoc methodDoc: _classDoc.methods(false)) {
-            // TODO Method detail.
+            List<MethodParameter> params = new ArrayList<>();
+            for (Parameter param: methodDoc.parameters()) {
+                params.add(new MethodParameter(shortName(param.type()), param.name()));
+            }
+            Method method = new Method(methodDoc.name(), 
+                    params, 
+                    shortName(methodDoc.returnType()), 
+                    mapVisibility(methodDoc),
+                    methodDoc.isAbstract(),
+                    methodDoc.isStatic());
+            methods.add(method);
         }
         return methods;
     }
