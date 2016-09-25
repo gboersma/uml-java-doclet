@@ -1,4 +1,4 @@
-package info.leadinglight.umljavadoclet.diagram;
+package info.leadinglight.umljavadoclet.printer;
 
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
@@ -6,13 +6,12 @@ import info.leadinglight.umljavadoclet.model.ModelRel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContextDiagramGenerator extends DiagramGenerator {
-    public ContextDiagramGenerator(Model model, ModelClass contextClass) {
+public class ContextDiagramPrinter extends PumlDiagramPrinter {
+    public ContextDiagramPrinter(Model model, ModelClass contextClass) {
         super(model);
         _contextClass = contextClass;
     }
     
-    @Override
     public void generate() {
         start();
         addContextClass(_contextClass);

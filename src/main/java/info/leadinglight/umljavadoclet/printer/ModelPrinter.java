@@ -4,14 +4,13 @@ import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
 import info.leadinglight.umljavadoclet.model.ModelRel;
-import java.util.List;
 
 public class ModelPrinter extends Printer {
     public ModelPrinter(Model model) {
         _model = model;
     }
     
-    public void print() {
+    public void generate() {
         printClasses();
         printPackages();
     }

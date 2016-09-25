@@ -1,20 +1,17 @@
-package info.leadinglight.umljavadoclet.diagram;
+package info.leadinglight.umljavadoclet.printer;
 
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
 import info.leadinglight.umljavadoclet.model.Multiplicity;
-import info.leadinglight.umljavadoclet.printer.Printer;
 
 /**
  * Generate PlantUML diagrams from the model.
  */
-public abstract class DiagramGenerator extends Printer {
-        public DiagramGenerator(Model model) {
+public abstract class PumlDiagramPrinter extends Printer {
+        public PumlDiagramPrinter(Model model) {
         _model = model;
     }
-    
-    public abstract void generate();
     
     public Model getModel() {
         return _model;

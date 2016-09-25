@@ -3,8 +3,8 @@ package info.leadinglight.umljavadoclet;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import com.sun.tools.doclets.standard.Standard;
-import info.leadinglight.umljavadoclet.diagram.ContextDiagramGenerator;
-import info.leadinglight.umljavadoclet.diagram.PackageDiagramGenerator;
+import info.leadinglight.umljavadoclet.printer.ContextDiagramPrinter;
+import info.leadinglight.umljavadoclet.printer.PackageDiagramPrinter;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
@@ -17,7 +17,7 @@ public class UmlJavaDoclet {
         
         // Dump results to file.
         ModelPrinter modelPrinter = new ModelPrinter(model);
-        modelPrinter.print();
+        modelPrinter.generate();
         modelPrinter.toFile("/Users/gerald/tmp/umljavadoclet/model.out");
         
         // Generate the PUML for the context diagrams.
@@ -46,14 +46,14 @@ public class UmlJavaDoclet {
     }
     
     private static void generateContextDiagram(Model model, ModelClass modelClass) {
-        ContextDiagramGenerator generator = new ContextDiagramGenerator(model, modelClass);
+        ContextDiagramPrinter generator = new ContextDiagramPrinter(model, modelClass);
         String filename = "/Users/gerald/tmp/umljavadoclet/puml/context_" + modelClass.qualifiedName().replace(".", "_") + ".puml";
         generator.generate();
         generator.toFile(filename);
     }
 
     private static void generatePackageDiagram(Model model, ModelPackage modelPackage) {
-        PackageDiagramGenerator generator = new PackageDiagramGenerator(model, modelPackage);
+        PackageDiagramPrinter generator = new PackageDiagramPrinter(model, modelPackage);
         String filename = "/Users/gerald/tmp/umljavadoclet/puml/package_" + modelPackage.fullName().replace(".", "_") + ".puml";
         generator.generate();
         generator.toFile(filename);
