@@ -18,8 +18,9 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     
     public void generate() {
         start();
+        ortholinesOption();
+        noPackagesOption();
         for (ModelClass modelClass: _modelPackage.classes()) {
-            // Display only public methods, no parameters.
             detailedClass(modelClass, false, false, false, false, false);
             for (ModelRel rel: modelClass.relationships()) {
                 if (addRelationshipClass(modelClass, rel)) {
@@ -34,19 +35,24 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     // Put the class on the other side of the relationship on the diagram.
     private boolean addRelationshipClass(ModelClass modelClass, ModelRel rel) {
         ModelClass otherClass = (rel.source() != modelClass ? rel.source() : rel.destination());
-        // Only draw relationships with classes that are internal.
         if (otherClass.isInternal()) {
-            // Only draw the class on the other side of the relationship if it hasn't been added yet.
             if (!_classes.contains(otherClass)) {
-                // Is the other class in the same package?
                 if (otherClass.modelPackage() == _modelPackage) {
-                    // Display only public methods, no parameters.
-                    detailedClass(otherClass, false, false, false, false, false);
+                    classHiddenFieldsAndMethods(otherClass);
                 } else {
-                    hiddenClass(otherClass);
+                    classHiddenFieldsAndMethods(otherClass, "lightgrey");
                 }
-                _classes.add(otherClass);
             }
+
+            // If this is a relationship to a class in the same package, and this class
+            // is the destination, do not draw it. It will get drawn when the other class is drawn.
+            // Otherwise, the relationship is drawn twice.
+            if (otherClass.modelPackage() == _modelPackage) {
+                if (rel.destination() == modelClass) {
+                    return false;
+                }
+            }
+            
             return true;
         } else {
             return false;

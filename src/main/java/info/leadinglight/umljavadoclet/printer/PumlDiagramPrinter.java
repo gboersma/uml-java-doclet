@@ -18,9 +18,15 @@ public abstract class PumlDiagramPrinter extends Printer {
     
     public void start() {
         println("@startuml");
-        // Orthogonal lines
-        println("skinparam linetype ortho");
         newline();
+    }
+    
+    public void ortholinesOption() {
+        println("skinparam linetype ortho");
+    }
+    
+    public void noPackagesOption() {
+        println("set namespaceSeparator none");
     }
     
     public void end() {
@@ -29,8 +35,15 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
     
     public void emptyClass(ModelClass modelClass) {
+        emptyClass(modelClass, null);
+    }
+
+    public void emptyClass(ModelClass modelClass, String color) {
         classType(modelClass);
         className(modelClass);
+        if (color != null && color.length() > 0) {
+            print(" #" + color);
+        }
         println( " {");
         println("}");
         newline();
@@ -52,9 +65,13 @@ public abstract class PumlDiagramPrinter extends Printer {
                 print("class ");
         }
     }
+
+    public void classHiddenFieldsAndMethods(ModelClass modelClass) {
+        classHiddenFieldsAndMethods(modelClass, null);
+    }
     
-    public void hiddenClass(ModelClass modelClass) {
-        emptyClass(modelClass);
+    public void classHiddenFieldsAndMethods(ModelClass modelClass, String color) {
+        emptyClass(modelClass, color);
         newline();
         hideFields(modelClass);
         hideMethods(modelClass);
