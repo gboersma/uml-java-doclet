@@ -18,8 +18,9 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     
     public void generate() {
         start();
-        ortholinesOption();
-        noPackagesOption();
+        orthogonalLinesOption();
+        //noPackagesOption();
+        rectangularPackagesOption();
         for (ModelClass modelClass: _modelPackage.classes()) {
             detailedClass(modelClass, false, false, false, false, false);
             for (ModelRel rel: modelClass.relationships()) {

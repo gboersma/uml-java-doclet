@@ -21,7 +21,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         newline();
     }
     
-    public void ortholinesOption() {
+    public void orthogonalLinesOption() {
         println("skinparam linetype ortho");
     }
     
@@ -29,6 +29,10 @@ public abstract class PumlDiagramPrinter extends Printer {
         println("set namespaceSeparator none");
     }
     
+    public void rectangularPackagesOption() {
+        println("skinparam packageStyle rect");
+    }
+
     public void end() {
         newline();
         println("@enduml");
