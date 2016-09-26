@@ -16,8 +16,9 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
         start();
         addContextClass(_contextClass);
         for (ModelRel rel: _contextClass.relationships()) {
-            addRelationshipClass(rel);
-            relationship(rel);
+            if (addRelationshipClass(rel)) {
+                relationship(rel);
+            }
             newline();
         }
         end();
@@ -31,12 +32,17 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
     }
     
     // Put the class on the other side of the relationship on the diagram.
-    private void addRelationshipClass(ModelRel rel) {
+    private boolean addRelationshipClass(ModelRel rel) {
         ModelClass otherClass = (rel.source() != _contextClass ? rel.source() : rel.destination());
-        // Only draw the class on the other side of the relationship if it hasn't been added yet.
-        if (!_classes.contains(otherClass)) {
-            hiddenClass(otherClass);
-            _classes.add(otherClass);
+        if (!otherClass.fullName().startsWith("java.util.")) {
+            // Only draw the class on the other side of the relationship if it hasn't been added yet.
+            if (!_classes.contains(otherClass)) {
+                hiddenClass(otherClass);
+                _classes.add(otherClass);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
     

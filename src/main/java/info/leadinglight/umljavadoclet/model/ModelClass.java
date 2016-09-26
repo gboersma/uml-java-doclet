@@ -126,6 +126,10 @@ public class ModelClass {
         return _type.asParameterizedType() != null;
     }
     
+    public boolean isCollectionClass() {
+        return _type.qualifiedTypeName().equals("java.util.List") || _type.qualifiedTypeName().equals("java.util.Map");
+    }
+    
     public List<String> parameters() {
         return buildParameters(_type);
     }
@@ -238,6 +242,7 @@ public class ModelClass {
     // Mapping
     
     private void mapRelationships() {
+        
         mapSuperclass();
         mapInterfaces();
         mapFieldAssociations();
@@ -266,6 +271,7 @@ public class ModelClass {
                 ModelClass dest = _model.createClassIfNotExists(superclassType);
                 ModelRel rel = new ModelRel(ModelRel.Kind.GENERALIZATION, this, dest);
                 mapSourceRel(rel);
+                mapParamDependencies(dest);
             }
         }
     }
@@ -277,6 +283,7 @@ public class ModelClass {
             ModelRel.Kind kind = _classDoc.isInterface() ? ModelRel.Kind.GENERALIZATION : ModelRel.Kind.REALIZATION;
             ModelRel rel = new ModelRel(kind, this, dest);
             mapSourceRel(rel);
+            mapParamDependencies(dest);
         }        
     }
     
@@ -289,7 +296,18 @@ public class ModelClass {
                 ModelClass dest = _model.createClassIfNotExists(type);
                 ModelRel rel = new ModelRel(ModelRel.Kind.DIRECTED_ASSOCIATION, this, dest, fieldDoc.name());
                 mapSourceRel(rel);
+                mapParamAssociations(fieldDoc, dest);
                 mapParamDependencies(dest);
+            }
+        }
+    }
+    
+    private void mapParamAssociations(FieldDoc fieldDoc, ModelClass modelClass) {
+        // If the modelclass is a parameterized collection, then we want to model a 1..many relationship with the collection.
+        if (modelClass.isParameterized() && modelClass.isCollectionClass()) {
+            for (ModelClass param: modelClass.parameterClasses()) {
+                ModelRel rel = new ModelRel(ModelRel.Kind.DIRECTED_ASSOCIATION, this, param, fieldDoc.name(), ModelRel.Multiplicity.MANY);
+                mapSourceRel(rel);
             }
         }
     }
