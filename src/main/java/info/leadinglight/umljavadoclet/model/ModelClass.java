@@ -85,6 +85,7 @@ public class ModelClass {
     }
     
     public void map() {
+        mapParameters();
         if (isInternal()) {
             // Only map internal classes.
             mapRelationships();
@@ -119,6 +120,18 @@ public class ModelClass {
     
     public boolean isExternal() {
         return !isInternal();
+    }
+    
+    public boolean isParameterized() {
+        return _type.asParameterizedType() != null;
+    }
+    
+    public List<String> parameters() {
+        return buildParameters(_type);
+    }
+    
+    public List<ModelClass> parameterClasses() {
+        return _params;
     }
     
     public List<ModelRel> relationships() {
@@ -228,8 +241,20 @@ public class ModelClass {
         mapSuperclass();
         mapInterfaces();
         mapFieldAssociations();
-        mapParameterDependencies();
         mapMethodDependencies();
+    }
+    
+    private void mapParameters() {
+        ParameterizedType paramType = _type.asParameterizedType();
+        if (paramType != null) {
+            for (Type type: paramType.typeArguments()) {
+                String typeName = type.qualifiedTypeName();
+                if (!typeName.startsWith("java.lang.") && !type.isPrimitive()) {
+                    ModelClass param = _model.createClassIfNotExists(type);
+                    _params.add(param);
+                }
+            }
+        }
     }
     
     private void mapSuperclass() {
@@ -264,6 +289,7 @@ public class ModelClass {
                 ModelClass dest = _model.createClassIfNotExists(type);
                 ModelRel rel = new ModelRel(ModelRel.Kind.DIRECTED_ASSOCIATION, this, dest, fieldDoc.name());
                 mapSourceRel(rel);
+                mapParamDependencies(dest);
             }
         }
     }
@@ -281,15 +307,6 @@ public class ModelClass {
         }
     }
     
-    private void mapParameterDependencies() {
-        ParameterizedType paramType = _type.asParameterizedType();
-        if (paramType != null) {
-            for (Type param : paramType.typeArguments()) {
-                mapTypeDependency(param);
-            }
-        }
-    }
-
     private void mapTypeDependency(Type type) {
         String typeName = type.qualifiedTypeName();
         // TODO Relationships through collection types.
@@ -300,6 +317,20 @@ public class ModelClass {
             if (this != dest && !hasRelationshipWith(dest)) {
                 ModelRel rel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, dest);
                 mapSourceRel(rel);
+            }
+            mapParamDependencies(dest);
+        }
+    }
+    
+    private void mapParamDependencies(ModelClass modelClass) {
+        // Is the destination class a parameterized class? If so, there is a dependency on the underlying parameters.
+        if (modelClass.isParameterized()) {
+            for (ModelClass param: modelClass.parameterClasses()) {
+                // Only map the dependency if there is no existing relationship with that class.
+                if (!hasRelationshipWith(param)) {
+                    ModelRel paramRel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, param);
+                    mapSourceRel(paramRel);
+                }
             }
         }
     }
@@ -324,6 +355,18 @@ public class ModelClass {
             return Visibility.PACKAGE_PRIVATE;
         }
     }
+    
+    private static List<String> buildParameters(Type type) {
+        List<String> params = new ArrayList<>();
+        ParameterizedType paramType = type.asParameterizedType();
+        if (paramType != null) {
+            for (Type param : paramType.typeArguments()) {
+                String name = ModelClass.fullName(param);
+                params.add(name);
+            }
+        }
+        return params;
+    }
 
     private static String buildParameterString(Type type) {
         StringBuilder sb = new StringBuilder();
@@ -342,6 +385,7 @@ public class ModelClass {
     private final Model _model;
     private final Type _type;
     private final ClassDoc _classDoc;
+    private final List<ModelClass> _params = new ArrayList<>();
     private final List<ModelRel> _rels = new ArrayList<>();
     private final boolean _isInternal;
 }
