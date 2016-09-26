@@ -37,7 +37,7 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
     
     public void className(ModelClass modelClass) {
-        print(modelClass.fullName());
+        print("\"" + modelClass.fullName() + "\"");
     }
     
     public void classType(ModelClass modelClass) {
@@ -169,13 +169,17 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
     
     public void hideFields(ModelClass modelClass) {
-        // TODO PlantUML does not like the full name. But how does it differentiate between parameterized classes?
-        println("hide " + modelClass.fullNameWithoutParameters() + " fields");
+        print("hide ");
+        className(modelClass);
+        print(" fields");
+        newline();
     }
 
     public void hideMethods(ModelClass modelClass) {
-        // TODO PlantUML does not like the full name. But how does it differentiate between parameterized classes?
-        println("hide " + modelClass.fullNameWithoutParameters() + " methods");
+        print("hide ");
+        className(modelClass);
+        print(" methods");
+        newline();
     }
     
     public void relationship(ModelRel rel) {
@@ -237,19 +241,32 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
 
     public void printRel(ModelClass src, String relText, ModelClass dest) {
-        // TODO PlantUML does not like parameterized name. But how does it differentiate?
-        println(src.fullNameWithoutParameters()+ " " + relText + " " + dest.fullNameWithoutParameters());
+        className(src);
+        print (" " + relText + " ");
+        className(dest);
+        newline();
     }
     
     public void printRel(ModelClass src, String srcRole, String srcCardinality, String relText, ModelClass dest, String destRole, String destCardinality) {
-        // PUML does not allow labels to be specified for each end.
-        // We'll fake it by overloading the multiplicity label.
-        String srcLabel = (srcRole != null ? srcRole + " " : "") + (srcCardinality != null ? srcCardinality : "");
-        srcLabel = srcLabel.length() > 0 ? "\"" + srcLabel + "\"" + " " : "";
-        String destLabel = (destRole != null ? destRole + " " : "") + (destCardinality != null ? destCardinality : "");
-        destLabel = destLabel.length() > 0 ? "\"" + destLabel + "\"" + " " : "";
-        // TODO PlantUML does not like parameterized name. But how does it differentiate?
-        println(src.fullNameWithoutParameters() + " " + srcLabel + relText + " " + destLabel + dest.fullNameWithoutParameters());
+        className(src);
+        printRelLabel(srcRole, srcCardinality);
+        print (" " + relText + " ");
+        printRelLabel(destRole, destCardinality);
+        className(dest);
+        newline();
+    }
+    
+    public void printRelLabel(String role, String cardinality) {
+        if ((role != null && role.length() > 0) || (cardinality != null && cardinality.length() > 0)) {
+            print(" \"");
+            if (role != null && role.length() > 0) {
+                print(role);
+            }
+            if (cardinality != null && cardinality.length() > 0) {
+                print(" " + cardinality);
+            }
+            print("\" ");
+        }
     }
 
     private final Model _model;
