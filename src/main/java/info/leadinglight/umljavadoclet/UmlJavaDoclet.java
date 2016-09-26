@@ -47,7 +47,7 @@ public class UmlJavaDoclet {
     
     private static void generateContextDiagram(Model model, ModelClass modelClass) {
         ContextDiagramPrinter generator = new ContextDiagramPrinter(model, modelClass);
-        String filename = "/Users/gerald/tmp/umljavadoclet/puml/context_" + modelClass.qualifiedName().replace(".", "_") + ".puml";
+        String filename = "/Users/gerald/tmp/umljavadoclet/puml/context_" + modelClass.fullNameWithoutParameters().replace(".", "_") + ".puml";
         generator.generate();
         generator.toFile(filename);
     }

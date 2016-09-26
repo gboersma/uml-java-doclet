@@ -169,11 +169,13 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
     
     public void hideFields(ModelClass modelClass) {
-        println("hide " + modelClass.qualifiedName() + " fields");
+        // TODO PlantUML does not like the full name. But how does it differentiate between parameterized classes?
+        println("hide " + modelClass.fullNameWithoutParameters() + " fields");
     }
 
     public void hideMethods(ModelClass modelClass) {
-        println("hide " + modelClass.qualifiedName() + " methods");
+        // TODO PlantUML does not like the full name. But how does it differentiate between parameterized classes?
+        println("hide " + modelClass.fullNameWithoutParameters() + " methods");
     }
     
     public void relationship(ModelRel rel) {
@@ -235,7 +237,8 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
 
     public void printRel(ModelClass src, String relText, ModelClass dest) {
-        println(src.qualifiedName() + " " + relText + " " + dest.qualifiedName());
+        // TODO PlantUML does not like parameterized name. But how does it differentiate?
+        println(src.fullNameWithoutParameters()+ " " + relText + " " + dest.fullNameWithoutParameters());
     }
     
     public void printRel(ModelClass src, String srcRole, String srcCardinality, String relText, ModelClass dest, String destRole, String destCardinality) {
@@ -245,7 +248,8 @@ public abstract class PumlDiagramPrinter extends Printer {
         srcLabel = srcLabel.length() > 0 ? "\"" + srcLabel + "\"" + " " : "";
         String destLabel = (destRole != null ? destRole + " " : "") + (destCardinality != null ? destCardinality : "");
         destLabel = destLabel.length() > 0 ? "\"" + destLabel + "\"" + " " : "";
-        println(src.qualifiedName() + " " + srcLabel + relText + " " + destLabel + dest.qualifiedName());
+        // TODO PlantUML does not like parameterized name. But how does it differentiate?
+        println(src.fullNameWithoutParameters() + " " + srcLabel + relText + " " + destLabel + dest.fullNameWithoutParameters());
     }
 
     private final Model _model;

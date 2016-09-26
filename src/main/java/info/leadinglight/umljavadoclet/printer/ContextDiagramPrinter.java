@@ -18,6 +18,7 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
         for (ModelRel rel: _contextClass.relationships()) {
             addRelationshipClass(rel);
             relationship(rel);
+            newline();
         }
         end();
     }

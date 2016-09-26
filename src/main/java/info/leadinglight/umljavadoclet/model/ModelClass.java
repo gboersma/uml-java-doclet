@@ -95,7 +95,7 @@ public class ModelClass {
         return fullName(_type);
     }
     
-    public String qualifiedName() {
+    public String fullNameWithoutParameters() {
         return _type.qualifiedTypeName();
     }
     
@@ -257,7 +257,6 @@ public class ModelClass {
     
     private void mapFieldAssociations() {
         for (FieldDoc fieldDoc: _classDoc.fields(false)) {
-            System.out.println("*** association from " + this.shortName() + ": " + fieldDoc.name() + " " + shortName(fieldDoc.type()));
             Type type = fieldDoc.type();
             String typeName = type.qualifiedTypeName();
             // TODO Relationships through collection types.
