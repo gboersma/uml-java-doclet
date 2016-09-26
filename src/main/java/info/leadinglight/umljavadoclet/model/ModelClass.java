@@ -138,6 +138,12 @@ public class ModelClass {
         return _params;
     }
     
+    public ModelPackage modelPackage() {
+        String packageName = _classDoc.containingPackage().name();
+        ModelPackage modelPackage = _model.modelPackage(packageName);
+        return modelPackage;
+    }
+    
     public List<ModelRel> relationships() {
         return _rels;
     }
@@ -242,10 +248,11 @@ public class ModelClass {
     // Mapping
     
     private void mapRelationships() {
-        
+        // Map field associations first, since that will establish the has relationships, which are stronger
+        // than any of the dependency relationships that may follow.
+        mapFieldAssociations();
         mapSuperclass();
         mapInterfaces();
-        mapFieldAssociations();
         mapMethodDependencies();
     }
     
