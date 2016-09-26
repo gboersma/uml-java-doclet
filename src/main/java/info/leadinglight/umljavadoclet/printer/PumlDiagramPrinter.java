@@ -3,7 +3,6 @@ package info.leadinglight.umljavadoclet.printer;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelRel;
-import info.leadinglight.umljavadoclet.model.Multiplicity;
 
 /**
  * Generate PlantUML diagrams from the model.
@@ -210,7 +209,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         printRel(src, null, null, "-->", dest, destRole, destCardinality);
     }
     
-    public String multiplicityLabel(Multiplicity mult) {
+    public String multiplicityLabel(ModelRel.Multiplicity mult) {
         if (mult != null) {
             switch(mult) {
                 case ONE:

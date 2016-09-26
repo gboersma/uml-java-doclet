@@ -15,9 +15,10 @@ import java.util.List;
  * Represents a class internal or external to the model.
  */
 public class ModelClass {
-    public ModelClass(Model model, Type type) {
+    public ModelClass(Model model, Type type, boolean isInternal) {
         _model = model;
         _type = type;
+       _isInternal = isInternal;
         _classDoc = _type.asClassDoc();
     }
     
@@ -98,6 +99,10 @@ public class ModelClass {
         return _type.qualifiedTypeName();
     }
     
+    public String shortName() {
+        return shortName(_type);
+    }
+    
     public ClassType type() {
         if (_classDoc.isInterface()) {
             return ClassType.INTERFACE;
@@ -109,7 +114,7 @@ public class ModelClass {
     }
     
     public boolean isInternal() {
-        return _classDoc != null ? _classDoc.isIncluded() : false;
+        return _isInternal;
     }
     
     public boolean isExternal() {
@@ -251,7 +256,8 @@ public class ModelClass {
     }
     
     private void mapFieldAssociations() {
-        for (FieldDoc fieldDoc: _classDoc.fields()) {
+        for (FieldDoc fieldDoc: _classDoc.fields(false)) {
+            System.out.println("*** association from " + this.shortName() + ": " + fieldDoc.name() + " " + shortName(fieldDoc.type()));
             Type type = fieldDoc.type();
             String typeName = type.qualifiedTypeName();
             // TODO Relationships through collection types.
@@ -338,4 +344,5 @@ public class ModelClass {
     private final Type _type;
     private final ClassDoc _classDoc;
     private final List<ModelRel> _rels = new ArrayList<>();
+    private final boolean _isInternal;
 }

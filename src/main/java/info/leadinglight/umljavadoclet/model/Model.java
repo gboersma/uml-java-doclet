@@ -19,6 +19,7 @@ public class Model {
     
     public void map() {
         mapClasses();
+        mapRelationships();
     }
     
     public List<ModelClass> classes() {
@@ -43,7 +44,8 @@ public class Model {
         String fullName = ModelClass.fullName(classType);
         ModelClass modelClass = _classes.get(fullName);
         if (modelClass == null) {
-            modelClass = new ModelClass(this, classType);
+            modelClass = new ModelClass(this, classType, false);
+            modelClass.map();
             _classes.put(fullName, modelClass);
         }
         return modelClass;
@@ -52,22 +54,23 @@ public class Model {
     // Mapping
     
     private void mapClasses() {
+        // First add the classes and packages to the model.
         for (ClassDoc classDoc: _rootDoc.classes()) {
-            ModelClass modelClass = mapClass(classDoc);
+            ModelClass modelClass = new ModelClass(this, classDoc, true);
+            String fullName = ModelClass.fullName(classDoc);
+            _classes.put(fullName, modelClass);
             ModelPackage modelPackage = mapPackage(classDoc.containingPackage());
             modelPackage.addClass(modelClass);
         }
     }
     
-    private ModelClass mapClass(Type classType) {
-        String fullName = ModelClass.fullName(classType);
-        ModelClass modelClass = _classes.get(fullName);
-        if (modelClass == null) {
-            modelClass = new ModelClass(this, classType);
-            _classes.put(fullName, modelClass);
+    private void mapRelationships() {
+        // Then map all the classes added to the model.
+        for (ClassDoc classDoc: _rootDoc.classes()) {
+            String fullName = ModelClass.fullName(classDoc);
+            ModelClass modelClass = _classes.get(fullName);
             modelClass.map();
         }
-        return modelClass;
     }
     
     private ModelPackage mapPackage(PackageDoc packageDoc) {

@@ -19,12 +19,9 @@ public class ModelPrinter extends Printer {
         for (ModelClass modelClass: _model.classes()) {
             if (modelClass.isInternal()) {
                 printClass(modelClass);
-                printSuperclass(modelClass);
-                printInterfaces(modelClass);
-                printAssociationsTo(modelClass);
-                printAssociationsFrom(modelClass);
-                printDependencies(modelClass);
-                printDependents(modelClass);
+                for (ModelRel rel: modelClass.relationships()) {
+                    printRel(modelClass, rel);
+                }
             }
         }
     }
@@ -33,43 +30,51 @@ public class ModelPrinter extends Printer {
         println("Class: " + modelClass.fullName());
     }
     
-    private void printSuperclass(ModelClass modelClass) {
-        ModelClass superclass = modelClass.superclass();
-        if (superclass != null) {
-            println(1, "extends: " + superclass.fullName());
+    private void printRel(ModelClass modelClass, ModelRel rel) {
+        indent(1);
+        boolean fromSource = (rel.source() == modelClass);
+        printKind(rel.kind(), fromSource);
+        print(": ");
+        print(fromSource ? rel.destination().fullName() :rel.source().fullName());
+        if (rel.destinationRole() != null) {
+            print (" " + rel.destinationRole());
+        }
+        if (rel.destinationCardinality() != null) {
+            print (" ");
+            printMultiplicity(rel.destinationCardinality());
+        }
+        newline();
+    }
+    
+    private void printKind(ModelRel.Kind kind, boolean fromSource) {
+        switch (kind) {
+            case GENERALIZATION:
+                print (fromSource ? "extends" : "extended by");
+                return;
+            case REALIZATION:
+                print (fromSource ? "implements" : "implemented by");
+                return;
+            case DIRECTED_ASSOCIATION:
+                print (fromSource ? "has" : "had by");
+                return;
+            case DEPENDENCY:
+                print (fromSource ? "uses" : "used by");
         }
     }
     
-    private void printInterfaces(ModelClass modelClass) {
-        for (ModelClass intrface: modelClass.interfaces()) {
-            println(1, "implements: " + intrface.fullName());
+    private void printMultiplicity(ModelRel.Multiplicity mult) {
+        switch (mult) {
+            case ONE:
+                print("one");
+                return;
+            case ZERO_OR_ONE:
+                print("zero or one");
+                return;
+            case MANY:
+                print("many");
         }
     }
     
-    private void printAssociationsTo(ModelClass modelClass) {
-        for (ModelRel assocTo: modelClass.sourceAssociations()) {
-            println(1, "to: " + assocTo.destinationRole() + " (" + assocTo.destination().fullName() + ")");
-        }
-    }
-
-    private void printAssociationsFrom(ModelClass modelClass) {
-        for (ModelRel assocFrom: modelClass.destinationAssociations()) {
-            println(1, "from: " + assocFrom.destinationRole() + " (" + assocFrom.source().fullName() + ")");
-        }
-    }
-
-    private void printDependencies(ModelClass modelClass) {
-        for (ModelClass dependency: modelClass.dependencies()) {
-            println(1, "uses: " + dependency.fullName());
-        }
-    }
-
-    private void printDependents(ModelClass modelClass) {
-        for (ModelClass dependent: modelClass.dependents()) {
-            println(1, "used by: " + dependent.fullName());
-        }
-    }
-
     private void printPackages() {
         for (ModelPackage modelPackage: _model.packages()) {
             printPackage(modelPackage);

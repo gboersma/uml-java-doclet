@@ -58,7 +58,11 @@ public class ModelRel {
     public enum Kind {
         DIRECTED_ASSOCIATION, GENERALIZATION, REALIZATION, DEPENDENCY;
     }
-
+    
+    public enum Multiplicity {
+        ZERO_OR_ONE, ONE, MANY
+    }
+    
     private final Kind _kind;
     private final ModelClass _src;
     private final ModelClass _dest;
