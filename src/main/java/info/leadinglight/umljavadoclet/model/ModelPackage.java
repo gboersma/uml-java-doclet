@@ -14,7 +14,7 @@ public class ModelPackage {
     }
     
     public void map() {
-        // Nothing additional to map.
+        mapRelationships();
     }
     
     public String fullName() {
@@ -29,6 +29,14 @@ public class ModelPackage {
         return _classes;
     }
     
+    public List<ModelPackage> dependencies() {
+        return _dependencyPackages;
+    }
+    
+    public List<ModelPackage> dependents() {
+        return _dependentPackages;
+    }
+    
     public static String fullName(PackageDoc packageDoc) {
         return packageDoc.name();
     }
@@ -41,7 +49,37 @@ public class ModelPackage {
         }
     }
     
+    // Mapping
+    
+    private void mapRelationships() {
+        for (ModelClass modelClass: _classes) {
+            for (ModelRel rel: modelClass.relationships()) {
+                if (rel.source() == modelClass) {
+                    ModelClass dest = rel.destination();
+                    ModelPackage destPackage = dest.modelPackage();
+                    // Only packages that are included in the model are modelled.
+                    if (destPackage != null) {
+                        if (destPackage != this && !_dependencyPackages.contains(destPackage)) {
+                            _dependencyPackages.add(destPackage);
+                        }
+                    }
+                } else {
+                    ModelClass src = rel.source();
+                    ModelPackage srcPackage = src.modelPackage();
+                    // Only packages that are included in the model are modelled.
+                    if (srcPackage != null) {
+                        if (srcPackage != this && !_dependentPackages.contains(srcPackage)) {
+                            _dependentPackages.add(srcPackage);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     private final Model _model;
     private final PackageDoc _packageDoc;
     private final List<ModelClass> _classes = new ArrayList<>();
+    private final List<ModelPackage> _dependentPackages = new ArrayList<>();
+    private final List<ModelPackage> _dependencyPackages = new ArrayList<>();
 }

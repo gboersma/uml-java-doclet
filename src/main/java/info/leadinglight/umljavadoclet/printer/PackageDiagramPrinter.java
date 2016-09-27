@@ -18,48 +18,30 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     
     public void generate() {
         start();
-        orthogonalLinesOption();
+        // Layout of packages is really, really bad.
+        // Would love to show relationships between packages, but it is just awful.
         //noPackagesOption();
-        rectangularPackagesOption();
+        orthogonalLinesOption();
+        emptyPackage(_modelPackage);
         for (ModelClass modelClass: _modelPackage.classes()) {
-            detailedClass(modelClass, false, false, false, false, false);
-            for (ModelRel rel: modelClass.relationships()) {
-                if (addRelationshipClass(modelClass, rel)) {
-                    relationship(rel);
-                }
-                newline();
-            }
+            emptyClass(modelClass);
         }
+        addRelationships();
         end();
     }
     
-    // Put the class on the other side of the relationship on the diagram.
-    private boolean addRelationshipClass(ModelClass modelClass, ModelRel rel) {
-        ModelClass otherClass = (rel.source() != modelClass ? rel.source() : rel.destination());
-        if (otherClass.isInternal()) {
-            if (!_classes.contains(otherClass)) {
-                if (otherClass.modelPackage() == _modelPackage) {
-                    classHiddenFieldsAndMethods(otherClass);
-                } else {
-                    classHiddenFieldsAndMethods(otherClass, "lightgrey");
+    public void addRelationships() {
+        for (ModelClass modelClass: _modelPackage.classes()) {
+            emptyClass(modelClass);
+            // Only draw the relationships between the classes in the package.
+            for (ModelRel rel: modelClass.relationships()) {
+                if (rel.source() == modelClass && rel.destination().modelPackage() == _modelPackage) {
+                    relationship(rel);
                 }
             }
-
-            // If this is a relationship to a class in the same package, and this class
-            // is the destination, do not draw it. It will get drawn when the other class is drawn.
-            // Otherwise, the relationship is drawn twice.
-            if (otherClass.modelPackage() == _modelPackage) {
-                if (rel.destination() == modelClass) {
-                    return false;
-                }
-            }
-            
-            return true;
-        } else {
-            return false;
         }
     }
     
     private final ModelPackage _modelPackage;
-    private final List<ModelClass> _classes = new ArrayList<>();
+    private final List<ModelPackage> _packages = new ArrayList<>();
 }

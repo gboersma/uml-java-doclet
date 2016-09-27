@@ -9,6 +9,7 @@ import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
 import info.leadinglight.umljavadoclet.printer.ModelPrinter;
+import info.leadinglight.umljavadoclet.printer.OverviewDiagramPrinter;
 
 public class UmlJavaDoclet {
     public static boolean start(RootDoc root) {
@@ -32,6 +33,7 @@ public class UmlJavaDoclet {
             generatePackageDiagram(model, modelPackage);
         }
         
+        generateOverviewDiagram(model);
         return true;
     }
 
@@ -55,6 +57,13 @@ public class UmlJavaDoclet {
     private static void generatePackageDiagram(Model model, ModelPackage modelPackage) {
         PackageDiagramPrinter generator = new PackageDiagramPrinter(model, modelPackage);
         String filename = "/Users/gerald/tmp/umljavadoclet/puml/package_" + modelPackage.fullName().replace(".", "_") + ".puml";
+        generator.generate();
+        generator.toFile(filename);
+    }
+
+    private static void generateOverviewDiagram(Model model) {
+        OverviewDiagramPrinter generator = new OverviewDiagramPrinter(model);
+        String filename = "/Users/gerald/tmp/umljavadoclet/puml/overview.puml";
         generator.generate();
         generator.toFile(filename);
     }

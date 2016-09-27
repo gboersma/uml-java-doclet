@@ -2,6 +2,7 @@ package info.leadinglight.umljavadoclet.printer;
 
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
+import info.leadinglight.umljavadoclet.model.ModelPackage;
 import info.leadinglight.umljavadoclet.model.ModelRel;
 
 /**
@@ -23,6 +24,10 @@ public abstract class PumlDiagramPrinter extends Printer {
     
     public void orthogonalLinesOption() {
         println("skinparam linetype ortho");
+    }
+    
+    public void polyLinesOption() {
+        println("skinparam linetype polyline");
     }
     
     public void noPackagesOption() {
@@ -53,6 +58,25 @@ public abstract class PumlDiagramPrinter extends Printer {
         newline();
     }
     
+    public void emptyPackage(ModelPackage modelPackage) {
+        print("package ");
+        print(modelPackage.fullName());
+        println(" {");
+        println("}");
+        newline();
+    }
+    
+    public void emptyPackage(ModelPackage modelPackage, String color) {
+        print("package ");
+        print(modelPackage.fullName());
+        if (color != null && color.length() > 0) {
+            print(" #" + color);
+        }
+        println(" {");
+        println("}");
+        newline();
+    }
+
     public void className(ModelClass modelClass) {
         print("\"" + modelClass.fullName() + "\"");
     }
@@ -232,6 +256,13 @@ public abstract class PumlDiagramPrinter extends Printer {
         printRel(src,  "..>", dest);
     }
     
+    public void packageDependency(ModelPackage src, ModelPackage dest) {
+        print(src.fullName());
+        print(" ..> ");
+        print(dest.fullName());
+        newline();
+    }
+
     public void association(ModelClass src, ModelClass dest, String destRole, String destCardinality) {
         printRel(src, null, null, "-->", dest, destRole, destCardinality);
     }

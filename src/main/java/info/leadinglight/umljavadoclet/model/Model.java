@@ -20,10 +20,22 @@ public class Model {
     public void map() {
         mapClasses();
         mapRelationships();
+        createPackages();
+        mapPackages();
     }
     
     public List<ModelClass> classes() {
         return new ArrayList<>(_classes.values());
+    }
+    
+    public List<ModelClass> internalClasses() {
+        List<ModelClass> internalClasses = new ArrayList<>();
+        for (ModelClass modelClass: classes()) {
+            if (modelClass.isInternal()) {
+                internalClasses.add(modelClass);
+            }
+        }
+        return internalClasses;
     }
     
     public ModelClass modelClass(String fullName) {
@@ -59,8 +71,6 @@ public class Model {
             ModelClass modelClass = new ModelClass(this, classDoc, true);
             String fullName = ModelClass.fullName(classDoc);
             _classes.put(fullName, modelClass);
-            ModelPackage modelPackage = mapPackage(classDoc.containingPackage());
-            modelPackage.addClass(modelClass);
         }
     }
     
@@ -73,15 +83,27 @@ public class Model {
         }
     }
     
-    private ModelPackage mapPackage(PackageDoc packageDoc) {
-        String fullName = ModelPackage.fullName(packageDoc);
-        ModelPackage modelPackage = _packages.get(fullName);
-        if (modelPackage == null) {
-            modelPackage = new ModelPackage(this, packageDoc);
-            _packages.put(fullName, modelPackage);
+    private void createPackages() {
+        for (ClassDoc classDoc: _rootDoc.classes()) {
+            PackageDoc packageDoc = classDoc.containingPackage();
+            String fullName = ModelPackage.fullName(packageDoc);
+            ModelPackage modelPackage = _packages.get(fullName);
+            if (modelPackage == null) {
+                modelPackage = new ModelPackage(this, packageDoc);
+                _packages.put(fullName, modelPackage);
+            }
+            String classFullName = ModelClass.fullName(classDoc);
+            ModelClass modelClass = _classes.get(classFullName);
+            modelPackage.addClass(modelClass);
+        }
+    }
+    
+    public void mapPackages() {
+        // Map the packages once all the classes are added.
+        // They have all the info need for mapping relationships.
+        for (ModelPackage modelPackage: _packages.values()) {
             modelPackage.map();
         }
-        return modelPackage;
     }
 
     private final RootDoc _rootDoc;
