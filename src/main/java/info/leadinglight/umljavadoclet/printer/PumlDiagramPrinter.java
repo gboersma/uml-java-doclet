@@ -43,13 +43,12 @@ public abstract class PumlDiagramPrinter extends Printer {
         println("@enduml");
     }
     
-    public void emptyClass(ModelClass modelClass) {
-        emptyClass(modelClass, null);
+    public void emptyClass(ModelClass modelClass, boolean displayPackageName) {
+        emptyClass(modelClass, displayPackageName, null);
     }
 
-    public void emptyClass(ModelClass modelClass, String color) {
-        classType(modelClass);
-        className(modelClass);
+    public void emptyClass(ModelClass modelClass, boolean displayPackageName, String color) {
+        classDeclaration(modelClass, displayPackageName);
         if (color != null && color.length() > 0) {
             print(" #" + color);
         }
@@ -76,9 +75,30 @@ public abstract class PumlDiagramPrinter extends Printer {
         println("}");
         newline();
     }
-
+    
+    public void classDeclaration(ModelClass modelClass, boolean displayPackageName) {
+        classType(modelClass);
+        print(" \"");
+        print("<b><size:14>");
+        print(modelClass.shortName());
+        print("</b>");
+        if (displayPackageName) {
+            print("\\n<size:10>");
+            print(modelClass.packageName());
+        }
+        print("\" as ");
+        className(modelClass);
+    }
+    
     public void className(ModelClass modelClass) {
-        print("\"" + modelClass.fullName() + "\"");
+        // Parameterized classes have < and , in the name, which confuses PlantUML.
+        // Strip out these characters from the name. 
+        // The name will remain unqiue across the model, and this 
+        // does not affect the way the class is displayed.
+        print(modelClass.fullNameWithoutParameters());
+        for (String param: modelClass.parameters()) {
+            print(param);
+        }
     }
     
     public void classType(ModelClass modelClass) {
@@ -94,12 +114,12 @@ public abstract class PumlDiagramPrinter extends Printer {
         }
     }
 
-    public void classHiddenFieldsAndMethods(ModelClass modelClass) {
-        classHiddenFieldsAndMethods(modelClass, null);
+    public void classHiddenFieldsAndMethods(ModelClass modelClass, boolean displayPackageName) {
+        classHiddenFieldsAndMethods(modelClass, displayPackageName, null);
     }
-    
-    public void classHiddenFieldsAndMethods(ModelClass modelClass, String color) {
-        emptyClass(modelClass, color);
+
+    public void classHiddenFieldsAndMethods(ModelClass modelClass, boolean displayPackageName, String color) {
+        emptyClass(modelClass, displayPackageName, color);
         newline();
         hideFields(modelClass);
         hideMethods(modelClass);
@@ -107,14 +127,14 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
 
     // Displays the class with all details, and full method signatures (if displayed).
-    public void detailedClass(ModelClass modelClass, 
+    public void detailedClass(ModelClass modelClass,
+            boolean displayPackageName,
             boolean showFields, 
             boolean showConstructors, 
             boolean showMethods,
             boolean publicMethodsOnly,
             boolean includeTypeInfo) {
-        classType(modelClass);
-        className(modelClass);
+        classDeclaration(modelClass, displayPackageName);
         println(" {");
         if (showFields) {
             for (ModelClass.Field field: modelClass.fields()) {

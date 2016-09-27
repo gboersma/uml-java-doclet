@@ -21,7 +21,7 @@ public class OverviewDiagramPrinter extends PumlDiagramPrinter {
         for (ModelPackage modelPackage: getModel().packages()) {
             emptyPackage(modelPackage);
             for (ModelClass modelClass: modelPackage.classes()) {
-                emptyClass(modelClass);
+                emptyClass(modelClass, false);
             }
         }
         end();

@@ -29,7 +29,7 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
     // Highlight the class with a different colour.
     private void addContextClass(ModelClass modelClass) {
         // TODO Show in different color.
-        detailedClass(modelClass, true, true, true, false, true);
+        detailedClass(modelClass, true, true, true, true, false, true);
         _classes.add(modelClass);
     }
     
@@ -40,11 +40,11 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
             // Only draw the class on the other side of the relationship if it hasn't been added yet.
             if (!_classes.contains(otherClass)) {
                 if (otherClass.modelPackage() == _contextClass.modelPackage()) {
-                    classHiddenFieldsAndMethods(otherClass);
+                    classHiddenFieldsAndMethods(otherClass, true);
                 } else if (otherClass.isInternal()) {
-                    classHiddenFieldsAndMethods(otherClass, "white");
+                    classHiddenFieldsAndMethods(otherClass, true, "white");
                 } else {
-                    classHiddenFieldsAndMethods(otherClass, "lightgrey");
+                    classHiddenFieldsAndMethods(otherClass, true, "lightgrey");
                 }
                 _classes.add(otherClass);
             }

@@ -104,6 +104,10 @@ public class ModelClass {
         return shortName(_type);
     }
     
+    public String shortNameWithoutParameters() {
+        return _type.simpleTypeName();
+    }
+    
     public ClassType type() {
         if (_classDoc.isInterface()) {
             return ClassType.INTERFACE;
@@ -136,6 +140,10 @@ public class ModelClass {
     
     public List<ModelClass> parameterClasses() {
         return _params;
+    }
+    
+    public String packageName() {
+        return _classDoc.containingPackage().name();
     }
     
     public ModelPackage modelPackage() {

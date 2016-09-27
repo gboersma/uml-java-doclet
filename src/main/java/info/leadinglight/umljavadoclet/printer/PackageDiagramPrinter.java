@@ -24,7 +24,7 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
         orthogonalLinesOption();
         emptyPackage(_modelPackage);
         for (ModelClass modelClass: _modelPackage.classes()) {
-            emptyClass(modelClass);
+            emptyClass(modelClass, false);
         }
         addRelationships();
         end();
@@ -32,7 +32,7 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     
     public void addRelationships() {
         for (ModelClass modelClass: _modelPackage.classes()) {
-            emptyClass(modelClass);
+            emptyClass(modelClass, false);
             // Only draw the relationships between the classes in the package.
             for (ModelRel rel: modelClass.relationships()) {
                 if (rel.source() == modelClass && rel.destination().modelPackage() == _modelPackage) {
