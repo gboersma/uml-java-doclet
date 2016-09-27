@@ -9,6 +9,15 @@ import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
 import info.leadinglight.umljavadoclet.printer.OverviewDiagramPrinter;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import net.sourceforge.plantuml.FileFormat;
+import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.SourceStringReader;
+import net.sourceforge.plantuml.version.Version;
 
 public class UmlJavaDoclet {
     public static boolean start(RootDoc root) {
@@ -21,13 +30,11 @@ public class UmlJavaDoclet {
         model.map();
         
         // Generate the diagrams.
+        System.out.println("Using PlantUML version " + Version.versionString());
         System.out.println("Generating diagrams...");
         generateContextDiagrams(root, model);
         generatePackageDiagrams(root, model);
         generateOverviewDiagram(root, model);
-        
-        // Execute PlantUML.
-        executePlantUML(root, model);
         
         // Update the Javadocs with the generated diagrams / maps.
         System.out.println("Updating Javadocs...");
@@ -60,9 +67,14 @@ public class UmlJavaDoclet {
     
     private static void generateContextDiagram(RootDoc rootDoc, Model model, ModelClass modelClass) {
         ContextDiagramPrinter generator = new ContextDiagramPrinter(model, modelClass);
-        String filename = "/Users/gerald/tmp/umljavadoclet/puml/context_" + modelClass.fullNameWithoutParameters().replace(".", "_") + ".puml";
         generator.generate();
-        generator.toFile(filename);
+        File file = createFile(modelClass.packageName(), modelClass.shortNameWithoutParameters(), "puml");
+        boolean success = generator.toFile(file);
+        if (success && executePlantUML(modelClass.packageName(), modelClass.shortNameWithoutParameters(), generator.stringBuilder())) {
+            System.out.println("Generated diagram for class " + modelClass.fullName());
+        } else {
+            System.out.println("ERROR: Could not generate diagram for class " + modelClass.fullName());
+        }
     }
     
     private static void generatePackageDiagrams(RootDoc rootDoc, Model model) {
@@ -73,23 +85,68 @@ public class UmlJavaDoclet {
 
     private static void generatePackageDiagram(RootDoc rootDoc, Model model, ModelPackage modelPackage) {
         PackageDiagramPrinter generator = new PackageDiagramPrinter(model, modelPackage);
-        String filename = "/Users/gerald/tmp/umljavadoclet/puml/package_" + modelPackage.fullName().replace(".", "_") + ".puml";
         generator.generate();
-        generator.toFile(filename);
+        File file = createFile(modelPackage.fullName(), "package", "puml");
+        boolean success = generator.toFile(file);
+        if (success && executePlantUML(modelPackage.fullName(), "package", generator.stringBuilder())) {
+            System.out.println("Generated diagram for package " + modelPackage.fullName());
+        } else {
+            System.out.println("ERROR: Could not generate diagram for package " + modelPackage.fullName());
+        }
     }
 
     private static void generateOverviewDiagram(RootDoc rootDoc, Model model) {
         OverviewDiagramPrinter generator = new OverviewDiagramPrinter(model);
-        String filename = "/Users/gerald/tmp/umljavadoclet/puml/overview.puml";
         generator.generate();
-        generator.toFile(filename);
-    }
-    
-    private static void executePlantUML(RootDoc rootDoc, Model model) {
-        // TODO Call PlantUML to generate the diagrams.
+        File file = createFile("", "overview", "puml");
+        boolean success = generator.toFile(file);
+        if (success && executePlantUML("", "overview", generator.stringBuilder())) {
+            System.out.println("Generated overview diagram");
+        } else {
+            System.out.println("ERROR: Could not generate overview diagram");
+        }
     }
     
     private static void updateJavadocs(RootDoc rootDoc, Model model) {
         // TODO Update all of the HTML to add the generated diagrams.
+    }
+    
+    private static boolean executePlantUML(String name, String baseName, StringBuilder content) {
+        File file = createFile(name, baseName, "svg");
+        try {
+            OutputStream imageOutput = new BufferedOutputStream(new FileOutputStream(file));
+            SourceStringReader reader = new SourceStringReader(content.toString());
+            reader.generateImage(imageOutput, new FileFormatOption(FileFormat.SVG));
+            return true;
+        } catch (IOException e) {
+            //e.printStackTrace();
+            return false;
+        }
+    }
+    
+    private static File createFile(String name, String baseName, String extension) {
+        try {
+            File dir = fileForName(name);
+            if (dir.exists() || dir.mkdirs()) {
+                File file = new File(dir, baseName + "." + extension);
+                if (file.exists() || file.createNewFile()) {
+                    return file;
+                }
+            }
+            return null;
+        } catch (IOException e) {
+            //e.printStackTrace();
+            return null;
+        }
+    }
+    
+    private static File fileForName(String name) {
+        File file = new File(".");
+        for (String part : name.split("\\.")) {
+            if (part.trim().length() > 0) {
+                file = new File(file, part);
+            }
+        }
+        return file;
     }
 }
