@@ -6,11 +6,11 @@ Add UML diagrams (using PlantUML) to Javadocs. Extends the standard Java doclet.
 
 Build using Maven:
 
-  mvn clean install
+    mvn clean install
 
 To see an example of the updated Javadocs, use the Javadoc target:
 
-  mvn javadoc:javadoc
+    mvn javadoc:javadoc
 
 Javadoc output is in target/site/apidocs.
 
