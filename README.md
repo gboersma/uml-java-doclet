@@ -2,8 +2,6 @@
 
 Add UML diagrams (using PlantUML) to Javadocs. Extends the standard Java doclet.
 
-### Building ###
-
 Build using Maven:
 
     mvn clean install
