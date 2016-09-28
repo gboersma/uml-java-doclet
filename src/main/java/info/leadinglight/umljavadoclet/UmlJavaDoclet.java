@@ -143,7 +143,8 @@ public class UmlJavaDoclet {
         try {
             OutputStream imageOutput = new BufferedOutputStream(new FileOutputStream(file));
             SourceStringReader reader = new SourceStringReader(content.toString());
-            reader.generateImage(imageOutput, new FileFormatOption(FileFormat.SVG));
+            // http://plantuml.sourceforge.net/qa/?qa=4969/skinparam-svglinktarget-not-working-for-api
+            reader.generateImage(imageOutput, new FileFormatOption(FileFormat.SVG).withSvgLinkTarget("_parent"));
             return true;
         } catch (IOException e) {
             //e.printStackTrace();
