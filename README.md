@@ -14,7 +14,7 @@ To see an example of the updated Javadocs, use the Javadoc target:
 
 Javadoc output is in target/site/apidocs.
 
-To add to your own project, add the following to your pom.xml:
+To generate UML diagrams for your own project, add the following to your pom.xml:
 
     <build>
         <plugins>
