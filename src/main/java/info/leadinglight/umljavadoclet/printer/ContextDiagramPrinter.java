@@ -29,7 +29,8 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
     // Highlight the class with a different colour.
     private void addContextClass(ModelClass modelClass) {
         // TODO Show in different color.
-        detailedClass(modelClass, true, true, true, true, false, true);
+        String filepath = classFilepath(modelClass, modelClass);
+        detailedClass(modelClass, filepath, true, true, true, true, false, true);
         _classes.add(modelClass);
     }
     
@@ -39,12 +40,16 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
         if (!otherClass.fullName().startsWith("java.util.")) {
             // Only draw the class on the other side of the relationship if it hasn't been added yet.
             if (!_classes.contains(otherClass)) {
+                String filepath = null;
+                if (otherClass.modelPackage() != null) {
+                    filepath = classFilepath(_contextClass, otherClass);
+                }
                 if (otherClass.modelPackage() == _contextClass.modelPackage()) {
-                    classHiddenFieldsAndMethods(otherClass, true);
+                    classHiddenFieldsAndMethods(otherClass, true, filepath, null);
                 } else if (otherClass.isInternal()) {
-                    classHiddenFieldsAndMethods(otherClass, true, "white");
+                    classHiddenFieldsAndMethods(otherClass, true, filepath, "white");
                 } else {
-                    classHiddenFieldsAndMethods(otherClass, true, "lightgrey");
+                    classHiddenFieldsAndMethods(otherClass, true, filepath, "lightgrey");
                 }
                 _classes.add(otherClass);
             }

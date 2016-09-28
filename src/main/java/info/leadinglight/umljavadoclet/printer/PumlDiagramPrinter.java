@@ -20,6 +20,8 @@ public abstract class PumlDiagramPrinter extends Printer {
     public void start() {
         println("@startuml");
         newline();
+        // We want links to go into the same frame as the diagram for Javadocs.
+        svglinktargetOption("_parent");
     }
     
     public void orthogonalLinesOption() {
@@ -37,18 +39,23 @@ public abstract class PumlDiagramPrinter extends Printer {
     public void rectangularPackagesOption() {
         println("skinparam packageStyle rect");
     }
+    
+    public void svglinktargetOption(String target) {
+        println("skinparam svgLinkTarget " + target);
+    }
 
     public void end() {
         newline();
         println("@enduml");
     }
     
-    public void emptyClass(ModelClass modelClass, boolean displayPackageName) {
-        emptyClass(modelClass, displayPackageName, null);
-    }
-
-    public void emptyClass(ModelClass modelClass, boolean displayPackageName, String color) {
+    public void emptyClass(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
         classDeclaration(modelClass, displayPackageName);
+        if (filepath != null && filepath.length() > 0) {
+            print(" [[");
+            print(filepath);
+            print("]]");
+        }
         if (color != null && color.length() > 0) {
             print(" #" + color);
         }
@@ -57,17 +64,14 @@ public abstract class PumlDiagramPrinter extends Printer {
         newline();
     }
     
-    public void emptyPackage(ModelPackage modelPackage) {
+    public void emptyPackage(ModelPackage modelPackage, String filepath, String color) {
         print("package ");
         print(modelPackage.fullName());
-        println(" {");
-        println("}");
-        newline();
-    }
-    
-    public void emptyPackage(ModelPackage modelPackage, String color) {
-        print("package ");
-        print(modelPackage.fullName());
+        if (filepath != null && filepath.length() > 0) {
+            print(" [[");
+            print(filepath);
+            print("]]");
+        }
         if (color != null && color.length() > 0) {
             print(" #" + color);
         }
@@ -104,22 +108,18 @@ public abstract class PumlDiagramPrinter extends Printer {
     public void classType(ModelClass modelClass) {
         switch(modelClass.type()) {
             case INTERFACE:
-                print("interface ");
+                print("interface");
                 break;
             case ENUM:
-                print("enum ");
+                print("enum");
                 break;
             default:
-                print("class ");
+                print("class");
         }
     }
 
-    public void classHiddenFieldsAndMethods(ModelClass modelClass, boolean displayPackageName) {
-        classHiddenFieldsAndMethods(modelClass, displayPackageName, null);
-    }
-
-    public void classHiddenFieldsAndMethods(ModelClass modelClass, boolean displayPackageName, String color) {
-        emptyClass(modelClass, displayPackageName, color);
+    public void classHiddenFieldsAndMethods(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
+        emptyClass(modelClass, displayPackageName, filepath, color);
         newline();
         hideFields(modelClass);
         hideMethods(modelClass);
@@ -128,6 +128,7 @@ public abstract class PumlDiagramPrinter extends Printer {
 
     // Displays the class with all details, and full method signatures (if displayed).
     public void detailedClass(ModelClass modelClass,
+            String filepath, 
             boolean displayPackageName,
             boolean showFields, 
             boolean showConstructors, 
@@ -135,6 +136,11 @@ public abstract class PumlDiagramPrinter extends Printer {
             boolean publicMethodsOnly,
             boolean includeTypeInfo) {
         classDeclaration(modelClass, displayPackageName);
+        if (filepath != null && filepath.length() > 0) {
+            print(" [[");
+            print(filepath);
+            print("]]");
+        }
         println(" {");
         if (showFields) {
             for (ModelClass.Field field: modelClass.fields()) {
@@ -339,6 +345,78 @@ public abstract class PumlDiagramPrinter extends Printer {
             }
             print("\" ");
         }
+    }
+    
+    // Filepath
+    
+    public String classFilepath(ModelClass modelClass, ModelClass classFile) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(relativePathToRoot(modelClass.packageName()));
+        sb.append(pathToPackage(classFile.packageName()));
+        sb.append(classFile.shortNameWithoutParameters());
+        sb.append(".html");
+        return sb.toString();
+    }
+    
+    public String packageFilepath(ModelClass modelClass, ModelPackage packageFile) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(relativePathToRoot(modelClass.packageName()));
+        sb.append(pathToPackage(packageFile.fullName()));
+        sb.append("pacakge-summary.html");
+        return sb.toString();
+    }
+    
+    public String classFilepath(ModelPackage modelPackage, ModelClass classFile) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(relativePathToRoot(modelPackage.fullName()));
+        sb.append(pathToPackage(classFile.packageName()));
+        sb.append(classFile.shortNameWithoutParameters());
+        sb.append(".html");
+        return sb.toString();
+    }
+    
+    public String packageFilepath(ModelPackage modelPackage, ModelPackage packageFile) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(relativePathToRoot(modelPackage.fullName()));
+        sb.append(pathToPackage(packageFile.fullName()));
+        sb.append("package-summary.html");
+        return sb.toString();
+    }
+
+    public String classFilepath(ModelClass classFile) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(pathToPackage(classFile.packageName()));
+        sb.append(classFile.shortNameWithoutParameters());
+        sb.append(".html");
+        return sb.toString();
+    }
+    
+    public String packageFilepath(ModelPackage packageFile) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(pathToPackage(packageFile.fullName()));
+        sb.append("package-summary.html");
+        return sb.toString();
+    }
+
+    public String relativePathToRoot(String packageName) {
+        StringBuilder sb = new StringBuilder();
+        String[] parts = packageName.split("\\.");
+        if (parts.length > 0) {
+            for(int i=0; i<parts.length; i++) {
+                sb.append("../");
+            }
+        }
+        return sb.toString();
+    }
+    
+    public String pathToPackage(String packageName) {
+        StringBuilder sb = new StringBuilder();
+        String[] parts = packageName.split("\\.");
+        for (int i=0; i<parts.length; i++) {
+            sb.append(parts[i]);
+            sb.append("/");
+        }
+        return sb.toString();
     }
 
     private final Model _model;

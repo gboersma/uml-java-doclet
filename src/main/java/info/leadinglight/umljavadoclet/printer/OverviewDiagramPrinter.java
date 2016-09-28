@@ -19,9 +19,13 @@ public class OverviewDiagramPrinter extends PumlDiagramPrinter {
         // Just show the classes within all of the packages in the model.
         orthogonalLinesOption();
         for (ModelPackage modelPackage: getModel().packages()) {
-            emptyPackage(modelPackage);
+            emptyPackage(modelPackage, packageFilepath(modelPackage), null);
             for (ModelClass modelClass: modelPackage.classes()) {
-                emptyClass(modelClass, false);
+                String filepath = null;
+                if (modelClass.modelPackage() != null) {
+                    filepath = classFilepath(modelClass);
+                }
+                emptyClass(modelClass, false, filepath, null);
             }
         }
         end();

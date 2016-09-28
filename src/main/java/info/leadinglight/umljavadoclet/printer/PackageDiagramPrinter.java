@@ -22,9 +22,11 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
         // Would love to show relationships between packages, but it is just awful.
         //noPackagesOption();
         orthogonalLinesOption();
-        emptyPackage(_modelPackage);
+        String filepath = packageFilepath(_modelPackage, _modelPackage);
+        emptyPackage(_modelPackage, filepath, null);
         for (ModelClass modelClass: _modelPackage.classes()) {
-            emptyClass(modelClass, false);
+            filepath = classFilepath(_modelPackage, modelClass);
+            emptyClass(modelClass, false, filepath, null);
         }
         addRelationships();
         end();
@@ -32,7 +34,6 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     
     public void addRelationships() {
         for (ModelClass modelClass: _modelPackage.classes()) {
-            emptyClass(modelClass, false);
             // Only draw the relationships between the classes in the package.
             for (ModelRel rel: modelClass.relationships()) {
                 if (rel.source() == modelClass && rel.destination().modelPackage() == _modelPackage) {
@@ -43,5 +44,4 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     }
     
     private final ModelPackage _modelPackage;
-    private final List<ModelPackage> _packages = new ArrayList<>();
 }
