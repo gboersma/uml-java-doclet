@@ -54,6 +54,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         if (filepath != null && filepath.length() > 0) {
             print(" [[");
             print(filepath);
+            print("{" + modelClass.fullNameWithoutParameters() + "}");
             print("]]");
         }
         if (color != null && color.length() > 0) {
@@ -70,6 +71,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         if (filepath != null && filepath.length() > 0) {
             print(" [[");
             print(filepath);
+            print("{" + modelPackage.fullName() + "}");
             print("]]");
         }
         if (color != null && color.length() > 0) {
@@ -139,6 +141,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         if (filepath != null && filepath.length() > 0) {
             print(" [[");
             print(filepath);
+            print("{" + modelClass.fullNameWithoutParameters() + "}");
             print("]]");
         }
         println(" {");
