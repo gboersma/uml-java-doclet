@@ -98,7 +98,7 @@ public class ModelClass {
     }
     
     public String fullNameWithoutParameters() {
-        return _type.qualifiedTypeName();
+        return fullNameWithoutParameters(_type);
     }
     
     public String shortName() {
@@ -106,9 +106,57 @@ public class ModelClass {
     }
     
     public String shortNameWithoutParameters() {
-        return _type.simpleTypeName();
+        return shortNameWithoutParameters(_type);
     }
     
+    public String packageName() {
+        return _classDoc.containingPackage().name();
+    }
+    
+    public static String fullName(Type type) {
+        String fullName = fullNameWithoutParameters(type);
+        String params = buildParameterString(type);
+        if (params != null && params.length() > 0) {
+            fullName = fullName + "<" + params + ">";
+        }
+        return fullName;
+    }
+    
+    public static String fullNameWithoutParameters(Type type) {
+        String fullName = "";
+        ClassDoc classDoc = type.asClassDoc();
+        if (classDoc != null) {
+            fullName = classDoc.containingPackage().name() + "." + shortName(type);
+        } else {
+            fullName = type.qualifiedTypeName();
+        }
+        return fullName;
+    }
+
+    public static String shortName(Type type) {
+        String shortName = shortNameWithoutParameters(type);
+        String params = buildParameterString(type);
+        if (params != null && params.length() > 0) {
+            shortName = shortName + "<" + params + ">";
+        }
+        return shortName;
+    }
+    
+    public static String shortNameWithoutParameters(Type type) {
+        ClassDoc classDoc = type.asClassDoc();
+        if (classDoc != null) {
+            // If this is an inner class, put the name of the enclosing class
+            // as the first part of this class' short name.
+            if (classDoc.containingClass() != null) {
+                return classDoc.containingClass().simpleTypeName() + "." + type.simpleTypeName();
+            } else {
+                return classDoc.simpleTypeName();
+            }
+        } else {
+            return type.simpleTypeName();
+        }
+    }
+
     public ClassType type() {
         if (_classDoc.isInterface()) {
             return ClassType.INTERFACE;
@@ -139,10 +187,6 @@ public class ModelClass {
         return _type.asParameterizedType() != null;
     }
     
-    public boolean isCollectionClass() {
-        return _type.qualifiedTypeName().equals("java.util.List") || _type.qualifiedTypeName().equals("java.util.Map");
-    }
-    
     public List<String> parameters() {
         return buildParameters(_type);
     }
@@ -151,8 +195,8 @@ public class ModelClass {
         return _params;
     }
     
-    public String packageName() {
-        return _classDoc.containingPackage().name();
+    public boolean isCollectionClass() {
+        return _type.qualifiedTypeName().equals("java.util.List") || _type.qualifiedTypeName().equals("java.util.Map");
     }
     
     public ModelPackage modelPackage() {
@@ -236,24 +280,6 @@ public class ModelClass {
             methods.add(method);
         }
         return methods;
-    }
-    
-    public static String fullName(Type type) {
-        String params = buildParameterString(type);
-        if (params.length() > 0) {
-            return type.qualifiedTypeName() + "<" + params + ">";
-        } else {
-            return type.qualifiedTypeName();
-        }
-    }
-    
-    public static String shortName(Type type) {
-        String params = buildParameterString(type);
-        if (params.length() > 0) {
-            return type.simpleTypeName() + "<" + params + ">";
-        } else {
-            return type.simpleTypeName();
-        }
     }
     
     // Update Model

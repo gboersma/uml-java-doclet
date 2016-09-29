@@ -25,7 +25,7 @@ public class OverviewDiagramPrinter extends PumlDiagramPrinter {
                 if (modelClass.modelPackage() != null) {
                     filepath = classFilepath(modelClass);
                 }
-                emptyClass(modelClass, false, filepath, null);
+                classHiddenFieldsAndMethods(modelClass, false, filepath, null);
             }
         }
         end();

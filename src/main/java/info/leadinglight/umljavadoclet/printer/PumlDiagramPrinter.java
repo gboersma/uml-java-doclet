@@ -50,39 +50,6 @@ public abstract class PumlDiagramPrinter extends Printer {
         println("@enduml");
     }
     
-    public void emptyClass(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
-        classDeclaration(modelClass, displayPackageName);
-        if (filepath != null && filepath.length() > 0) {
-            print(" [[");
-            print(filepath);
-            print("{" + modelClass.fullNameWithoutParameters() + "}");
-            print("]]");
-        }
-        if (color != null && color.length() > 0) {
-            print(" #" + color);
-        }
-        println( " {");
-        println("}");
-        newline();
-    }
-    
-    public void emptyPackage(ModelPackage modelPackage, String filepath, String color) {
-        print("package ");
-        print(modelPackage.fullName());
-        if (filepath != null && filepath.length() > 0) {
-            print(" [[");
-            print(filepath);
-            print("{" + modelPackage.fullName() + "}");
-            print("]]");
-        }
-        if (color != null && color.length() > 0) {
-            print(" #" + color);
-        }
-        println(" {");
-        println("}");
-        newline();
-    }
-    
     public void classDeclaration(ModelClass modelClass, boolean displayPackageName) {
         classType(modelClass);
         print(" \"");
@@ -134,6 +101,39 @@ public abstract class PumlDiagramPrinter extends Printer {
         }
     }
 
+    public void emptyPackage(ModelPackage modelPackage, String filepath, String color) {
+        print("package ");
+        print(modelPackage.fullName());
+        if (filepath != null && filepath.length() > 0) {
+            print(" [[");
+            print(filepath);
+            print("{" + modelPackage.fullName() + "}");
+            print("]]");
+        }
+        if (color != null && color.length() > 0) {
+            print(" #" + color);
+        }
+        println(" {");
+        println("}");
+        newline();
+    }
+    
+    public void emptyClass(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
+        classDeclaration(modelClass, displayPackageName);
+        if (filepath != null && filepath.length() > 0) {
+            print(" [[");
+            print(filepath);
+            print("{" + modelClass.fullNameWithoutParameters() + "}");
+            print("]]");
+        }
+        if (color != null && color.length() > 0) {
+            print(" #" + color);
+        }
+        println( " {");
+        println("}");
+        newline();
+    }
+    
     public void classHiddenFieldsAndMethods(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
         emptyClass(modelClass, displayPackageName, filepath, color);
         newline();
