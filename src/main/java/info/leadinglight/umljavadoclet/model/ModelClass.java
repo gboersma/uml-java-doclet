@@ -1,5 +1,6 @@
 package info.leadinglight.umljavadoclet.model;
 
+import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.FieldDoc;
@@ -116,6 +117,14 @@ public class ModelClass {
         } else {
             return ClassType.CLASS;
         }
+    }
+    
+    public List<String> annotations() {
+        List<String> annotations = new ArrayList<>();
+        for (AnnotationDesc annotation: _classDoc.annotations()) {
+            annotations.add(annotation.annotationType().simpleTypeName());
+        }
+        return annotations;
     }
     
     public boolean isInternal() {

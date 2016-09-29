@@ -4,6 +4,7 @@ import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
 import info.leadinglight.umljavadoclet.model.ModelRel;
+import java.util.List;
 
 /**
  * Generate PlantUML diagrams from the model.
@@ -94,6 +95,19 @@ public abstract class PumlDiagramPrinter extends Printer {
         }
         print("\" as ");
         className(modelClass);
+        print(" ");
+        annotations(modelClass);
+    }
+    
+    public void annotations(ModelClass modelClass) {
+        List<String> annotations = modelClass.annotations();
+        if (annotations.size() > 0) {
+            for (String annotation: modelClass.annotations()) {
+                print("<<");
+                print(annotation);
+                print(">>");
+            }
+        }
     }
     
     public void className(ModelClass modelClass) {
