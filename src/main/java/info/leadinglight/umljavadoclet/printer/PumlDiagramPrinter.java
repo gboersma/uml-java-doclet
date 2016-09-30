@@ -50,6 +50,78 @@ public abstract class PumlDiagramPrinter extends Printer {
         println("@enduml");
     }
     
+    public void packageDefinition(ModelPackage modelPackage, String filepath, String color) {
+        print("package ");
+        print(modelPackage.fullName());
+        if (filepath != null && filepath.length() > 0) {
+            print(" [[");
+            print(filepath);
+            print("{" + modelPackage.fullName() + "}");
+            print("]]");
+        }
+        if (color != null && color.length() > 0) {
+            print(" #" + color);
+        }
+        println(" {");
+        println("}");
+        newline();
+    }
+    
+    // Displays the class with all details, and full method signatures (if displayed).
+    public void classDefinition(ModelClass modelClass,
+            boolean displayPackageName,
+            String filepath, 
+            String color,
+            boolean showFields, 
+            boolean showConstructors, 
+            boolean showMethods,
+            boolean publicMethodsOnly,
+            boolean includeTypeInfo) {
+        classDeclaration(modelClass, displayPackageName);
+        if (filepath != null && filepath.length() > 0) {
+            print(" [[");
+            print(filepath);
+            print("{" + modelClass.fullNameWithoutParameters() + "}");
+            print("]]");
+        }
+        if (color != null && color.length() > 0) {
+            print(" #" + color);
+        }
+        println(" {");
+        if (showFields) {
+            for (ModelClass.Field field: modelClass.fields()) {
+                field(field, includeTypeInfo);
+            }
+        }
+        if (showConstructors) {
+            for (ModelClass.Constructor cons: modelClass.constructors()) {
+                if (publicMethodsOnly == false || publicMethodsOnly == true && cons.visibility == ModelClass.Visibility.PUBLIC) {
+                    constructor(cons, includeTypeInfo);
+                }
+            }
+        }
+        if (showMethods) {
+            for (ModelClass.Method method: modelClass.methods()) {
+                if (publicMethodsOnly == false || publicMethodsOnly == true && method.visibility == ModelClass.Visibility.PUBLIC) {
+                    method(method, includeTypeInfo);
+                }
+            }
+        }
+        println("}");
+        newline();
+        if (!showFields) {
+            hideFields(modelClass);
+        }
+        if (!showConstructors && !showMethods) {
+            hideMethods(modelClass);
+        }
+        newline();
+    }
+    
+    public void classDefinitionNoDetail(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
+        classDefinition(modelClass, displayPackageName, filepath, color, false, false, false, false, false);
+    }
+    
     public void classDeclaration(ModelClass modelClass, boolean displayPackageName) {
         classType(modelClass);
         print(" \"");
@@ -80,7 +152,7 @@ public abstract class PumlDiagramPrinter extends Printer {
     public void className(ModelClass modelClass) {
         // Parameterized classes have < and , in the name, which confuses PlantUML.
         // Strip out these characters from the name. 
-        // The name will remain unqiue across the model, and this 
+        // The name will remain unique across the model, and this 
         // does not affect the way the class is displayed.
         print(modelClass.fullNameWithoutParameters());
         for (String param: modelClass.parameters()) {
@@ -101,87 +173,6 @@ public abstract class PumlDiagramPrinter extends Printer {
         }
     }
 
-    public void emptyPackage(ModelPackage modelPackage, String filepath, String color) {
-        print("package ");
-        print(modelPackage.fullName());
-        if (filepath != null && filepath.length() > 0) {
-            print(" [[");
-            print(filepath);
-            print("{" + modelPackage.fullName() + "}");
-            print("]]");
-        }
-        if (color != null && color.length() > 0) {
-            print(" #" + color);
-        }
-        println(" {");
-        println("}");
-        newline();
-    }
-    
-    public void emptyClass(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
-        classDeclaration(modelClass, displayPackageName);
-        if (filepath != null && filepath.length() > 0) {
-            print(" [[");
-            print(filepath);
-            print("{" + modelClass.fullNameWithoutParameters() + "}");
-            print("]]");
-        }
-        if (color != null && color.length() > 0) {
-            print(" #" + color);
-        }
-        println( " {");
-        println("}");
-        newline();
-    }
-    
-    public void classHiddenFieldsAndMethods(ModelClass modelClass, boolean displayPackageName, String filepath, String color) {
-        emptyClass(modelClass, displayPackageName, filepath, color);
-        newline();
-        hideFields(modelClass);
-        hideMethods(modelClass);
-        newline();
-    }
-
-    // Displays the class with all details, and full method signatures (if displayed).
-    public void detailedClass(ModelClass modelClass,
-            String filepath, 
-            boolean displayPackageName,
-            boolean showFields, 
-            boolean showConstructors, 
-            boolean showMethods,
-            boolean publicMethodsOnly,
-            boolean includeTypeInfo) {
-        classDeclaration(modelClass, displayPackageName);
-        if (filepath != null && filepath.length() > 0) {
-            print(" [[");
-            print(filepath);
-            print("{" + modelClass.fullNameWithoutParameters() + "}");
-            print("]]");
-        }
-        println(" {");
-        if (showFields) {
-            for (ModelClass.Field field: modelClass.fields()) {
-                field(field, includeTypeInfo);
-            }
-        }
-        if (showConstructors) {
-            for (ModelClass.Constructor cons: modelClass.constructors()) {
-                if (publicMethodsOnly == false || publicMethodsOnly == true && cons.visibility == ModelClass.Visibility.PUBLIC) {
-                    constructor(cons, includeTypeInfo);
-                }
-            }
-        }
-        if (showMethods) {
-            for (ModelClass.Method method: modelClass.methods()) {
-                if (publicMethodsOnly == false || publicMethodsOnly == true && method.visibility == ModelClass.Visibility.PUBLIC) {
-                    method(method, includeTypeInfo);
-                }
-            }
-        }
-        println("}");
-        newline();
-    }
-    
     public void field(ModelClass.Field field, boolean includeTypeInfo) {
         if (field.isStatic) {
             printStatic();

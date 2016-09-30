@@ -23,10 +23,10 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
         //noPackagesOption();
         orthogonalLinesOption();
         String filepath = packageFilepath(_modelPackage, _modelPackage);
-        emptyPackage(_modelPackage, filepath, null);
+        packageDefinition(_modelPackage, filepath, null);
         for (ModelClass modelClass: _modelPackage.classes()) {
             filepath = classFilepath(_modelPackage, modelClass);
-            emptyClass(modelClass, false, filepath, null);
+            classDefinitionNoDetail(modelClass, false, filepath, null);
         }
         addRelationships();
         end();

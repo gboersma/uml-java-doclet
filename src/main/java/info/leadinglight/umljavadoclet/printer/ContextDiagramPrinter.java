@@ -30,7 +30,7 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
     private void addContextClass(ModelClass modelClass) {
         // TODO Show in different color.
         String filepath = classFilepath(modelClass, modelClass);
-        detailedClass(modelClass, filepath, true, true, true, true, false, true);
+        classDefinition(modelClass, true, filepath, null, true, true, true, false, true);
         _classes.add(modelClass);
     }
     
@@ -45,11 +45,11 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
                     filepath = classFilepath(_contextClass, otherClass);
                 }
                 if (otherClass.modelPackage() == _contextClass.modelPackage()) {
-                    classHiddenFieldsAndMethods(otherClass, true, filepath, null);
+                    classDefinitionNoDetail(otherClass, true, filepath, null);
                 } else if (otherClass.isInternal()) {
-                    classHiddenFieldsAndMethods(otherClass, true, filepath, "white");
+                    classDefinitionNoDetail(otherClass, true, filepath, "white");
                 } else {
-                    classHiddenFieldsAndMethods(otherClass, true, filepath, "lightgrey");
+                    classDefinitionNoDetail(otherClass, true, filepath, "lightgrey");
                 }
                 _classes.add(otherClass);
             }
