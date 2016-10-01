@@ -126,7 +126,7 @@ public class ModelClass {
         String fullName = "";
         ClassDoc classDoc = type.asClassDoc();
         if (classDoc != null) {
-            fullName = classDoc.containingPackage().name() + "." + shortName(type);
+            fullName = classDoc.containingPackage().name() + "." + shortNameWithoutParameters(type);
         } else {
             fullName = type.qualifiedTypeName();
         }
@@ -147,7 +147,7 @@ public class ModelClass {
         if (classDoc != null) {
             // If this is an inner class, put the name of the enclosing class
             // as the first part of this class' short name.
-            if (classDoc.containingClass() != null) {
+            if (isInnerClass(classDoc)) {
                 return classDoc.containingClass().simpleTypeName() + "." + type.simpleTypeName();
             } else {
                 return classDoc.simpleTypeName();
@@ -185,6 +185,14 @@ public class ModelClass {
     
     public boolean isParameterized() {
         return _type.asParameterizedType() != null;
+    }
+    
+    public boolean isInnerClass() {
+        return isInnerClass(_classDoc);
+    }
+    
+    public static boolean isInnerClass(ClassDoc classDoc) {
+        return classDoc.containingClass() != null;
     }
     
     public List<String> parameters() {
@@ -429,7 +437,7 @@ public class ModelClass {
         ParameterizedType paramType = type.asParameterizedType();
         if (paramType != null) {
             for (Type param : paramType.typeArguments()) {
-                String name = ModelClass.fullName(param);
+                String name = ModelClass.shortName(param);
                 params.add(name);
             }
         }
