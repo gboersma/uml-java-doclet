@@ -33,7 +33,7 @@
                         <version>1.0-SNAPSHOT</version>                                               
                     </docletArtifact>
                     <additionalparam></additionalparam>
-                    <useStandardDocletOptions>false</useStandardDocletOptions>
+                    <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>
             </plugin>                                                                        
         </plugins>

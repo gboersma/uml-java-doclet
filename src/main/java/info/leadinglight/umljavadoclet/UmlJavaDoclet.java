@@ -25,7 +25,7 @@ import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.version.Version;
 
-public class UmlJavaDoclet {
+public class UmlJavaDoclet extends Standard {
     public static boolean start(RootDoc root) {
         // Generate Javadocs using standard doclet.
         System.out.println("Generating Javadocs...");
