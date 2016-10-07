@@ -31,38 +31,44 @@ public class ModelClass {
         INTERFACE, ENUM, CLASS
     }
     
-    public static class Field {
+    public static class VisibilityItem {
+        public VisibilityItem(Visibility visibility) {
+            this.visibility = visibility;
+        }
+        
+        public Visibility visibility;
+    }
+    
+    public static class Field extends VisibilityItem {
         public Field(String name, String type, Visibility visibility, boolean isStatic) {
+            super(visibility);
             this.name = name;
             this.type = type;
-            this.visibility = visibility;
             this.isStatic = isStatic;
         }
         
         public String name;
         public String type;
-        public Visibility visibility;
         public boolean isStatic;
     }
     
-    public static class Constructor {
+    public static class Constructor extends VisibilityItem {
         public Constructor(String name, List<MethodParameter> parameters, Visibility visibility) {
+            super(visibility);
             this.name = name;
             this.parameters = parameters;
-            this.visibility = visibility;
         }
         
         public String name;
         public List<MethodParameter> parameters;
-        public Visibility visibility;
     }
     
-    public static class Method {
+    public static class Method extends VisibilityItem {
         public Method(String name, List<MethodParameter> parameters, String returnType, Visibility visibility, boolean isAbstract, boolean isStatic) {
+            super(visibility);
             this.name = name;
             this.parameters = parameters;
             this.returnType = returnType;
-            this.visibility = visibility;
             this.isAbstract = isAbstract;
             this.isStatic = isStatic;
         }
@@ -70,7 +76,6 @@ public class ModelClass {
         public String name;
         public List<MethodParameter> parameters;
         public String returnType;
-        public Visibility visibility;
         public boolean isAbstract;
         public boolean isStatic;
     }
@@ -89,6 +94,7 @@ public class ModelClass {
         mapParameters();
         if (isInternal()) {
             // Only map internal classes.
+            mapInternals();
             mapRelationships();
         }
     }
@@ -251,43 +257,15 @@ public class ModelClass {
     }
     
     public List<Field> fields() {
-        List<Field> fields = new ArrayList<>();
-        for (FieldDoc fieldDoc: _classDoc.fields(false)) {
-            Field mappedField = new Field(fieldDoc.name(), shortName(fieldDoc.type()), mapVisibility(fieldDoc), fieldDoc.isStatic());
-            fields.add(mappedField);
-        }
-        return fields;
+        return _fields;
     }
     
     public List<Constructor> constructors() {
-        List<Constructor> constructors = new ArrayList<>();
-        for (ConstructorDoc consDoc: _classDoc.constructors(false)) {
-            List<MethodParameter> params = new ArrayList<>();
-            for (Parameter param: consDoc.parameters()) {
-                params.add(new MethodParameter(shortName(param.type()), param.name()));
-            }
-            Constructor constructor = new Constructor(consDoc.name(), params, mapVisibility(consDoc));
-            constructors.add(constructor);
-        }
-        return constructors;
+        return _constructors;
     }
     
     public List<Method> methods() {
-        List<Method> methods = new ArrayList<>();
-        for (MethodDoc methodDoc: _classDoc.methods(false)) {
-            List<MethodParameter> params = new ArrayList<>();
-            for (Parameter param: methodDoc.parameters()) {
-                params.add(new MethodParameter(shortName(param.type()), param.name()));
-            }
-            Method method = new Method(methodDoc.name(), 
-                    params, 
-                    shortName(methodDoc.returnType()), 
-                    mapVisibility(methodDoc),
-                    methodDoc.isAbstract(),
-                    methodDoc.isStatic());
-            methods.add(method);
-        }
-        return methods;
+        return _methods;
     }
     
     // Update Model
@@ -298,12 +276,19 @@ public class ModelClass {
     
     // Mapping
     
+    private void mapInternals() {
+        mapFields();
+        mapConstructors();
+        mapMethods();
+    }
+    
     private void mapRelationships() {
         // Map field associations first, since that will establish the has relationships, which are stronger
         // than any of the dependency relationships that may follow.
         mapFieldAssociations();
         mapSuperclass();
         mapInterfaces();
+        mapConstructorDependencies();
         mapMethodDependencies();
     }
     
@@ -370,6 +355,17 @@ public class ModelClass {
         }
     }
     
+    private void mapConstructorDependencies() {
+        for (ConstructorDoc constructorDoc: _classDoc.constructors()) {
+            if (constructorDoc.isPublic()) {
+                for (Parameter param: constructorDoc.parameters()) {
+                    Type type = param.type();
+                    mapTypeDependency(type);
+                }
+            }
+        }
+    }
+
     private void mapMethodDependencies() {
         for (MethodDoc methodDoc: _classDoc.methods()) {
             if (methodDoc.isPublic()) {
@@ -381,6 +377,46 @@ public class ModelClass {
                 mapTypeDependency(returnType);
             }
         }
+    }
+    
+    private void mapFields() {
+        List<Field> fields = new ArrayList<>();
+        for (FieldDoc fieldDoc: _classDoc.fields(false)) {
+            Field mappedField = new Field(fieldDoc.name(), shortName(fieldDoc.type()), mapVisibility(fieldDoc), fieldDoc.isStatic());
+            fields.add(mappedField);
+        }
+        orderVisibility(fields, _fields);
+    }
+    
+    private void mapConstructors() {
+        List<Constructor> constructors = new ArrayList<>();
+        for (ConstructorDoc consDoc: _classDoc.constructors(false)) {
+            List<MethodParameter> params = new ArrayList<>();
+            for (Parameter param: consDoc.parameters()) {
+                params.add(new MethodParameter(shortName(param.type()), param.name()));
+            }
+            Constructor constructor = new Constructor(consDoc.name(), params, mapVisibility(consDoc));
+            constructors.add(constructor);
+        }
+        orderVisibility(constructors, _constructors);
+    }
+    
+    private void mapMethods() {
+        List<Method> methods = new ArrayList<>();
+        for (MethodDoc methodDoc: _classDoc.methods(false)) {
+            List<MethodParameter> params = new ArrayList<>();
+            for (Parameter param: methodDoc.parameters()) {
+                params.add(new MethodParameter(shortName(param.type()), param.name()));
+            }
+            Method method = new Method(methodDoc.name(), 
+                    params, 
+                    shortName(methodDoc.returnType()), 
+                    mapVisibility(methodDoc),
+                    methodDoc.isAbstract(),
+                    methodDoc.isStatic());
+            methods.add(method);
+        }
+        orderVisibility(methods, _methods);
     }
     
     private void mapTypeDependency(Type type) {
@@ -432,6 +468,21 @@ public class ModelClass {
         }
     }
     
+    private void orderVisibility(List<? extends VisibilityItem> items, List<? extends VisibilityItem> filteredItems) {
+        filterVisibility(items, filteredItems, Visibility.PUBLIC);
+        filterVisibility(items, filteredItems, Visibility.PROTECTED);
+        filterVisibility(items, filteredItems, Visibility.PACKAGE_PRIVATE);
+        filterVisibility(items, filteredItems, Visibility.PRIVATE);
+    }
+    
+    private void filterVisibility(List<? extends VisibilityItem> items, List<? extends VisibilityItem> filteredItems, Visibility visibility) {
+        for (VisibilityItem item: items) {
+            if (item.visibility == visibility) {
+                ((List<VisibilityItem>)filteredItems).add(item);
+            }
+        }
+    }
+    
     private static List<String> buildParameters(Type type) {
         List<String> params = new ArrayList<>();
         ParameterizedType paramType = type.asParameterizedType();
@@ -463,5 +514,9 @@ public class ModelClass {
     private final ClassDoc _classDoc;
     private final List<ModelClass> _params = new ArrayList<>();
     private final List<ModelRel> _rels = new ArrayList<>();
+    private final List<Field> _fields = new ArrayList<>();
+    private final List<Constructor> _constructors = new ArrayList<>();
+    private final List<Method> _methods = new ArrayList<>();
+    
     private final boolean _isInternal;
 }
