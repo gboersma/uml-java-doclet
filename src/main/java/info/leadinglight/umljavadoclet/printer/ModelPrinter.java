@@ -43,6 +43,10 @@ public class ModelPrinter extends Printer {
             print (" ");
             printMultiplicity(rel.destinationCardinality());
         }
+        if (rel.destinationVisibility() != null) {
+            print(" ");
+            printVisibility(rel.destinationVisibility());
+        }
         newline();
     }
     
@@ -75,6 +79,22 @@ public class ModelPrinter extends Printer {
         }
     }
     
+    private void printVisibility(ModelRel.Visibility visibility) {
+        switch (visibility) {
+            case PUBLIC:
+                print("public");
+                return;
+            case PROTECTED:
+                print("protected");
+                return;
+            case PACKAGE:
+                print("package");
+                return;
+            case PRIVATE:
+                print("private");
+        }
+    }
+
     private void printPackages() {
         for (ModelPackage modelPackage: _model.packages()) {
             printPackage(modelPackage);
@@ -84,10 +104,10 @@ public class ModelPrinter extends Printer {
     private void printPackage(ModelPackage modelPackage) {
         println("Package: " + modelPackage.fullName());
         for (ModelPackage dependency: modelPackage.dependencies()) {
-            print(1, "depends on: " + dependency.fullName());
+            println(1, "depends on: " + dependency.fullName());
         }
         for (ModelPackage dependent: modelPackage.dependents()) {
-            print(1, "is dependency for: " + dependent.fullName());
+            println(1, "is dependency for: " + dependent.fullName());
         }
         for (ModelClass modelClass: modelPackage.classes()) {
             indent(1);

@@ -13,6 +13,11 @@ public abstract class Printer {
         return dumpToFile(file, _sb.toString());
     }
     
+    @Override
+    public String toString() {
+        return _sb.toString();
+    }
+    
     public StringBuilder stringBuilder() {
         return _sb;
     }

@@ -10,6 +10,7 @@ import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
 import info.leadinglight.umljavadoclet.printer.DiagramOptions;
+import info.leadinglight.umljavadoclet.printer.ModelPrinter;
 import info.leadinglight.umljavadoclet.printer.OverviewDiagramPrinter;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -42,6 +43,13 @@ public class UmlJavaDoclet extends Standard {
         // Extract the Model.
         Model model = new Model(root);
         model.map();
+        
+        // Print the model.
+//        ModelPrinter printer = new ModelPrinter(model);
+//        printer.generate();
+//        System.out.println("=======================================================================================");
+//        System.out.println(printer.toString());
+//        System.out.println("=======================================================================================");
         
         // Generate the diagrams.
         System.out.println("Using PlantUML version " + Version.versionString());

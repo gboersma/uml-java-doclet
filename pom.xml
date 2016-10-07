@@ -33,7 +33,8 @@
                         <version>1.0-SNAPSHOT</version>                                               
                     </docletArtifact>
                     <!-- -linetype polyline / spline / ortho (default) -->
-                    <additionalparam></additionalparam>
+                    <!-- -dependencies public (default) / protected / package / private -->
+                    <additionalparam>-dependencies</additionalparam>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>
             </plugin>                                                                        

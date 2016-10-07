@@ -17,6 +17,16 @@ public class ModelRel {
         _dest = dest;
         _srcRole = null;
         _srcCardinality = null;
+        _srcVisibility = null;
+    }
+
+    public ModelRel(Kind kind, ModelClass src, ModelClass dest, Visibility srcVisibility) {
+        _kind = kind;
+        _src = src;
+        _dest = dest;
+        _srcRole = null;
+        _srcCardinality = null;
+        _srcVisibility = srcVisibility;
     }
 
     public ModelRel(Kind kind, ModelClass src, ModelClass dest, String srcRole) {
@@ -25,6 +35,7 @@ public class ModelRel {
         _dest = dest;
         _srcRole = srcRole;
         _srcCardinality = null;
+        _srcVisibility = null;
     }
 
     public ModelRel(Kind kind, ModelClass src, ModelClass dest, String srcRole, Multiplicity srcCardinality) {
@@ -33,6 +44,7 @@ public class ModelRel {
         _dest = dest;
         _srcRole = srcRole;
         _srcCardinality = srcCardinality;
+        _srcVisibility = null;
     }
     
     public Kind kind() {
@@ -43,6 +55,10 @@ public class ModelRel {
         return _src;
     }
     
+    public ModelClass destination() {
+        return _dest;
+    }
+
     public String destinationRole() {
         return _srcRole;
     }
@@ -51,8 +67,12 @@ public class ModelRel {
         return _srcCardinality;
     }
 
-    public ModelClass destination() {
-        return _dest;
+    public Visibility destinationVisibility() {
+        return _srcVisibility;
+    }
+    
+    public void changeVisibility(Visibility visibility) {
+        _srcVisibility = visibility;
     }
     
     public enum Kind {
@@ -63,9 +83,14 @@ public class ModelRel {
         ZERO_OR_ONE, ONE, MANY
     }
     
+    public enum Visibility {
+        PUBLIC, PROTECTED, PACKAGE, PRIVATE
+    }
+
     private final Kind _kind;
     private final ModelClass _src;
     private final ModelClass _dest;
     private final String _srcRole;
     private final Multiplicity _srcCardinality;
+    private Visibility _srcVisibility;
 }

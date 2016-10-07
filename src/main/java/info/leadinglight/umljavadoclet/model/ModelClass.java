@@ -256,6 +256,14 @@ public class ModelClass {
         return relationshipsFilter().source(this).destination(dest).first() != null;
     }
     
+    public ModelRel dependencyWith(ModelClass dest) {
+        return relationshipsFilter().source(this).destination(dest).kind(ModelRel.Kind.DEPENDENCY).first();
+    }
+
+    public boolean hasDependencyWith(ModelClass dest) {
+        return dependencyWith(dest) != null;
+    }
+    
     public List<Field> fields() {
         return _fields;
     }
@@ -356,25 +364,82 @@ public class ModelClass {
     }
     
     private void mapConstructorDependencies() {
-        for (ConstructorDoc constructorDoc: _classDoc.constructors()) {
-            if (constructorDoc.isPublic()) {
-                for (Parameter param: constructorDoc.parameters()) {
-                    Type type = param.type();
-                    mapTypeDependency(type);
-                }
+        for (ConstructorDoc constructorDoc: _classDoc.constructors(false)) {
+            for (Parameter param: constructorDoc.parameters()) {
+                Type type = param.type();
+                mapTypeDependency(type, constructorDoc.isPublic(), constructorDoc.isProtected(), constructorDoc.isPackagePrivate(), constructorDoc.isPrivate());
             }
         }
     }
 
     private void mapMethodDependencies() {
-        for (MethodDoc methodDoc: _classDoc.methods()) {
-            if (methodDoc.isPublic()) {
-                for (Parameter param: methodDoc.parameters()) {
-                    Type type = param.type();
-                    mapTypeDependency(type);
+        for (MethodDoc methodDoc: _classDoc.methods(false)) {
+            for (Parameter param: methodDoc.parameters()) {
+                Type type = param.type();
+                mapTypeDependency(type, methodDoc.isPublic(), methodDoc.isProtected(), methodDoc.isPackagePrivate(), methodDoc.isPrivate());
+            }
+            Type returnType = methodDoc.returnType();
+            mapTypeDependency(returnType, methodDoc.isPublic(), methodDoc.isProtected(), methodDoc.isPackagePrivate(), methodDoc.isPrivate());
+        }
+    }
+    
+    private void mapTypeDependency(Type type, boolean isPublic, boolean isProtected, boolean isPackage, boolean isPrivate) {
+        String typeName = type.qualifiedTypeName();
+        // TODO Relationships through collection types.
+        if (!type.simpleTypeName().equals("void") && !typeName.startsWith("java.lang.") && !type.isPrimitive()) {
+            ModelClass dest = _model.createClassIfNotExists(type);
+
+            ModelRel.Visibility visibility = null;
+            if (isPublic) {
+                visibility = ModelRel.Visibility.PUBLIC;
+            } else if (isProtected) {
+                visibility = ModelRel.Visibility.PROTECTED;
+            } else if (isPackage) {
+                visibility = ModelRel.Visibility.PACKAGE;
+            } else if (isPrivate) {
+                visibility = ModelRel.Visibility.PRIVATE;
+            }
+
+            // If there is already a dependency with the othe class, and it has a visibility
+            // weaker than this visibility, than replace it with this visibility.
+            if (this != dest && visibility != null) {
+                if (hasDependencyWith(dest)) {
+                    ModelRel depedencyWith = dependencyWith(dest);
+                    if (visibility == ModelRel.Visibility.PUBLIC) {
+                        depedencyWith.changeVisibility(visibility);
+                    } else if (visibility == ModelRel.Visibility.PROTECTED) {
+                        if (depedencyWith.destinationVisibility() != ModelRel.Visibility.PUBLIC) {
+                            depedencyWith.changeVisibility(visibility);
+                        }
+                    } else if (visibility == ModelRel.Visibility.PACKAGE) {
+                        if (depedencyWith.destinationVisibility() != ModelRel.Visibility.PUBLIC &&
+                                depedencyWith.destinationVisibility() != ModelRel.Visibility.PROTECTED) {
+                            depedencyWith.changeVisibility(visibility);
+                        }
+                    }
                 }
-                Type returnType = methodDoc.returnType();
-                mapTypeDependency(returnType);
+            }
+            
+            // Only add if there is no existing relationship with the class.
+            // Do not add dependency to this class.
+            if (this != dest && !hasRelationshipWith(dest)) {
+                ModelRel rel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, dest, visibility);
+                mapSourceRel(rel);
+            }
+            
+            mapParamDependencies(dest);
+        }
+    }
+    
+    private void mapParamDependencies(ModelClass modelClass) {
+        // Is the destination class a parameterized class? If so, there is a dependency on the underlying parameters.
+        if (modelClass.isParameterized()) {
+            for (ModelClass param: modelClass.parameterClasses()) {
+                // Only map the dependency if there is no existing relationship with that class.
+                if (!hasRelationshipWith(param)) {
+                    ModelRel paramRel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, param);
+                    mapSourceRel(paramRel);
+                }
             }
         }
     }
@@ -417,34 +482,6 @@ public class ModelClass {
             methods.add(method);
         }
         orderVisibility(methods, _methods);
-    }
-    
-    private void mapTypeDependency(Type type) {
-        String typeName = type.qualifiedTypeName();
-        // TODO Relationships through collection types.
-        if (!type.simpleTypeName().equals("void") && !typeName.startsWith("java.lang.") && !type.isPrimitive()) {
-            ModelClass dest = _model.createClassIfNotExists(type);
-            // Only add if there is no existing relationship with the class.
-            // Do not add dependency to this class.
-            if (this != dest && !hasRelationshipWith(dest)) {
-                ModelRel rel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, dest);
-                mapSourceRel(rel);
-            }
-            mapParamDependencies(dest);
-        }
-    }
-    
-    private void mapParamDependencies(ModelClass modelClass) {
-        // Is the destination class a parameterized class? If so, there is a dependency on the underlying parameters.
-        if (modelClass.isParameterized()) {
-            for (ModelClass param: modelClass.parameterClasses()) {
-                // Only map the dependency if there is no existing relationship with that class.
-                if (!hasRelationshipWith(param)) {
-                    ModelRel paramRel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, param);
-                    mapSourceRel(paramRel);
-                }
-            }
-        }
     }
     
     private void mapSourceRel(ModelRel rel) {

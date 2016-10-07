@@ -25,16 +25,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         // We want links to go into the same frame as the diagram for Javadocs.
         svglinktargetOption("_parent");
         // Line style option
-        lineTypeOption();
-    }
-    
-    private void lineTypeOption() {
-        if (_options.getLineType() == DiagramOptions.LineType.ORTHO) {
-            println("skinparam linetype ortho");
-        } else if (_options.getLineType() == DiagramOptions.LineType.POLYLINE) {
-            println("skinparam linetype polyline");
-        }
-        // Otherwise, splines is the default. No skinparam required.
+        printLineTypeOption();
     }
     
     public void noPackagesOption() {
@@ -271,7 +262,26 @@ public abstract class PumlDiagramPrinter extends Printer {
                 generalization(rel.source(), rel.destination());
                 break;
             case DEPENDENCY:
-                dependency(rel.source(), rel.destination());
+                // Only draw the dependency if it has visibility specified in options.
+                if (rel.destinationVisibility() != null) {
+                    if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PUBLIC &&
+                            rel.destinationVisibility() == ModelRel.Visibility.PUBLIC) {
+                        dependency(rel.source(), rel.destination());
+                    } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PROTECTED &&
+                            (rel.destinationVisibility() == ModelRel.Visibility.PUBLIC ||
+                            rel.destinationVisibility() == ModelRel.Visibility.PROTECTED)) {
+                        dependency(rel.source(), rel.destination());
+                    } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PACKAGE &&
+                            (rel.destinationVisibility() == ModelRel.Visibility.PUBLIC ||
+                            rel.destinationVisibility() == ModelRel.Visibility.PROTECTED ||
+                            rel.destinationVisibility() == ModelRel.Visibility.PACKAGE)) {
+                        dependency(rel.source(), rel.destination());
+                    } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PRIVATE) {
+                        dependency(rel.source(), rel.destination());
+                    }
+                } else {
+                    dependency(rel.source(), rel.destination());
+                }
                 break;
             case REALIZATION:
                 realization(rel.source(), rel.destination());
@@ -322,22 +332,22 @@ public abstract class PumlDiagramPrinter extends Printer {
         }
     }
     
-    public void printAbstract() {
+    private void printAbstract() {
         print("{abstract} ");
     }
     
-    public void printStatic() {
+    private void printStatic() {
         print("{static} ");
     }
 
-    public void printRel(ModelClass src, String relText, ModelClass dest) {
+    private void printRel(ModelClass src, String relText, ModelClass dest) {
         className(src);
         print (" " + relText + " ");
         className(dest);
         newline();
     }
     
-    public void printRel(ModelClass src, String srcRole, String srcCardinality, String relText, ModelClass dest, String destRole, String destCardinality) {
+    private void printRel(ModelClass src, String srcRole, String srcCardinality, String relText, ModelClass dest, String destRole, String destCardinality) {
         className(src);
         printRelLabel(srcRole, srcCardinality);
         print (" " + relText + " ");
@@ -346,7 +356,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         newline();
     }
     
-    public void printRelLabel(String role, String cardinality) {
+    private void printRelLabel(String role, String cardinality) {
         if ((role != null && role.length() > 0) || (cardinality != null && cardinality.length() > 0)) {
             print(" \"");
             if (role != null && role.length() > 0) {
@@ -357,6 +367,15 @@ public abstract class PumlDiagramPrinter extends Printer {
             }
             print("\" ");
         }
+    }
+    
+    private void printLineTypeOption() {
+        if (_options.getLineType() == DiagramOptions.LineType.ORTHO) {
+            println("skinparam linetype ortho");
+        } else if (_options.getLineType() == DiagramOptions.LineType.POLYLINE) {
+            println("skinparam linetype polyline");
+        }
+        // Otherwise, splines is the default. No skinparam required.
     }
     
     // Filepath
@@ -430,7 +449,7 @@ public abstract class PumlDiagramPrinter extends Printer {
         }
         return sb.toString();
     }
-
+    
     private final Model _model;
     private final DiagramOptions _options;
 }
