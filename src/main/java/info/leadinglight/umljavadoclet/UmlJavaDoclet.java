@@ -1,5 +1,6 @@
 package info.leadinglight.umljavadoclet;
 
+import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import com.sun.tools.doclets.standard.Standard;
@@ -8,6 +9,7 @@ import info.leadinglight.umljavadoclet.printer.PackageDiagramPrinter;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
+import info.leadinglight.umljavadoclet.printer.DiagramOptions;
 import info.leadinglight.umljavadoclet.printer.OverviewDiagramPrinter;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -19,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
@@ -31,6 +35,10 @@ public class UmlJavaDoclet extends Standard {
         System.out.println("Generating Javadocs...");
         generateJavadoc(root);
         
+        // Set the options.
+        DiagramOptions options = new DiagramOptions();
+        options.set(root.options());
+        
         // Extract the Model.
         Model model = new Model(root);
         model.map();
@@ -38,13 +46,9 @@ public class UmlJavaDoclet extends Standard {
         // Generate the diagrams.
         System.out.println("Using PlantUML version " + Version.versionString());
         System.out.println("Generating diagrams...");
-        generateContextDiagrams(root, model);
-        generatePackageDiagrams(root, model);
-        generateOverviewDiagram(root, model);
-        
-        // Update the Javadocs with the generated diagrams / maps.
-        System.out.println("Updating Javadocs...");
-        updateJavadocs(root, model);
+        generateContextDiagrams(model, options);
+        generatePackageDiagrams(model, options);
+        generateOverviewDiagram(model, options);
         
         return true;
     }
@@ -59,20 +63,45 @@ public class UmlJavaDoclet extends Standard {
         return Standard.languageVersion();
     }
     
+    public static int optionLength(String option) {
+        if (DiagramOptions.isValidOption(option)) {
+            return DiagramOptions.getOptionLength(option);
+        } else {
+            return Standard.optionLength(option);
+        }
+    }
+    
+    public static boolean validOptions(String[][] options, DocErrorReporter reporter) {
+        // Iterate through all of the options, checking to see if an option is valid.
+        List<String[]> standardOptions = new ArrayList<>();
+        for (String[] option: options) {
+            String name = option[0];
+            if (DiagramOptions.isValidOption(name)) {
+                String error = DiagramOptions.checkOption(option);
+                if (error != null && error.length() > 0) {
+                    reporter.printError(error);
+                }
+            } else {
+                standardOptions.add(option);
+            }
+        }
+        return Standard.validOptions(standardOptions.toArray(new String[][]{}), reporter);
+    }
+    
     private static void generateJavadoc(RootDoc rootDoc) {
         Standard.start(rootDoc);
     }
     
-    private static void generateContextDiagrams(RootDoc rootDoc, Model model) {
+    private static void generateContextDiagrams(Model model, DiagramOptions options) {
         for (ModelClass modelClass: model.classes()) {
             if (modelClass.isInternal()) {
-                generateContextDiagram(rootDoc, model, modelClass);
+                generateContextDiagram(model, modelClass, options);
             }
         }
     }
     
-    private static void generateContextDiagram(RootDoc rootDoc, Model model, ModelClass modelClass) {
-        ContextDiagramPrinter generator = new ContextDiagramPrinter(model, modelClass);
+    private static void generateContextDiagram(Model model, ModelClass modelClass, DiagramOptions options) {
+        ContextDiagramPrinter generator = new ContextDiagramPrinter(model, modelClass, options);
         generator.generate();
         File file = createFile(modelClass.packageName(), modelClass.shortNameWithoutParameters(), "puml");
         boolean success = generator.toFile(file);
@@ -90,14 +119,14 @@ public class UmlJavaDoclet extends Standard {
         }
     }
     
-    private static void generatePackageDiagrams(RootDoc rootDoc, Model model) {
+    private static void generatePackageDiagrams(Model model, DiagramOptions options) {
         for (ModelPackage modelPackage: model.packages()) {
-            generatePackageDiagram(rootDoc, model, modelPackage);
+            generatePackageDiagram(model, modelPackage, options);
         }
     }
 
-    private static void generatePackageDiagram(RootDoc rootDoc, Model model, ModelPackage modelPackage) {
-        PackageDiagramPrinter generator = new PackageDiagramPrinter(model, modelPackage);
+    private static void generatePackageDiagram(Model model, ModelPackage modelPackage, DiagramOptions options) {
+        PackageDiagramPrinter generator = new PackageDiagramPrinter(model, modelPackage, options);
         generator.generate();
         File file = createFile(modelPackage.fullName(), "package-summary", "puml");
         boolean success = generator.toFile(file);
@@ -115,8 +144,8 @@ public class UmlJavaDoclet extends Standard {
         }
     }
 
-    private static void generateOverviewDiagram(RootDoc rootDoc, Model model) {
-        OverviewDiagramPrinter generator = new OverviewDiagramPrinter(model);
+    private static void generateOverviewDiagram(Model model, DiagramOptions options) {
+        OverviewDiagramPrinter generator = new OverviewDiagramPrinter(model, options);
         generator.generate();
         File file = createFile("", "overview-summary", "puml");
         boolean success = generator.toFile(file);
@@ -132,10 +161,6 @@ public class UmlJavaDoclet extends Standard {
         } else {
             System.out.println("ERROR: Could not generate overview diagram");
         }
-    }
-    
-    private static void updateJavadocs(RootDoc rootDoc, Model model) {
-        // TODO Update all of the HTML to add the generated diagrams.
     }
     
     private static boolean executePlantUML(String name, String baseName, StringBuilder content) {
@@ -237,7 +262,7 @@ public class UmlJavaDoclet extends Standard {
             return false;
 	}
     }
-
+    
     // TODO Not specifying the width and height of diagrams means that they may be bigger than the page.
     // However, if I specify a width and height, the diagrams do not resize if I zoom in and out.
     // Need to investigate how to do this to keep the diagrams consistent and the browser happy.

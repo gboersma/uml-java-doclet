@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContextDiagramPrinter extends PumlDiagramPrinter {
-    public ContextDiagramPrinter(Model model, ModelClass contextClass) {
-        super(model);
+    public ContextDiagramPrinter(Model model, ModelClass contextClass, DiagramOptions options) {
+        super(model, options);
         _contextClass = contextClass;
     }
     
     public void generate() {
         start();
-        orthogonalLinesOption();
         noPackagesOption();
         addContextClass(_contextClass);
         for (ModelRel rel: _contextClass.relationships()) {

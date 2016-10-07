@@ -9,15 +9,14 @@ import info.leadinglight.umljavadoclet.model.ModelPackage;
  * No relationships.
  */
 public class OverviewDiagramPrinter extends PumlDiagramPrinter {
-    public OverviewDiagramPrinter(Model model) {
-        super(model);
+    public OverviewDiagramPrinter(Model model, DiagramOptions options) {
+        super(model, options);
     }
     
     public void generate() {
         start();
         // The layout for packages is really bad.
         // Just show the classes within all of the packages in the model.
-        orthogonalLinesOption();
         for (ModelPackage modelPackage: getModel().packages()) {
             packageDefinition(modelPackage, packageFilepath(modelPackage), null);
             for (ModelClass modelClass: modelPackage.classes()) {

@@ -32,6 +32,7 @@
                         <artifactId>uml-java-doclet</artifactId>
                         <version>1.0-SNAPSHOT</version>                                               
                     </docletArtifact>
+                    <!-- -linetype polyline / spline / ortho (default) -->
                     <additionalparam></additionalparam>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>

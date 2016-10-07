@@ -10,8 +10,9 @@ import java.util.List;
  * Generate PlantUML diagrams from the model.
  */
 public abstract class PumlDiagramPrinter extends Printer {
-        public PumlDiagramPrinter(Model model) {
+        public PumlDiagramPrinter(Model model, DiagramOptions options) {
         _model = model;
+        _options = options;
     }
     
     public Model getModel() {
@@ -23,14 +24,17 @@ public abstract class PumlDiagramPrinter extends Printer {
         newline();
         // We want links to go into the same frame as the diagram for Javadocs.
         svglinktargetOption("_parent");
+        // Line style option
+        lineTypeOption();
     }
     
-    public void orthogonalLinesOption() {
-        println("skinparam linetype ortho");
-    }
-    
-    public void polyLinesOption() {
-        println("skinparam linetype polyline");
+    private void lineTypeOption() {
+        if (_options.getLineType() == DiagramOptions.LineType.ORTHO) {
+            println("skinparam linetype ortho");
+        } else if (_options.getLineType() == DiagramOptions.LineType.POLYLINE) {
+            println("skinparam linetype polyline");
+        }
+        // Otherwise, splines is the default. No skinparam required.
     }
     
     public void noPackagesOption() {
@@ -428,4 +432,5 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
 
     private final Model _model;
+    private final DiagramOptions _options;
 }
