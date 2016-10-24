@@ -75,6 +75,26 @@ public class ModelRel {
         _srcVisibility = visibility;
     }
     
+    public boolean isVisible(Visibility visibility) {
+        if (_srcVisibility == null) {
+            return true;
+        } else {
+            if (visibility == Visibility.PUBLIC && 
+                    _srcVisibility == Visibility.PUBLIC) {
+                return true;
+            } else if (visibility == Visibility.PROTECTED && 
+                    (_srcVisibility == Visibility.PUBLIC || _srcVisibility == Visibility.PROTECTED)) {
+                return true;
+            } else if (visibility == Visibility.PACKAGE &&
+                    (_srcVisibility == Visibility.PUBLIC || _srcVisibility == Visibility.PROTECTED || _srcVisibility == Visibility.PACKAGE)) {
+                return true;
+            } else if (visibility == Visibility.PRIVATE) {
+                return true;
+            }
+            return false;
+        }
+    }
+    
     public enum Kind {
         DIRECTED_ASSOCIATION, GENERALIZATION, REALIZATION, DEPENDENCY;
     }

@@ -257,40 +257,37 @@ public abstract class PumlDiagramPrinter extends Printer {
     }
     
     public void relationship(ModelRel rel) {
-        switch (rel.kind()) {
-            case GENERALIZATION:
-                generalization(rel.source(), rel.destination());
-                break;
-            case DEPENDENCY:
-                // Only draw the dependency if it has visibility specified in options.
-                if (rel.destinationVisibility() != null) {
-                    if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PUBLIC &&
-                            rel.destinationVisibility() == ModelRel.Visibility.PUBLIC) {
-                        dependency(rel.source(), rel.destination());
-                    } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PROTECTED &&
-                            (rel.destinationVisibility() == ModelRel.Visibility.PUBLIC ||
-                            rel.destinationVisibility() == ModelRel.Visibility.PROTECTED)) {
-                        dependency(rel.source(), rel.destination());
-                    } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PACKAGE &&
-                            (rel.destinationVisibility() == ModelRel.Visibility.PUBLIC ||
-                            rel.destinationVisibility() == ModelRel.Visibility.PROTECTED ||
-                            rel.destinationVisibility() == ModelRel.Visibility.PACKAGE)) {
-                        dependency(rel.source(), rel.destination());
-                    } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PRIVATE) {
-                        dependency(rel.source(), rel.destination());
-                    }
-                } else {
+        if (isRelationshipVisible(rel)) {
+            switch (rel.kind()) {
+                case GENERALIZATION:
+                    generalization(rel.source(), rel.destination());
+                    break;
+                case DEPENDENCY:
                     dependency(rel.source(), rel.destination());
-                }
-                break;
-            case REALIZATION:
-                realization(rel.source(), rel.destination());
-                break;
-            case DIRECTED_ASSOCIATION:
-                association(rel.source(), rel.destination(), rel.destinationRole(), multiplicityLabel(rel.destinationCardinality()));
-                break;
+                    break;
+                case REALIZATION:
+                    realization(rel.source(), rel.destination());
+                    break;
+                case DIRECTED_ASSOCIATION:
+                    association(rel.source(), rel.destination(), rel.destinationRole(), multiplicityLabel(rel.destinationCardinality()));
+                    break;
+            }
         }
     }
+    
+    public boolean isRelationshipVisible(ModelRel rel) {
+        // Check to see if the relationship is visible according to diagram options.
+        if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PUBLIC) {
+            return rel.isVisible(ModelRel.Visibility.PUBLIC);
+        } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PROTECTED) {
+            return rel.isVisible(ModelRel.Visibility.PROTECTED);
+        } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PACKAGE) {
+            return rel.isVisible(ModelRel.Visibility.PACKAGE);
+        } else if (_options.getDependenciesVisibility() == DiagramOptions.Visibility.PRIVATE) {
+            return rel.isVisible(ModelRel.Visibility.PRIVATE);
+        }
+        return false;
+   }
     
     public void generalization(ModelClass src, ModelClass dest) {
         printRel(src,  "--|>", dest);
