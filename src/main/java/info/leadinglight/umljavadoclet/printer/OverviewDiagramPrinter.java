@@ -17,7 +17,7 @@ public class OverviewDiagramPrinter extends PumlDiagramPrinter {
         start();
         // The layout for packages is really bad.
         // Just show the classes within all of the packages in the model.
-        for (ModelPackage modelPackage: getModel().packages()) {
+        for (ModelPackage modelPackage: getModel().rootPackages()) {
             packageDefinition(modelPackage, packageFilepath(modelPackage), null);
             for (ModelClass modelClass: modelPackage.classes()) {
                 String filepath = null;

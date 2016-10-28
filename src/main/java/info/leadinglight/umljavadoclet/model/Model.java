@@ -4,6 +4,8 @@ import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Type;
+import java.time.DayOfWeek;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -49,6 +51,55 @@ public class Model {
     
     public ModelPackage modelPackage(String fullName) {
         return _packages.get(fullName);
+    }
+    
+    public ModelPackage parentPackage(ModelPackage childPackage) {
+        String parentPackageName = childPackage.parentPackageFullName();
+        if (parentPackageName != null) {
+            return modelPackage(parentPackageName);
+        } else {
+            return null;
+        }
+    }
+    
+    public List<ModelPackage> childPackages(ModelPackage parentPackage) {
+        List<ModelPackage> childPackages = new ArrayList<>();
+        for (ModelPackage modelPackage: packages()) {
+            if (modelPackage.isChildPackage(parentPackage)) {
+                childPackages.add(modelPackage);
+            }
+        }
+        return childPackages;
+    }
+    
+    public List<ModelPackage> rootPackages() {
+        List<ModelPackage> rootPackages = new ArrayList<>();
+        for (ModelPackage modelPackage: packages()) {
+            if (isRootPackage(modelPackage)) {
+                rootPackages.add(modelPackage);
+            }
+        }
+        return rootPackages;
+    }
+    
+    public boolean isRootPackage(ModelPackage modelPackage) {
+        // In order for a package to be a root package, no portion of the
+        // package name may appear in the model.
+        // Because of the way the doclet works, not all packages in scope are 
+        // included in the model- only the ones that have package-summary or classes.
+        String parentName = modelPackage.parentPackageFullName();
+        while (parentName != null) {
+            if (modelPackage(parentName) != null) {
+                return false;
+            }
+            
+            if (parentName.lastIndexOf(".") == -1) {
+                return true;
+            }
+            
+            parentName = parentName.substring(0, parentName.lastIndexOf("."));
+        }
+        return false;
     }
     
     // Updating Model

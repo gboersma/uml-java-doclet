@@ -19,21 +19,29 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
         // Layout of packages is really, really bad.
         // Would love to show relationships between packages, but it is just awful.
         //noPackagesOption();
-        String filepath = packageFilepath(_modelPackage, _modelPackage);
-        packageDefinition(_modelPackage, filepath, null);
-        for (ModelClass modelClass: _modelPackage.classes()) {
-            filepath = classFilepath(_modelPackage, modelClass);
-            classDefinitionNoDetail(modelClass, false, filepath, null);
+        addPackage(_modelPackage, "lightyellow");
+        addRelationships(_modelPackage);
+        // Get all of the sub-packages of the model package and draw them as well.
+        for (ModelPackage subPackage: getModel().childPackages(_modelPackage)) {
+            addPackage(subPackage, null);
         }
-        addRelationships();
         end();
     }
     
-    public void addRelationships() {
-        for (ModelClass modelClass: _modelPackage.classes()) {
+    public void addPackage(ModelPackage modelPackage, String color) {
+        String filepath = packageFilepath(_modelPackage, modelPackage);
+        packageDefinition(modelPackage, filepath, color);
+        for (ModelClass modelClass: modelPackage.classes()) {
+            filepath = classFilepath(_modelPackage, modelClass);
+            classDefinitionNoDetail(modelClass, false, filepath, null);
+        }
+    }
+    
+    public void addRelationships(ModelPackage modelPackage) {
+        for (ModelClass modelClass: modelPackage.classes()) {
             // Only draw the relationships between the classes in the package.
             for (ModelRel rel: modelClass.relationships()) {
-                if (rel.source() == modelClass && rel.destination().modelPackage() == _modelPackage) {
+                if (rel.source() == modelClass && rel.destination().modelPackage() == modelPackage) {
                     relationship(rel);
                 }
             }

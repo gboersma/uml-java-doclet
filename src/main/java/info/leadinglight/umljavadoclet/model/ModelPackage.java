@@ -41,6 +41,27 @@ public class ModelPackage {
         return packageDoc.name();
     }
     
+    /**
+     * Is this package an immediate child package of the specified package?
+     * @param parentPackage Package to check.
+     * @return Whether or not it is a child package.
+     */
+    public boolean isChildPackage(ModelPackage parentPackage) {
+        if (parentPackage != this) {
+            if (qualifiedName().startsWith(parentPackage.qualifiedName())) {
+                String thisPath = qualifiedName().substring(parentPackage.qualifiedName().length() + 1);
+                // If the remaining part of the package name does not contain a period, it is an immediate child.
+                return (!thisPath.contains("."));
+            }
+            return false;
+        }
+        return false;
+    }
+    
+    public String parentPackageFullName() {
+        return qualifiedName().substring(0, qualifiedName().lastIndexOf("."));
+    }
+    
     // Update model
     
     public void addClass(ModelClass modelClass) {
