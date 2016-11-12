@@ -4,14 +4,13 @@ import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import com.sun.tools.doclets.standard.Standard;
-import info.leadinglight.umljavadoclet.printer.ContextDiagramPrinter;
-import info.leadinglight.umljavadoclet.printer.PackageDiagramPrinter;
 import info.leadinglight.umljavadoclet.model.Model;
 import info.leadinglight.umljavadoclet.model.ModelClass;
 import info.leadinglight.umljavadoclet.model.ModelPackage;
+import info.leadinglight.umljavadoclet.printer.ContextDiagramPrinter;
 import info.leadinglight.umljavadoclet.printer.DiagramOptions;
-import info.leadinglight.umljavadoclet.printer.ModelPrinter;
 import info.leadinglight.umljavadoclet.printer.OverviewDiagramPrinter;
+import info.leadinglight.umljavadoclet.printer.PackageDiagramPrinter;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,6 +33,26 @@ public class UmlJavaDoclet extends Standard {
     public static boolean start(RootDoc root) {
         // Generate Javadocs using standard doclet.
         System.out.println("Generating Javadocs...");
+        System.out.println("Using arguments:");
+
+        int idx = -1;
+        for (int i = 0; i < root.options().length; i++)
+        {
+            for (int j = 0; j < root.options()[i].length; j++)
+            {
+                String s = root.options()[i][j];
+                System.out.print(s + " ");
+                if (s.trim().equalsIgnoreCase("-d"))
+                {
+                    idx = i;
+                }
+            }
+            System.out.println("");
+        }
+
+        javaDocDir = idx != -1 && root.options()[idx].length == 2 ? root.options()[idx][1] : ".";
+        System.out.println("Using java doc dir: " + javaDocDir);
+
         generateJavadoc(root);
         
         // Set the options.
@@ -202,7 +221,7 @@ public class UmlJavaDoclet extends Standard {
     }
     
     private static File fileForName(String name) {
-        File file = new File(".");
+        File file = new File(javaDocDir);
         for (String part : name.split("\\.")) {
             if (part.trim().length() > 0) {
                 file = new File(file, part);
@@ -278,4 +297,6 @@ public class UmlJavaDoclet extends Standard {
 	"<div align=\"center\">" +
 	    "<object type=\"image/svg+xml\" data=\"%1$s.svg\" alt=\"Package class diagram package %1$s\" border=0></object>" +
 	"</div>";
+    
+    private static String javaDocDir;
 }
