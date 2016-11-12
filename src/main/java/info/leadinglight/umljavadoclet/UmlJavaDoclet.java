@@ -36,14 +36,11 @@ public class UmlJavaDoclet extends Standard {
         System.out.println("Using arguments:");
 
         int idx = -1;
-        for (int i = 0; i < root.options().length; i++)
-        {
-            for (int j = 0; j < root.options()[i].length; j++)
-            {
+        for (int i = 0; i < root.options().length; i++){
+            for (int j = 0; j < root.options()[i].length; j++){
                 String s = root.options()[i][j];
                 System.out.print(s + " ");
-                if (s.trim().equalsIgnoreCase("-d"))
-                {
+                if (s.trim().equalsIgnoreCase("-d")){
                     idx = i;
                 }
             }
