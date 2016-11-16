@@ -19,7 +19,21 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
-            </plugin>      
+            </plugin>     
+            <!-- Build jar with dependencies for usage with ant -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>info.leadinglight.umljavadoclet.UmlJavaDoclet</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
             <!-- Generate UML diagrams in javadoc using doclet: mvn javadoc:javadoc -->
             <plugin>                                                                         
                 <groupId>org.apache.maven.plugins</groupId>                                  
