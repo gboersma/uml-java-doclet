@@ -65,7 +65,7 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>8047</version>
+            <version>1.2017.15</version>
         </dependency>
     </dependencies>
     <name>uml-java-doclet</name>
