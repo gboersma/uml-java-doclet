@@ -16,6 +16,12 @@ public class PackageDiagramPrinter extends PumlDiagramPrinter {
     
     public void generate() {
         start();
+
+        // Option for displaying the packages diagram left to right.
+        if (getOptions().getPackageOrientation() == DiagramOptions.Orientation.LEFT_TO_RIGHT) {
+            leftToRight();
+        }
+
         // Layout of packages is really, really bad.
         // Would love to show relationships between packages, but it is just awful.
         //noPackagesOption();

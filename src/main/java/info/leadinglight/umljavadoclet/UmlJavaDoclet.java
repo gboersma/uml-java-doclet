@@ -55,8 +55,7 @@ public class UmlJavaDoclet extends Standard {
         // Set the options.
         DiagramOptions options = new DiagramOptions();
         options.set(root.options());
-        System.out.println("options=" + options);
-        
+
         // Extract the Model.
         Model model = new Model(root);
         model.map();

@@ -1,6 +1,5 @@
 package info.leadinglight.umljavadoclet.printer;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,27 +10,29 @@ public class DiagramOptions {
     public DiagramOptions() {
         addOption(LINETYPE, "polyline,spline,ortho", "ortho", 2);
         addOption(DEPENDENCIES, "public,protected,package,private", "public", 2);
+        addOption(PACKAGE_ORIENTATION, "left-to-right,top-to-bottom", "top-to-bottom", 2);
     }
 
-    // LineType
-
     public enum LineType { SPLINE, POLYLINE, ORTHO };
+    public enum Visibility { PUBLIC, PROTECTED, PACKAGE, PRIVATE };
+    public enum Orientation { LEFT_TO_RIGHT, TOP_TO_BOTTOM };
 
+    // Options as enumerated types
     public LineType getLineType() {
         return LineType.valueOf(getOptionEnumValue(LINETYPE));
     }
-
-    private static final String LINETYPE = "linetype";
-
-    // Dependencies
-
-    public enum Visibility { PUBLIC, PROTECTED, PACKAGE, PRIVATE };
 
     public Visibility getDependenciesVisibility() {
         return Visibility.valueOf(getOptionEnumValue(DEPENDENCIES));
     }
 
+    public Orientation getPackageOrientation() {
+        return Orientation.valueOf(getOptionEnumValue(PACKAGE_ORIENTATION));
+    }
+
+    private static final String LINETYPE = "linetype";
     private static final String DEPENDENCIES = "dependencies";
+    private static final String PACKAGE_ORIENTATION = "package-orientation";
 
     /**
      * Set the options as provided in the strings.
@@ -118,7 +119,8 @@ public class DiagramOptions {
 
     private String getOptionEnumValue(String name) {
         String value = getOptionValue(name);
-        return value != null ? value.toUpperCase() : null;
+        // Any hyphens in the name are treated as _ in the enum value.
+        return value != null ? value.toUpperCase().replace("-", "_") : null;
     }
 
     @Override

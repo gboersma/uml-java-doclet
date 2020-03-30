@@ -18,7 +18,11 @@ public abstract class PumlDiagramPrinter extends Printer {
     public Model getModel() {
         return _model;
     }
-    
+
+    public DiagramOptions getOptions() {
+        return _options;
+    }
+
     public void start() {
         println("@startuml");
         newline();
@@ -27,7 +31,11 @@ public abstract class PumlDiagramPrinter extends Printer {
         // Line style option
         printLineTypeOption();
     }
-    
+
+    public void leftToRight() {
+        println("left to right direction");
+    }
+
     public void noPackagesOption() {
         println("set namespaceSeparator none");
     }

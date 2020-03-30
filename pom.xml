@@ -49,7 +49,8 @@
                     </docletArtifact>
                     <!-- -linetype polyline / spline / ortho (default) -->
                     <!-- -dependencies public (default) / protected / package / private -->
-                    <additionalparam>-linetype asdasd -dependencies asdasd</additionalparam>
+                    <!-- -package-orientation top-to-bottom (default) / left-to-right -->
+                    <additionalparam></additionalparam>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>
             </plugin>                                                                        
