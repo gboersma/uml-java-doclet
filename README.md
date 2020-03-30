@@ -57,19 +57,35 @@ Maven Central:
     <build>
         <plugins>
             <!-- Generate UML diagrams in javadoc using doclet: mvn javadoc:javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+            <plugin>                                                                         
+                <groupId>org.apache.maven.plugins</groupId>                                  
+                <artifactId>maven-javadoc-plugin</artifactId>                                
+                <version>3.2.0</version>
                 <configuration>
                     <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
                     <docletArtifact>
                         <groupId>info.leadinglight</groupId>
                         <artifactId>uml-java-doclet</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>1.0-SNAPSHOT</version>                                               
                     </docletArtifact>
-                    <!-- -linetype polyline / spline / ortho (default) -->
-                    <!-- -dependencies public (default) / protected / package / private -->
+                    <!--
+                        Standard doclet option for specifying different location for javadocs:
+                        -reportOutputDirectory: parent folder
+                        -destDir: name of the directory in the folder.
+                        Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.0.1/examples/output-configuration.html
+                    -->
+                    <reportOutputDirectory>/path/to/parent/folder</reportOutputDirectory>
+                    <destDir>folder</destDir>
+                    <!--
+                        Specify options that are specific to uml-java-doclet as a single line, in format of
+                        -optionname value -optionname2 value...
+
+                        Options include:
+                        -linetype polyline / spline / ortho (default)
+                        -dependencies public (default) / protected / package / private
+                        -package-orientation top-to-bottom (default) / left-to-right
+                        -output-model true / false (default)
+                    -->
                     <additionalparam></additionalparam>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>
