@@ -14,11 +14,12 @@ public class DiagramOptions {
         addOption(OUTPUT_MODEL, "true,false", "false", 2);
     }
 
+    // Helpers for getting the value for a specific option
+
     public enum LineType { SPLINE, POLYLINE, ORTHO };
     public enum Visibility { PUBLIC, PROTECTED, PACKAGE, PRIVATE };
     public enum Orientation { LEFT_TO_RIGHT, TOP_TO_BOTTOM };
 
-    // Options as enumerated types
     public LineType getLineType() {
         return LineType.valueOf(getOptionEnumValue(LINETYPE));
     }
