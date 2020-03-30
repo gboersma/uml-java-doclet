@@ -400,21 +400,21 @@ public class ModelClass {
                 visibility = ModelRel.Visibility.PRIVATE;
             }
 
-            // If there is already a dependency with the othe class, and it has a visibility
+            // If there is already a dependency with the other class, and it has a visibility
             // weaker than this visibility, than replace it with this visibility.
             if (this != dest && visibility != null) {
                 if (hasDependencyWith(dest)) {
-                    ModelRel depedencyWith = dependencyWith(dest);
+                    ModelRel dependencyWith = dependencyWith(dest);
                     if (visibility == ModelRel.Visibility.PUBLIC) {
-                        depedencyWith.changeVisibility(visibility);
+                        dependencyWith.changeVisibility(visibility);
                     } else if (visibility == ModelRel.Visibility.PROTECTED) {
-                        if (depedencyWith.destinationVisibility() != ModelRel.Visibility.PUBLIC) {
-                            depedencyWith.changeVisibility(visibility);
+                        if (dependencyWith.destinationVisibility() != ModelRel.Visibility.PUBLIC) {
+                            dependencyWith.changeVisibility(visibility);
                         }
                     } else if (visibility == ModelRel.Visibility.PACKAGE) {
-                        if (depedencyWith.destinationVisibility() != ModelRel.Visibility.PUBLIC &&
-                                depedencyWith.destinationVisibility() != ModelRel.Visibility.PROTECTED) {
-                            depedencyWith.changeVisibility(visibility);
+                        if (dependencyWith.destinationVisibility() != ModelRel.Visibility.PUBLIC &&
+                                dependencyWith.destinationVisibility() != ModelRel.Visibility.PROTECTED) {
+                            dependencyWith.changeVisibility(visibility);
                         }
                     }
                 }
@@ -435,10 +435,15 @@ public class ModelClass {
         // Is the destination class a parameterized class? If so, there is a dependency on the underlying parameters.
         if (modelClass.isParameterized()) {
             for (ModelClass param: modelClass.parameterClasses()) {
-                // Only map the dependency if there is no existing relationship with that class.
-                if (!hasRelationshipWith(param)) {
-                    ModelRel paramRel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, param);
-                    mapSourceRel(paramRel);
+                // In some cases, the generic parameter can be returned as a '?', instead of the actual class.
+                // I think this can happen with lists to inner classes (that happen in this class, for example).
+                // Filter them out.
+                if (!param.shortName().endsWith(".?")) {
+                    // Only map the dependency if there is no existing relationship with that class.
+                    if (!hasRelationshipWith(param)) {
+                        ModelRel paramRel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, param);
+                        mapSourceRel(paramRel);
+                    }
                 }
             }
         }
