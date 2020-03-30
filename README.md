@@ -34,6 +34,8 @@ there are other options that are being explored (http://plantuml.sourceforge.net
 - GraphViz (as required by PlantUML).
 - Java 8 (easy enough to backport to earlier versions).
 
+NOTE: The doclet tool was completely changed in Java 9; uml-java-doclet will not work with any JDK later than 8.
+
 ### Building ###
 
 Build using Maven:
