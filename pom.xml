@@ -49,7 +49,7 @@
                     </docletArtifact>
                     <!-- -linetype polyline / spline / ortho (default) -->
                     <!-- -dependencies public (default) / protected / package / private -->
-                    <additionalparam>-dependencies</additionalparam>
+                    <additionalparam>-linetype asdasd -dependencies asdasd</additionalparam>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>
             </plugin>                                                                        

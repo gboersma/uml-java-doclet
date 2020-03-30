@@ -55,6 +55,7 @@ public class UmlJavaDoclet extends Standard {
         // Set the options.
         DiagramOptions options = new DiagramOptions();
         options.set(root.options());
+        System.out.println("options=" + options);
         
         // Extract the Model.
         Model model = new Model(root);
@@ -88,25 +89,27 @@ public class UmlJavaDoclet extends Standard {
     }
     
     public static int optionLength(String option) {
-        if (DiagramOptions.isValidOption(option)) {
-            return DiagramOptions.getOptionLength(option);
+        DiagramOptions options = new DiagramOptions();
+        if (options.isValidOption(option)) {
+            return options.getOptionLength(option);
         } else {
             return Standard.optionLength(option);
         }
     }
     
-    public static boolean validOptions(String[][] options, DocErrorReporter reporter) {
+    public static boolean validOptions(String[][] settings, DocErrorReporter reporter) {
+        DiagramOptions options = new DiagramOptions();
         // Iterate through all of the options, checking to see if an option is valid.
         List<String[]> standardOptions = new ArrayList<>();
-        for (String[] option: options) {
-            String name = option[0];
-            if (DiagramOptions.isValidOption(name)) {
-                String error = DiagramOptions.checkOption(option);
+        for (String[] setting: settings) {
+            String name = setting[0];
+            if (options.isValidOption(name)) {
+                String error = options.checkOption(setting);
                 if (error != null && error.length() > 0) {
                     reporter.printError(error);
                 }
             } else {
-                standardOptions.add(option);
+                standardOptions.add(setting);
             }
         }
         return Standard.validOptions(standardOptions.toArray(new String[][]{}), reporter);
