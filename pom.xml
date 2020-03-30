@@ -47,9 +47,19 @@
                         <artifactId>uml-java-doclet</artifactId>
                         <version>1.0-SNAPSHOT</version>                                               
                     </docletArtifact>
-                    <!-- -linetype polyline / spline / ortho (default) -->
-                    <!-- -dependencies public (default) / protected / package / private -->
-                    <!-- -package-orientation top-to-bottom (default) / left-to-right -->
+                    <!--
+                        Specify options that are specific to uml-java-doclet, or provide values for standard doclet
+                        options as a single line, in format of -optionname value -optionname2 value...
+
+                        Helpful standard doclet options:
+                        -d path-where-to-generate-docs: Specify different path for generating docs.
+
+                        uml-java-doclet options:
+                        -linetype polyline / spline / ortho (default)
+                        -dependencies public (default) / protected / package / private
+                        -package-orientation top-to-bottom (default) / left-to-right
+                        -output-model true / false (default)
+                    -->
                     <additionalparam></additionalparam>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>

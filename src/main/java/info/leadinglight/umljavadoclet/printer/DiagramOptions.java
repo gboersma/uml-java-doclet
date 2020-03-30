@@ -11,6 +11,7 @@ public class DiagramOptions {
         addOption(LINETYPE, "polyline,spline,ortho", "ortho", 2);
         addOption(DEPENDENCIES, "public,protected,package,private", "public", 2);
         addOption(PACKAGE_ORIENTATION, "left-to-right,top-to-bottom", "top-to-bottom", 2);
+        addOption(OUTPUT_MODEL, "true,false", "false", 2);
     }
 
     public enum LineType { SPLINE, POLYLINE, ORTHO };
@@ -30,9 +31,14 @@ public class DiagramOptions {
         return Orientation.valueOf(getOptionEnumValue(PACKAGE_ORIENTATION));
     }
 
+    public boolean isOutputModel() {
+        return getOptionValue(OUTPUT_MODEL).equals("true");
+    }
+
     private static final String LINETYPE = "linetype";
     private static final String DEPENDENCIES = "dependencies";
     private static final String PACKAGE_ORIENTATION = "package-orientation";
+    private static final String OUTPUT_MODEL = "output-model";
 
     /**
      * Set the options as provided in the strings.
