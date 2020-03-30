@@ -151,6 +151,11 @@ public abstract class PumlDiagramPrinter extends Printer {
         // does not affect the way the class is displayed.
         print(modelClass.fullNameWithoutParameters());
         for (String param: modelClass.parameters()) {
+            // It is also possible for a parameter to be a generic, and have <> embedded in the name.
+            // For example: List<Optional<String>>.
+            // We'll do the same thing here- just remove the <>.
+            // That should still guarantee a unique name in all cases.
+            param = param.replace("<", "").replace(">", "");
             print(param);
         }
     }
