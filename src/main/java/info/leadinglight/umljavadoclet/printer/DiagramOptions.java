@@ -1,5 +1,7 @@
 package info.leadinglight.umljavadoclet.printer;
 
+import info.leadinglight.umljavadoclet.model.ModelClass;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +15,19 @@ public class DiagramOptions {
         addOption(PACKAGE_ORIENTATION, "left-to-right,top-to-bottom", "top-to-bottom", 2);
         addOption(OUTPUT_MODEL, "true,false", "false", 2);
         addOption(PUML_INCLUDE_FILE, 2);
+        addOption(EXCLUDE_CLASSES, 2);
+        addOption(EXCLUDE_PACKAGES, 2);
     }
 
     // Helpers for getting the value for a specific option
+
+    private static final String LINETYPE = "linetype";
+    private static final String DEPENDENCIES = "dependencies";
+    private static final String PACKAGE_ORIENTATION = "package-orientation";
+    private static final String OUTPUT_MODEL = "output-model";
+    private static final String PUML_INCLUDE_FILE = "puml-include-file";
+    private static final String EXCLUDE_CLASSES = "exclude-classes";
+    private static final String EXCLUDE_PACKAGES = "exclude-packages";
 
     public enum LineType { SPLINE, POLYLINE, ORTHO };
     public enum Visibility { PUBLIC, PROTECTED, PACKAGE, PRIVATE };
@@ -45,11 +57,21 @@ public class DiagramOptions {
         return getPumlIncludeFile() != null && getPumlIncludeFile().length() > 0;
     }
 
-    private static final String LINETYPE = "linetype";
-    private static final String DEPENDENCIES = "dependencies";
-    private static final String PACKAGE_ORIENTATION = "package-orientation";
-    private static final String OUTPUT_MODEL = "output-model";
-    private static final String PUML_INCLUDE_FILE = "puml-include-file";
+    public List<String> getExcludedClasses() {
+        return getOptionCsvValue(EXCLUDE_CLASSES);
+    }
+
+    public boolean isExcludedClass(ModelClass modelClass) {
+        return getExcludedClasses().contains(modelClass.fullNameWithoutParameters());
+    }
+
+    public List<String> getExcludedPackages() {
+        return getOptionCsvValue(EXCLUDE_PACKAGES);
+    }
+
+    public boolean isExcludedPackage(ModelClass modelClass) {
+        return getExcludedPackages().contains(modelClass.packageName());
+    }
 
     /**
      * Set the options as provided in the strings.
@@ -142,6 +164,11 @@ public class DiagramOptions {
     private String getOptionValue(String name) {
         DiagramOption option = getOption(name);
         return option != null ? option.getValue() : null;
+    }
+
+    private List<String> getOptionCsvValue(String name) {
+        DiagramOption option = getOption(name);
+        return option != null ? option.getCsvValues() : new ArrayList<>();
     }
 
     private String getOptionEnumValue(String name) {

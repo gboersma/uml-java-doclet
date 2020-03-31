@@ -64,6 +64,18 @@ public class DiagramOption {
         return value != null ? value : defaultValue;
     }
 
+    public List<String> getCsvValues() {
+        List<String> values = new ArrayList<>();
+        String value = getValue();
+        if (value != null && value.length() > 0) {
+            String[] parts = value.split(",");
+            for (String part: parts) {
+                values.add(part);
+            }
+        }
+        return values;
+    }
+
     public void setValue(String value) {
         if (validValues != null) {
             for (String validValue : validValues) {

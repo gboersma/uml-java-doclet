@@ -92,7 +92,8 @@ Options are specified as `additionalOption` tags in the POM.
 |-dependencies|public,protected,package,private|public|What dependencies to explicitly show on the diagram|
 |-package-orientation|top-to-bottom,left-to-right|top-to-bottom|Layout of packages on package diagrams|
 |-output-model|true,false|false|Whether to output the details of the model (useful for debugging)|
-|-puml-include-file|free-form|none|Name of PUML file to include on every diagram|
+|-puml-include-file|free-form|none|Name of PUML file to include in every diagram PUML|
+|-exclude-classes|comma-separated|none|List of qualified class names to exclude from context diagrams|
 
 # Acknowlegments #
 

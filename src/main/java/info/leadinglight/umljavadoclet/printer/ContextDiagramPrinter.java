@@ -35,6 +35,12 @@ public class ContextDiagramPrinter extends PumlDiagramPrinter {
     private void addRelationship(ModelRel rel) {
         ModelClass otherClass = (rel.source() != _contextClass ? rel.source() : rel.destination());
         if (!otherClass.fullName().startsWith("java.util.")) {
+            // Check to see if the class in the relationship is excluded from the diagram, either
+            // by the name of the class or the name of the package.
+            if (getOptions().isExcludedPackage(otherClass) || getOptions().isExcludedClass(otherClass)) {
+                return;
+            }
+
             if (isRelationshipVisible(rel)) {
                 // Only draw the class on the other side of the relationship if it hasn't been added yet.
                 if (!_classes.contains(otherClass)) {
