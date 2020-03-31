@@ -36,18 +36,6 @@ there are other options that are being explored (http://plantuml.sourceforge.net
 
 NOTE: The doclet tool was completely changed in Java 9; uml-java-doclet will not work with any JDK later than 8.
 
-### Building ###
-
-Build using Maven:
-
-    mvn clean install
-
-To see an example of the Javadocs for the uml-java-doclet source code, use the Javadoc target:
-
-    mvn javadoc:javadoc
-
-Javadoc output is in target/site/apidocs.
-
 ### Installing ###
 
 Use http://jitpack.io to automatically build and install the JAR file. Add the JitPack repository to your POM:
@@ -60,6 +48,8 @@ Use http://jitpack.io to automatically build and install the JAR file. Add the J
 	</repositories> 
 
 Note: Not published to Maven Central; this is a much easier alternative.
+
+### Generating Updated Javadocs ###
 
 To generate UML diagrams for your own project, add the following to your POM: 
 
@@ -88,13 +78,9 @@ To generate UML diagrams for your own project, add the following to your POM:
 Note: Version 3+ of the maven-javadoc-plugin uses the `additionalOptions` tag to specify additional javadoc tags.
 The previous `additionalparam` tag no longer works correctly. Be sure to upgrade your POMs accordingly.
 
-### Generating Javadocs to Different Folder ###
-Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.2.0/examples/output-configuration.html
-for documentation on how to use standard doclet option to specify a different folder in which to generate javadocs.
+### Diagram Options ###
 
-### Specifying Options ###
-
-Options are specified as `additionalOption` tags in the POM.
+Options for the diagrams are specified as `additionalOption` tags in the POM.
 
 |Option|Valid Values|Default|Description|
 |---|---|---|---|
@@ -106,10 +92,17 @@ Options are specified as `additionalOption` tags in the POM.
 |-exclude-classes|comma-separated|none|List of qualified class names to exclude from context diagrams|
 |-exclude-packages|comma-separated|none|List of qualified package names to exclude from context diagrams|
 
-# Acknowlegments #
+### Tips ###
+
+- To generate the Javadoc to a different folder, refer to: 
+https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.2.0/examples/output-configuration.html
+for how to use specify the standard doclet option.
+
+# Acknowledgments #
 
 Many thanks to the folks at PlantUML (https://github.com/plantuml/plantuml) for their
 fantastic support.
+Thanks to @bcopy for the pointer to jitpack. 
 
 # License #
 
