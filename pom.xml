@@ -9,6 +9,11 @@
             <id>gboersma</id>
         </developer>
     </developers>
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+        </license>
+    </licenses>
     <groupId>info.leadinglight</groupId>
     <artifactId>uml-java-doclet</artifactId>
     <version>1.2-SNAPSHOT</version>
@@ -107,7 +112,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>3.0.0-M1</version>
                 <configuration>
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
