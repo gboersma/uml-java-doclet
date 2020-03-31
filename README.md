@@ -56,10 +56,8 @@ Maven Central:
 
     <build>
         <plugins>
-            <!-- Generate UML diagrams in javadoc using doclet: mvn javadoc:javadoc -->
-            <plugin>                                                                         
                 <groupId>org.apache.maven.plugins</groupId>                                  
-                <artifactId>maven-javadoc-plugin</artifactId>                                
+                <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
                     <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
@@ -68,30 +66,33 @@ Maven Central:
                         <artifactId>uml-java-doclet</artifactId>
                         <version>1.0-SNAPSHOT</version>                                               
                     </docletArtifact>
-                    <!--
-                        Standard doclet option for specifying different location for javadocs:
-                        -reportOutputDirectory: parent folder
-                        -destDir: name of the directory in the folder.
-                        Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.0.1/examples/output-configuration.html
-                    -->
-                    <reportOutputDirectory>/path/to/parent/folder</reportOutputDirectory>
-                    <destDir>folder</destDir>
-                    <!--
-                        Specify options that are specific to uml-java-doclet as a single line, in format of
-                        -optionname value -optionname2 value...
-
-                        Options include:
-                        -linetype polyline / spline / ortho (default)
-                        -dependencies public (default) / protected / package / private
-                        -package-orientation top-to-bottom (default) / left-to-right
-                        -output-model true / false (default)
-                    -->
-                    <additionalparam></additionalparam>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
+                    <additionalOptions>
+                        <!-- Specify each diagram option here as an additionOption tag. -->
+                    </additionalOptions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+Note: Version 3+ of the maven-javadoc-plugin uses the `additionalOptions` tag to specify additional javadoc tags.
+The previous `additionalparm` tag no longer works correctly. Be sure to upgrade your POMs accordingly.
+
+### Generating Javadocs to Different Folder ###
+Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.0.1/examples/output-configuration.html
+for documentation on how to use standard doclet option to specify a different folder in which to generate javadocs.
+
+### Specifying Options ###
+
+Options are specified as `additionalOption` tags in the POM.
+
+|Option|Valid Values|Default|Description|
+|---|---|---|---|
+|-linetype|polyline,spline,ortho|ortho|Types of lines to display on diagrams|
+|-dependencies|public,protected,package,private|public|What dependencies to explicitly show on the diagram|
+|-package-orientation|top-to-bottom,left-to-right|top-to-bottom|Layout of packages on package diagrams|
+|-output-model|true,false|false|Whether to output the details of the model (useful for debugging)|
+|-puml-include-file|free-form|none|Name of PUML file to include on every diagram|
 
 # Acknowlegments #
 
