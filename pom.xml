@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>info.leadinglight</groupId>
     <artifactId>uml-java-doclet</artifactId>
     <name>uml-java-doclet</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,7 +40,7 @@
         <connection>scm:git:git://github.com/gboersma/uml-java-doclet.git</connection>
         <developerConnection>scm:git:git@github.com:gboersma/uml-java-doclet.git</developerConnection>
         <url>https://github.com/gboersma/uml-java-doclet</url>
-        <tag>HEAD</tag>
+        <tag>uml-java-doclet-1.1</tag>
     </scm>
     <build>
         <plugins>
@@ -143,16 +142,6 @@
                             <goal>jar</goal>
                         </goals>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
                     <execution>
                         <id>attach-javadoc</id>
                     </execution>
