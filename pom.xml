@@ -4,7 +4,7 @@
     <groupId>info.leadinglight</groupId>
     <artifactId>uml-java-doclet</artifactId>
     <name>uml-java-doclet</name>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,7 +40,7 @@
         <connection>scm:git:git://github.com/gboersma/uml-java-doclet.git</connection>
         <developerConnection>scm:git:git@github.com:gboersma/uml-java-doclet.git</developerConnection>
         <url>https://github.com/gboersma/uml-java-doclet</url>
-        <tag>uml-java-doclet-1.1</tag>
+        <tag>HEAD</tag>
     </scm>
     <build>
         <plugins>
