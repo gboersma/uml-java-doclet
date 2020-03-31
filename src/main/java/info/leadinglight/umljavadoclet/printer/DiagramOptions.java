@@ -12,6 +12,7 @@ public class DiagramOptions {
         addOption(DEPENDENCIES, "public,protected,package,private", "public", 2);
         addOption(PACKAGE_ORIENTATION, "left-to-right,top-to-bottom", "top-to-bottom", 2);
         addOption(OUTPUT_MODEL, "true,false", "false", 2);
+        addOption(PUML_INCLUDE_FILE, 2);
     }
 
     // Helpers for getting the value for a specific option
@@ -36,10 +37,19 @@ public class DiagramOptions {
         return getOptionValue(OUTPUT_MODEL).equals("true");
     }
 
+    public String getPumlIncludeFile() {
+        return getOptionValue(PUML_INCLUDE_FILE);
+    }
+
+    public boolean hasPumlIncludeFile() {
+        return getPumlIncludeFile() != null && getPumlIncludeFile().length() > 0;
+    }
+
     private static final String LINETYPE = "linetype";
     private static final String DEPENDENCIES = "dependencies";
     private static final String PACKAGE_ORIENTATION = "package-orientation";
     private static final String OUTPUT_MODEL = "output-model";
+    private static final String PUML_INCLUDE_FILE = "puml-include-file";
 
     /**
      * Set the options as provided in the strings.
@@ -49,9 +59,11 @@ public class DiagramOptions {
      */
     public void set(String[][] docletOptions) {
         for (String[] docletOption : docletOptions) {
-            DiagramOption option = getOptionForDocletName(docletOption[0]);
+            String docletName = docletOption[0];
+            DiagramOption option = getOptionForDocletName(docletName);
             if (option != null) {
-                option.setValue(docletOption[1]);
+                String docletValue = docletOption[1];
+                option.setValue(docletValue);
             }
         }
     }
@@ -93,7 +105,20 @@ public class DiagramOptions {
         return null;
     }
 
+    public String getOptionValuesAsString() {
+        String result = "";
+        for (DiagramOption option: options) {
+            result += option.getName() + "=" + option.getValue() + " ";
+        }
+        return result;
+    }
+
     // Helpers
+
+    private void addOption(String name, int length) {
+        DiagramOption option = new DiagramOption(name, length);
+        options.add(option);
+    }
 
     private void addOption(String name, String validValues, String defaultValue, int length) {
         DiagramOption option = new DiagramOption(name, validValues, defaultValue, length);
@@ -117,11 +142,6 @@ public class DiagramOptions {
     private String getOptionValue(String name) {
         DiagramOption option = getOption(name);
         return option != null ? option.getValue() : null;
-    }
-
-    private void setOptionValue(String name, String value) {
-        DiagramOption option = getOption(name);
-        option.setValue(value);
     }
 
     private String getOptionEnumValue(String name) {

@@ -38,7 +38,7 @@
             <!-- Generate UML diagrams in javadoc using doclet: mvn javadoc:javadoc -->
             <plugin>                                                                         
                 <groupId>org.apache.maven.plugins</groupId>                                  
-                <artifactId>maven-javadoc-plugin</artifactId>                                
+                <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
                     <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
@@ -53,21 +53,33 @@
                         -destDir: name of the directory in the folder.
                         Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.0.1/examples/output-configuration.html
                     -->
-<!--
-                    <reportOutputDirectory>/path/to/parent/folder</reportOutputDirectory>
-                    <destDir>folder</destDir>
--->
+<!--                    <reportOutputDirectory>/path/to/parent/folder</reportOutputDirectory>-->
+<!--                    <destDir>foldername</destDir>-->
                     <!--
                         Specify options that are specific to uml-java-doclet as a single line, in format of
                         -optionname value -optionname2 value...
 
                         Options include:
+
+                        Types of lines to display on diagrams:
                         -linetype polyline / spline / ortho (default)
+
+                        What dependencies to explicitly show on the diagram:
                         -dependencies public (default) / protected / package / private
+
+                        Layout of packages on package diagrams:
                         -package-orientation top-to-bottom (default) / left-to-right
+
+                        Whether to output the details of the model (useful for debugging):
                         -output-model true / false (default)
+
+                        PUML file to include for every diagram:
+                        -puml-include-file filename
                     -->
-                    <additionalparam></additionalparam>
+                    <!-- Note: Do not use additionalparam tag for maven-javadoc-plugin version 3+; no longer works properly. -->
+                    <additionalOptions>
+                        <additionalOption>-puml-include-file /Users/gerald/tmp/class-diagram-options.puml</additionalOption>
+                    </additionalOptions>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                 </configuration>
             </plugin>                                                                        

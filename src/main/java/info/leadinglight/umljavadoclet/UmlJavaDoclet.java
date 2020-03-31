@@ -51,11 +51,13 @@ public class UmlJavaDoclet extends Standard {
         javaDocDir = idx != -1 && root.options()[idx].length == 2 ? root.options()[idx][1] : ".";
         System.out.println("Using java doc dir: " + javaDocDir);
 
-        generateJavadoc(root);
-        
-        // Set the options.
+        // Set the uml-java-doclet options.
         DiagramOptions options = new DiagramOptions();
         options.set(root.options());
+        System.out.println("uml-java-doclet options: " + options.getOptionValuesAsString());
+
+        // Standard javadoc generation
+        generateJavadoc(root);
 
         // Extract the Model.
         Model model = new Model(root);

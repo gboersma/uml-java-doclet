@@ -4,9 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiagramOption {
+    public DiagramOption(String name, int length) {
+        this.name = name;
+        this.length = length;
+        // No valid values / default options- free-form option.
+        this.validValues = null;
+        this.defaultValue = null;
+    }
+
     public DiagramOption(String name, String validValues, String defaultValue, int length) {
         this.name = name;
         // Valid values are separated by a comma.
+        this.validValues = new ArrayList<>();
         String[] parts = validValues.split(",");
         for (String part: parts) {
             this.validValues.add(part.trim());
@@ -28,7 +37,7 @@ public class DiagramOption {
     }
 
     public boolean isValidValue(String value) {
-        return validValues.contains(value);
+        return validValues != null ? validValues.contains(value) : true;
     }
 
     public void setValidValues(List<String> validValues) {
@@ -56,11 +65,16 @@ public class DiagramOption {
     }
 
     public void setValue(String value) {
-        for (String validValue: validValues) {
-            if (validValue.equalsIgnoreCase(value)) {
-                this.value = validValue;
-                return;
+        if (validValues != null) {
+            for (String validValue : validValues) {
+                if (validValue.equalsIgnoreCase(value)) {
+                    this.value = validValue;
+                    return;
+                }
             }
+        } else {
+            // Free-form value.
+            this.value = value;
         }
     }
 
@@ -76,7 +90,7 @@ public class DiagramOption {
     }
 
     private String name;
-    private List<String> validValues = new ArrayList<>();
+    private List<String> validValues;
     private String defaultValue;
     private int length;
     private String value;

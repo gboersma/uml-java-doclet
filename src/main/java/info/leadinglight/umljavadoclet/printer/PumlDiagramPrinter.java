@@ -25,6 +25,10 @@ public abstract class PumlDiagramPrinter extends Printer {
 
     public void start() {
         println("@startuml");
+        // Add include file if specified
+        if (_options.hasPumlIncludeFile()) {
+            println("!include " + _options.getPumlIncludeFile());
+        }
         newline();
         // We want links to go into the same frame as the diagram for Javadocs.
         svglinktargetOption("_parent");
