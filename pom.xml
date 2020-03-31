@@ -78,24 +78,6 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
-            <!-- Generate UML diagrams in javadoc using doclet: mvn javadoc:javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
-                    <docletArtifact>
-                        <groupId>info.leadinglight</groupId>
-                        <artifactId>uml-java-doclet</artifactId>
-                        <version>1.0-SNAPSHOT</version>
-                    </docletArtifact>
-                    <useStandardDocletOptions>true</useStandardDocletOptions>
-                    <additionalOptions>
-                        <!-- Specify each diagram option here as an additionOption tag. -->
-                    </additionalOptions>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
@@ -146,23 +128,26 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>attach-javadoc</id>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
