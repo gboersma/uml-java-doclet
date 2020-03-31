@@ -9,11 +9,6 @@
             <id>gboersma</id>
         </developer>
     </developers>
-    <licenses>
-        <license>
-            <name>apache 2.0</name>
-        </license>
-    </licenses>
     <groupId>info.leadinglight</groupId>
     <artifactId>uml-java-doclet</artifactId>
     <version>1.2-SNAPSHOT</version>
