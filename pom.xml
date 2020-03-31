@@ -16,7 +16,7 @@
     </licenses>
     <groupId>info.leadinglight</groupId>
     <artifactId>uml-java-doclet</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
