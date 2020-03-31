@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <name>uml-java-doclet</name>
+    <description>Generate UML class diagrams with PlantUML and include them in generated javadocs.</description>
+    <url>https://github.com/gboersma/uml-java-doclet</url>
+    <developers>
+        <developer>
+            <id>gboersma</id>
+        </developer>
+    </developers>
     <groupId>info.leadinglight</groupId>
     <artifactId>uml-java-doclet</artifactId>
-    <name>uml-java-doclet</name>
     <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
