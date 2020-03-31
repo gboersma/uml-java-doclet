@@ -63,9 +63,9 @@
                 <configuration>
                     <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
                     <docletArtifact>
-                        <groupId>com.github.gboersma</groupId>
+                        <groupId>info.leadinglight</groupId>
                         <artifactId>uml-java-doclet</artifactId>
-                        <version>1.1</version>
+                        <version>1.2-SNAPSHOT</version>
                     </docletArtifact>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                     <additionalOptions>

@@ -65,6 +65,7 @@ To generate UML diagrams for your own project, add the following to your POM:
 
     <build>
         <plugins>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>                                  
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
