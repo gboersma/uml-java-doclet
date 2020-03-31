@@ -11,6 +11,26 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>sun.jdk</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.5.0</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>1.2020.4</version>
+        </dependency>
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>
@@ -43,9 +63,9 @@
                 <configuration>
                     <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
                     <docletArtifact>
-                        <groupId>info.leadinglight</groupId>
+                        <groupId>com.github.gboersma</groupId>
                         <artifactId>uml-java-doclet</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>1.1</version>
                     </docletArtifact>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                     <additionalOptions>
@@ -55,18 +75,4 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>sun.jdk</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.5.0</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.plantuml</groupId>
-            <artifactId>plantuml</artifactId>
-            <version>1.2020.4</version>
-        </dependency>
-    </dependencies>
 </project>

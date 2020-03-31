@@ -42,7 +42,7 @@ Build using Maven:
 
     mvn clean install
 
-To see an example of the updated Javadocs, use the Javadoc target:
+To see an example of the Javadocs for the uml-java-doclet source code, use the Javadoc target:
 
     mvn javadoc:javadoc
 
@@ -50,9 +50,18 @@ Javadoc output is in target/site/apidocs.
 
 ### Installing ###
 
-To generate UML diagrams for your own project, add the following to your pom.xml. You will need to build
-the project from scratch in your local environment; the distribution has not yet been uploaded to
-Maven Central:
+Use http://jitpack.io to automatically build and install the JAR file. Add the JitPack repository to your POM:
+
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories> 
+
+Note: Not published to Maven Central; this is a much easier alternative.
+
+To generate UML diagrams for your own project, add the following to your POM: 
 
     <build>
         <plugins>
@@ -62,9 +71,9 @@ Maven Central:
                 <configuration>
                     <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
                     <docletArtifact>
-                        <groupId>info.leadinglight</groupId>
+                        <groupId>com.github.gboersma</groupId>
                         <artifactId>uml-java-doclet</artifactId>
-                        <version>1.0-SNAPSHOT</version>                                               
+                        <version>1.1</version>
                     </docletArtifact>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                     <additionalOptions>
@@ -76,7 +85,7 @@ Maven Central:
     </build>
 
 Note: Version 3+ of the maven-javadoc-plugin uses the `additionalOptions` tag to specify additional javadoc tags.
-The previous `additionalparm` tag no longer works correctly. Be sure to upgrade your POMs accordingly.
+The previous `additionalparam` tag no longer works correctly. Be sure to upgrade your POMs accordingly.
 
 ### Generating Javadocs to Different Folder ###
 Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.2.0/examples/output-configuration.html
