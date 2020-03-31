@@ -94,6 +94,7 @@ Options are specified as `additionalOption` tags in the POM.
 |-output-model|true,false|false|Whether to output the details of the model (useful for debugging)|
 |-puml-include-file|free-form|none|Name of PUML file to include in every diagram PUML|
 |-exclude-classes|comma-separated|none|List of qualified class names to exclude from context diagrams|
+|-exclude-packages|comma-separated|none|List of qualified package names to exclude from context diagrams|
 
 # Acknowlegments #
 
