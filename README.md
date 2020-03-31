@@ -79,7 +79,7 @@ Note: Version 3+ of the maven-javadoc-plugin uses the `additionalOptions` tag to
 The previous `additionalparm` tag no longer works correctly. Be sure to upgrade your POMs accordingly.
 
 ### Generating Javadocs to Different Folder ###
-Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.0.1/examples/output-configuration.html
+Refer to: https://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.2.0/examples/output-configuration.html
 for documentation on how to use standard doclet option to specify a different folder in which to generate javadocs.
 
 ### Specifying Options ###
