@@ -28,7 +28,7 @@ public class ModelClass {
     }
     
     public enum ClassType {
-        INTERFACE, ENUM, CLASS
+        INTERFACE, ENUM, CLASS, ABSTRACT
     }
     
     public static class VisibilityItem {
@@ -168,6 +168,8 @@ public class ModelClass {
             return ClassType.INTERFACE;
         } else if (_classDoc.isEnum()) {
             return ClassType.ENUM;
+        } else if (_classDoc.isAbstract()) {
+            return ClassType.ABSTRACT;
         } else {
             return ClassType.CLASS;
         }

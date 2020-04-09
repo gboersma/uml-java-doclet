@@ -180,6 +180,9 @@ public abstract class PumlDiagramPrinter extends Printer {
             case ENUM:
                 print("enum");
                 break;
+            case ABSTRACT:
+                print("abstract");
+                break;
             default:
                 print("class");
         }
