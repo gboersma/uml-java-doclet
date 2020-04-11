@@ -591,6 +591,16 @@ public class ModelClass {
                     sb.append(sep);
                     TypeVariable typeParam = typeParams[i];
                     sb.append(typeParam.simpleTypeName());
+                    // If the type has any bounds, display them.
+                    if (typeParam.bounds().length > 0) {
+                        sb.append(" extends ");
+                        String sep2 = "";
+                        for (Type bound: typeParam.bounds()) {
+                            sb.append(sep2);
+                            sb.append(bound.simpleTypeName());
+                            sep2 = ",";
+                        }
+                    }
                     sep = ", ";
                 }
             }
