@@ -546,7 +546,7 @@ public class ModelClass {
             String sep = "";
             for (Type param : paramType.typeArguments()) {
                 sb.append(sep);
-                sb.append(param.simpleTypeName());
+                sb.append(shortName(param));
                 sep = ", ";
             }
         }
