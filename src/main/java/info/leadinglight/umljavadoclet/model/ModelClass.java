@@ -430,7 +430,8 @@ public class ModelClass {
                 ModelRel rel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, dest, visibility);
                 mapSourceRel(rel);
             }
-            
+
+            // TODO Relationships through embedded parameter types.
             mapParamDependencies(dest);
         }
     }
@@ -443,10 +444,13 @@ public class ModelClass {
                 // I think this can happen with lists to inner classes (that happen in this class, for example).
                 // Filter them out.
                 if (!param.shortName().endsWith(".?")) {
-                    // Only map the dependency if there is no existing relationship with that class.
-                    if (!hasRelationshipWith(param)) {
-                        ModelRel paramRel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, param);
-                        mapSourceRel(paramRel);
+                    // Do not map a dependency relationship back to this class.
+                    if (!param._type.equals(_type)) {
+                        // Only map the dependency if there is no existing relationship with that class.
+                        if (!hasRelationshipWith(param)) {
+                            ModelRel paramRel = new ModelRel(ModelRel.Kind.DEPENDENCY, this, param);
+                            mapSourceRel(paramRel);
+                        }
                     }
                 }
             }
