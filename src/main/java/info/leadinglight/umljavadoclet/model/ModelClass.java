@@ -458,14 +458,21 @@ public class ModelClass {
             }
         }
     }
+
+    private String getTypeName(Type type) {
+        // TODO The simpleTypeName call on the type does not include any bounds for any embedded types.
+        //  Need to build our own.
+        String typeName = type.asTypeVariable() != null
+            ? type.asTypeVariable().simpleTypeName()
+            : shortName(type);
+        return typeName;
+    }
     
     private void mapFields() {
         List<Field> fields = new ArrayList<>();
         for (FieldDoc fieldDoc: _classDoc.fields(false)) {
             Type type = fieldDoc.type();
-            String typeName = type.asTypeVariable() != null
-                ? type.asTypeVariable().simpleTypeName()
-                : shortName(type);
+            String typeName = getTypeName(type);
             Field mappedField = new Field(fieldDoc.name(), typeName, mapVisibility(fieldDoc), fieldDoc.isStatic());
             fields.add(mappedField);
         }
@@ -478,9 +485,7 @@ public class ModelClass {
             List<MethodParameter> params = new ArrayList<>();
             for (Parameter param: consDoc.parameters()) {
                 Type paramType = param.type();
-                String paramTypeName = paramType.asTypeVariable() != null
-                    ? paramType.asTypeVariable().simpleTypeName()
-                    : shortName(param.type());
+                String paramTypeName = getTypeName(paramType);
                 params.add(new MethodParameter(paramTypeName, param.name()));
             }
             Constructor constructor = new Constructor(consDoc.name(), params, mapVisibility(consDoc));
@@ -495,15 +500,11 @@ public class ModelClass {
             List<MethodParameter> params = new ArrayList<>();
             for (Parameter param: methodDoc.parameters()) {
                 Type paramType = param.type();
-                String paramTypeName = paramType.asTypeVariable() != null
-                    ? paramType.asTypeVariable().simpleTypeName()
-                    : shortName(param.type());
+                String paramTypeName = getTypeName(paramType);
                 params.add(new MethodParameter(paramTypeName, param.name()));
             }
             Type returnType = methodDoc.returnType();
-            String returnTypeName = returnType.asTypeVariable() != null
-                ? returnType.asTypeVariable().simpleTypeName()
-                : shortName(returnType);
+            String returnTypeName = getTypeName(returnType);
             Method method = new Method(methodDoc.name(), 
                     params, 
                     returnTypeName,
