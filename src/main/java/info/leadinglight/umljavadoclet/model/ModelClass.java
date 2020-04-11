@@ -456,7 +456,11 @@ public class ModelClass {
     private void mapFields() {
         List<Field> fields = new ArrayList<>();
         for (FieldDoc fieldDoc: _classDoc.fields(false)) {
-            Field mappedField = new Field(fieldDoc.name(), shortName(fieldDoc.type()), mapVisibility(fieldDoc), fieldDoc.isStatic());
+            Type type = fieldDoc.type();
+            String typeName = type.asTypeVariable() != null
+                ? type.asTypeVariable().simpleTypeName()
+                : shortName(type);
+            Field mappedField = new Field(fieldDoc.name(), typeName, mapVisibility(fieldDoc), fieldDoc.isStatic());
             fields.add(mappedField);
         }
         orderVisibility(fields, _fields);
@@ -467,7 +471,11 @@ public class ModelClass {
         for (ConstructorDoc consDoc: _classDoc.constructors(false)) {
             List<MethodParameter> params = new ArrayList<>();
             for (Parameter param: consDoc.parameters()) {
-                params.add(new MethodParameter(shortName(param.type()), param.name()));
+                Type paramType = param.type();
+                String paramTypeName = paramType.asTypeVariable() != null
+                    ? paramType.asTypeVariable().simpleTypeName()
+                    : shortName(param.type());
+                params.add(new MethodParameter(paramTypeName, param.name()));
             }
             Constructor constructor = new Constructor(consDoc.name(), params, mapVisibility(consDoc));
             constructors.add(constructor);
@@ -480,11 +488,19 @@ public class ModelClass {
         for (MethodDoc methodDoc: _classDoc.methods(false)) {
             List<MethodParameter> params = new ArrayList<>();
             for (Parameter param: methodDoc.parameters()) {
-                params.add(new MethodParameter(shortName(param.type()), param.name()));
+                Type paramType = param.type();
+                String paramTypeName = paramType.asTypeVariable() != null
+                    ? paramType.asTypeVariable().simpleTypeName()
+                    : shortName(param.type());
+                params.add(new MethodParameter(paramTypeName, param.name()));
             }
+            Type returnType = methodDoc.returnType();
+            String returnTypeName = returnType.asTypeVariable() != null
+                ? returnType.asTypeVariable().simpleTypeName()
+                : shortName(returnType);
             Method method = new Method(methodDoc.name(), 
                     params, 
-                    shortName(methodDoc.returnType()), 
+                    returnTypeName,
                     mapVisibility(methodDoc),
                     methodDoc.isAbstract(),
                     methodDoc.isStatic());
