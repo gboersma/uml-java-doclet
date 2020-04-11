@@ -431,7 +431,6 @@ public class ModelClass {
                 mapSourceRel(rel);
             }
 
-            // TODO Relationships through embedded parameter types.
             mapParamDependencies(dest);
         }
     }
@@ -453,6 +452,9 @@ public class ModelClass {
                         }
                     }
                 }
+                // Relationships through embedded parameter types:
+                // If the dependent class is also parameterized, expand relationships through the parameters.
+                mapParamDependencies(param);
             }
         }
     }
