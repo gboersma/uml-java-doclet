@@ -69,6 +69,7 @@
                     </docletArtifact>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
                     <additionalOptions>
+                        <additionalOption>-output-model true</additionalOption>
                         <!-- Specify each diagram option here as an additionOption tag. -->
                     </additionalOptions>
                 </configuration>

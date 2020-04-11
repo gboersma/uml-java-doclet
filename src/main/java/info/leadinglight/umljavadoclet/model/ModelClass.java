@@ -9,6 +9,8 @@ import com.sun.javadoc.Parameter;
 import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.Type;
+import com.sun.javadoc.TypeVariable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -546,8 +548,29 @@ public class ModelClass {
             String sep = "";
             for (Type param : paramType.typeArguments()) {
                 sb.append(sep);
-                sb.append(shortName(param));
+                TypeVariable paramTypeVariable = param.asTypeVariable();
+                if (paramTypeVariable != null) {
+                    sb.append(paramTypeVariable.simpleTypeName());
+                } else {
+                    sb.append(shortName(param));
+                }
                 sep = ", ";
+            }
+        } else {
+            // If a generic type has only type variables, it is not a parameterized type.
+            // It is only considered a parameterized type if it has at least one specific type
+            // (which itself can also be a parameterized type).
+            // Need to handle the case where we have a class that has type parameters.
+            ClassDoc classDocType = type.asClassDoc();
+            if (classDocType != null) {
+                TypeVariable[] typeParams = classDocType.typeParameters();
+                String sep = "";
+                for (int i=0; i<typeParams.length; i++) {
+                    sb.append(sep);
+                    TypeVariable typeParam = typeParams[i];
+                    sb.append(typeParam.simpleTypeName());
+                    sep = ", ";
+                }
             }
         }
         return sb.toString();
