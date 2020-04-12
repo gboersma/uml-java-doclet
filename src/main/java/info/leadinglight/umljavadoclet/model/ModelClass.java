@@ -92,15 +92,6 @@ public class ModelClass {
         public String name;
     }
     
-    public void map() {
-        mapParameters();
-        if (isInternal()) {
-            // Only map internal classes.
-            mapInternals();
-            mapRelationships();
-        }
-    }
-    
     public String fullName() {
         return fullName(_type);
     }
@@ -129,7 +120,61 @@ public class ModelClass {
         }
         return fullName;
     }
-    
+
+    public static String shortName(Type type) {
+        String shortName = shortNameWithoutParameters(type);
+        String params = buildParameterString(type);
+        if (params != null && params.length() > 0) {
+            shortName = shortName + "<" + params + ">";
+        }
+        return shortName;
+    }
+
+    private static String buildParameterString(Type type) {
+        StringBuilder sb = new StringBuilder();
+        ParameterizedType paramType = type.asParameterizedType();
+        if (paramType != null) {
+            String sep = "";
+            for (Type param : paramType.typeArguments()) {
+                sb.append(sep);
+                TypeVariable paramTypeVariable = param.asTypeVariable();
+                if (paramTypeVariable != null) {
+                    sb.append(paramTypeVariable.simpleTypeName());
+                } else {
+                    sb.append(shortName(param));
+                }
+                sep = ", ";
+            }
+        } else {
+            // If a generic type has only type variables, it is not a parameterized type.
+            // It is only considered a parameterized type if it has at least one specific type
+            // (which itself can also be a parameterized type).
+            // Need to handle the case where we have a class that has type parameters.
+            ClassDoc classDocType = type.asClassDoc();
+            if (classDocType != null) {
+                TypeVariable[] typeParams = classDocType.typeParameters();
+                String sep = "";
+                for (int i=0; i<typeParams.length; i++) {
+                    sb.append(sep);
+                    TypeVariable typeParam = typeParams[i];
+                    sb.append(typeParam.simpleTypeName());
+                    // If the type has any bounds, display them.
+                    if (typeParam.bounds().length > 0) {
+                        sb.append(" extends ");
+                        String sep2 = "";
+                        for (Type bound: typeParam.bounds()) {
+                            sb.append(sep2);
+                            sb.append(bound.simpleTypeName());
+                            sep2 = ",";
+                        }
+                    }
+                    sep = ", ";
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     public static String fullNameWithoutParameters(Type type) {
         String fullName = "";
         ClassDoc classDoc = type.asClassDoc();
@@ -141,15 +186,6 @@ public class ModelClass {
         return fullName;
     }
 
-    public static String shortName(Type type) {
-        String shortName = shortNameWithoutParameters(type);
-        String params = buildParameterString(type);
-        if (params != null && params.length() > 0) {
-            shortName = shortName + "<" + params + ">";
-        }
-        return shortName;
-    }
-    
     public static String shortNameWithoutParameters(Type type) {
         ClassDoc classDoc = type.asClassDoc();
         if (classDoc != null) {
@@ -208,7 +244,19 @@ public class ModelClass {
     public List<String> parameters() {
         return buildParameters(_type);
     }
-    
+
+    private static List<String> buildParameters(Type type) {
+        List<String> params = new ArrayList<>();
+        ParameterizedType paramType = type.asParameterizedType();
+        if (paramType != null) {
+            for (Type param : paramType.typeArguments()) {
+                String name = ModelClass.shortName(param);
+                params.add(name);
+            }
+        }
+        return params;
+    }
+
     public List<ModelClass> parameterClasses() {
         return _params;
     }
@@ -287,7 +335,16 @@ public class ModelClass {
     }
     
     // Mapping
-    
+
+    public void map() {
+        mapParameters();
+        if (isInternal()) {
+            // Only map internal classes.
+            mapInternals();
+            mapRelationships();
+        }
+    }
+
     private void mapInternals() {
         mapFields();
         mapConstructors();
@@ -459,15 +516,6 @@ public class ModelClass {
         }
     }
 
-    private String getTypeName(Type type) {
-        // TODO The simpleTypeName call on the type does not include any bounds for any embedded types.
-        //  Need to build our own.
-        String typeName = type.asTypeVariable() != null
-            ? type.asTypeVariable().simpleTypeName()
-            : shortName(type);
-        return typeName;
-    }
-    
     private void mapFields() {
         List<Field> fields = new ArrayList<>();
         for (FieldDoc fieldDoc: _classDoc.fields(false)) {
@@ -515,7 +563,16 @@ public class ModelClass {
         }
         orderVisibility(methods, _methods);
     }
-    
+
+    private String getTypeName(Type type) {
+        // TODO The simpleTypeName call on the type does not include any bounds for any embedded types.
+        //  Need to build our own.
+        String typeName = type.asTypeVariable() != null
+            ? type.asTypeVariable().simpleTypeName()
+            : shortName(type);
+        return typeName;
+    }
+
     private void mapSourceRel(ModelRel rel) {
         _rels.add(rel);
         // Do not add relationships back to ourselves more than once.
@@ -550,63 +607,6 @@ public class ModelClass {
                 ((List<VisibilityItem>)filteredItems).add(item);
             }
         }
-    }
-    
-    private static List<String> buildParameters(Type type) {
-        List<String> params = new ArrayList<>();
-        ParameterizedType paramType = type.asParameterizedType();
-        if (paramType != null) {
-            for (Type param : paramType.typeArguments()) {
-                String name = ModelClass.shortName(param);
-                params.add(name);
-            }
-        }
-        return params;
-    }
-
-    private static String buildParameterString(Type type) {
-        StringBuilder sb = new StringBuilder();
-        ParameterizedType paramType = type.asParameterizedType();
-        if (paramType != null) {
-            String sep = "";
-            for (Type param : paramType.typeArguments()) {
-                sb.append(sep);
-                TypeVariable paramTypeVariable = param.asTypeVariable();
-                if (paramTypeVariable != null) {
-                    sb.append(paramTypeVariable.simpleTypeName());
-                } else {
-                    sb.append(shortName(param));
-                }
-                sep = ", ";
-            }
-        } else {
-            // If a generic type has only type variables, it is not a parameterized type.
-            // It is only considered a parameterized type if it has at least one specific type
-            // (which itself can also be a parameterized type).
-            // Need to handle the case where we have a class that has type parameters.
-            ClassDoc classDocType = type.asClassDoc();
-            if (classDocType != null) {
-                TypeVariable[] typeParams = classDocType.typeParameters();
-                String sep = "";
-                for (int i=0; i<typeParams.length; i++) {
-                    sb.append(sep);
-                    TypeVariable typeParam = typeParams[i];
-                    sb.append(typeParam.simpleTypeName());
-                    // If the type has any bounds, display them.
-                    if (typeParam.bounds().length > 0) {
-                        sb.append(" extends ");
-                        String sep2 = "";
-                        for (Type bound: typeParam.bounds()) {
-                            sb.append(sep2);
-                            sb.append(bound.simpleTypeName());
-                            sep2 = ",";
-                        }
-                    }
-                    sep = ", ";
-                }
-            }
-        }
-        return sb.toString();
     }
     
     private final Model _model;
