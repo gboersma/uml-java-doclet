@@ -17,13 +17,6 @@ public class Model {
         _rootDoc = rootDoc;
     }
     
-    public void map() {
-        mapClasses();
-        mapRelationships();
-        createPackages();
-        mapPackages();
-    }
-    
     public List<ModelClass> classes() {
         return new ArrayList<>(_classes.values());
     }
@@ -113,7 +106,14 @@ public class Model {
     }
 
     // Mapping
-    
+
+    public void map() {
+        mapClasses();
+        mapRelationships();
+        createPackages();
+        mapPackages();
+    }
+
     private void mapClasses() {
         // First add the classes and packages to the model.
         for (ClassDoc classDoc: _rootDoc.classes()) {
