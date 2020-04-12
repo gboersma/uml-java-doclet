@@ -113,66 +113,66 @@ public class ModelClass {
     }
     
     public static String fullName(Type type) {
-        String fullName = fullNameWithoutParameters(type);
-        String params = buildParameterString(type);
-        if (params != null && params.length() > 0) {
-            fullName = fullName + "<" + params + ">";
-        }
-        return fullName;
+        // The full name of the class is not used for display purposes,
+        // but rather to uniquely identify the class across all packages.
+        // This needs to include the parameters of the class.
+        return type.toString();
     }
 
     public static String shortName(Type type) {
-        String shortName = shortNameWithoutParameters(type);
-        String params = buildParameterString(type);
-        if (params != null && params.length() > 0) {
-            shortName = shortName + "<" + params + ">";
+        // The short name of the class is used for display purposes.
+        // This can be for the name of the class, an attribute, or a method parameter / return type.
+        // The logic for determining the name of a class is very complicated,
+        // and needs to take into account parameterized types, type variables, etc.
+        // There is no clean way to do that from the Javadoc classes.
+        // The hack is to use the result of the toString() method and massage it.
+        String fullName = type.toString();
+        String shortName = getShortName(fullName);
+        return shortName;
+    }
+
+    private static String getShortName(String fullName) {
+        // The toString() contains package identifiers for the classes that are referenced.
+        // We need to remove all of the package identifiers.
+        // We need to do this recursively on any generics, since they can be embedded.
+        int paramIndex = fullName.indexOf('<');
+
+        String shortName = paramIndex != -1
+            ? stripQualifier(fullName.substring(0, paramIndex))
+            : stripQualifier(fullName);
+
+        // Parameter declaration: clean up all the parameters.
+        if (paramIndex != -1) {
+            String paramStr = fullName.substring(paramIndex + 1);
+            String[] parts = paramStr.split(" ");
+            String shortParamStr = "";
+            for (String part : parts) {
+                shortParamStr += getShortName(part) + " ";
+            }
+            shortName += "<" + shortParamStr;
         }
         return shortName;
     }
 
-    private static String buildParameterString(Type type) {
-        StringBuilder sb = new StringBuilder();
-        ParameterizedType paramType = type.asParameterizedType();
-        if (paramType != null) {
-            String sep = "";
-            for (Type param : paramType.typeArguments()) {
-                sb.append(sep);
-                TypeVariable paramTypeVariable = param.asTypeVariable();
-                if (paramTypeVariable != null) {
-                    sb.append(paramTypeVariable.simpleTypeName());
-                } else {
-                    sb.append(shortName(param));
-                }
-                sep = ", ";
+    private static String stripQualifier(String name) {
+        String[] parts = name.split("\\.");
+        int index = 0;
+        for (String part: parts) {
+            // We assume that an uppercase character indicates the name of a class.
+            if (Character.isUpperCase(part.charAt(0))) {
+                break;
             }
-        } else {
-            // If a generic type has only type variables, it is not a parameterized type.
-            // It is only considered a parameterized type if it has at least one specific type
-            // (which itself can also be a parameterized type).
-            // Need to handle the case where we have a class that has type parameters.
-            ClassDoc classDocType = type.asClassDoc();
-            if (classDocType != null) {
-                TypeVariable[] typeParams = classDocType.typeParameters();
-                String sep = "";
-                for (int i=0; i<typeParams.length; i++) {
-                    sb.append(sep);
-                    TypeVariable typeParam = typeParams[i];
-                    sb.append(typeParam.simpleTypeName());
-                    // If the type has any bounds, display them.
-                    if (typeParam.bounds().length > 0) {
-                        sb.append(" extends ");
-                        String sep2 = "";
-                        for (Type bound: typeParam.bounds()) {
-                            sb.append(sep2);
-                            sb.append(bound.simpleTypeName());
-                            sep2 = ",";
-                        }
-                    }
-                    sep = ", ";
-                }
-            }
+            index++;
         }
-        return sb.toString();
+
+        // Assemble the remaining parts.
+        String result = "";
+        for (int i = index; i < parts.length - 1; i++) {
+            result += parts[i] + ".";
+        }
+        result += parts[parts.length - 1];
+
+        return result;
     }
 
     public static String fullNameWithoutParameters(Type type) {
@@ -499,7 +499,7 @@ public class ModelClass {
                 // In some cases, the generic parameter can be returned as a '?', instead of the actual class.
                 // I think this can happen with lists to inner classes (that happen in this class, for example).
                 // Filter them out.
-                if (!param.shortName().endsWith(".?")) {
+                if (!param._type.toString().startsWith("? ")) {
                     // Do not map a dependency relationship back to this class.
                     if (!param._type.equals(_type)) {
                         // Only map the dependency if there is no existing relationship with that class.
@@ -520,7 +520,7 @@ public class ModelClass {
         List<Field> fields = new ArrayList<>();
         for (FieldDoc fieldDoc: _classDoc.fields(false)) {
             Type type = fieldDoc.type();
-            String typeName = getTypeName(type);
+            String typeName = shortName(type);
             Field mappedField = new Field(fieldDoc.name(), typeName, mapVisibility(fieldDoc), fieldDoc.isStatic());
             fields.add(mappedField);
         }
@@ -533,7 +533,7 @@ public class ModelClass {
             List<MethodParameter> params = new ArrayList<>();
             for (Parameter param: consDoc.parameters()) {
                 Type paramType = param.type();
-                String paramTypeName = getTypeName(paramType);
+                String paramTypeName = shortName(paramType);
                 params.add(new MethodParameter(paramTypeName, param.name()));
             }
             Constructor constructor = new Constructor(consDoc.name(), params, mapVisibility(consDoc));
@@ -548,11 +548,11 @@ public class ModelClass {
             List<MethodParameter> params = new ArrayList<>();
             for (Parameter param: methodDoc.parameters()) {
                 Type paramType = param.type();
-                String paramTypeName = getTypeName(paramType);
+                String paramTypeName = shortName(paramType);
                 params.add(new MethodParameter(paramTypeName, param.name()));
             }
             Type returnType = methodDoc.returnType();
-            String returnTypeName = getTypeName(returnType);
+            String returnTypeName = shortName(returnType);
             Method method = new Method(methodDoc.name(), 
                     params, 
                     returnTypeName,
@@ -562,15 +562,6 @@ public class ModelClass {
             methods.add(method);
         }
         orderVisibility(methods, _methods);
-    }
-
-    private String getTypeName(Type type) {
-        // TODO The simpleTypeName call on the type does not include any bounds for any embedded types.
-        //  Need to build our own.
-        String typeName = type.asTypeVariable() != null
-            ? type.asTypeVariable().simpleTypeName()
-            : shortName(type);
-        return typeName;
     }
 
     private void mapSourceRel(ModelRel rel) {
