@@ -6,7 +6,7 @@ Add UML diagrams (using PlantUML) to Javadocs. Extends the standard Java doclet.
 
 The inspiration for this project is better communication between the developers on my team. We want to 
 follow the principles of DDD and Model-Driven Design 
-(https://www.amazon.ca/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215/ref=sr_1_1?s=books&ie=UTF8&qid=1475876769&sr=1-1&keywords=domain+driven+design) 
+(https://www.amazon.ca/dp/0321125215) 
 and automatically generating class diagrams is a key part of that approach.
 
 ### Diagrams ###
