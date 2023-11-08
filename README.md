@@ -2,6 +2,13 @@
 
 Add UML diagrams (using PlantUML) to Javadocs. Extends the standard Java doclet.
 
+### Status ###
+
+The doclet tool was completely changed in Java 9; uml-java-doclet will not work with any JDK later than 8.
+
+This project is not maintained anymore, since for us it is not worth effort required to update it for later JDKs. 
+However, if anyone wants to take it on, feel free to log any issues and I will do my best to answer.
+
 ### Background ###
 
 The inspiration for this project is better communication between the developers on my team. We want to 
